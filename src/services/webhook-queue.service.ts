@@ -1,9 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { logger } from '../utils/logger.js';
-<<<<<<< HEAD
 import { geminiService } from './gemini.service.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { whatsappService } from './whatsapp.service.js';
 import {
   geoscienceAnalysisService,
@@ -19,7 +16,6 @@ import {
 } from './webhook-queue-readiness.js';
 import { webhookJobRepository, type WebhookJob, type WebhookJobRepository } from '../repositories/webhook-job.repository.js';
 import { webhookClaimRepository, type WebhookClaimRepository } from '../repositories/webhook-claim.repository.js';
-<<<<<<< HEAD
 import {
   buildUnsupportedInputWarning,
   detectOffTopicText,
@@ -29,8 +25,6 @@ import {
   SUPPORTED_OBSERVED_SUMMARY,
   SUPPORTED_ROCK_TYPE_SUMMARY,
 } from '../ai/domain-scope.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { WhatsAppMessage, WhatsAppWebhookPayload } from '../types/whatsapp.types.js';
 
 /**
@@ -42,7 +36,6 @@ const RECOVERY_SWEEP_TICKS = 40;
 export const RESPONSES = {
   START: `🪨 Welcome to Earth Talk!
 
-<<<<<<< HEAD
 🌍 Mission: ${EARTH_TALK_MISSION}
 🎯 Goal: ${EARTH_TALK_GOAL}
 
@@ -82,29 +75,6 @@ We support:
 • Evidence state: Preliminary AI reading, Community evidence, and Expert review
 
 ⚠️ Non-geoscience submissions (e.g., shoes, clothes, everyday objects, or unrelated messages) are not supported. Send a geological photo/short video or type HELP.`,
-=======
-Send me a photo or a short video of a rock, mineral, fossil, rock layer, landform, spring, slope or any other geological feature you find interesting.
-
-I will help you learn about it.
-
-Type HELP to see what you can do.`,
-
-  HELP: `🪨 EARTH TALK HELP
-
-You can:
-
-📸 Send a photo of a rock, mineral, fossil, layer, landform, spring, slope or geological structure
-🎥 Send a short video (a moving view often shows more than a still photo)
-📍 Share a location pin first, then send the photo or video, to record where you were
-💬 Ask questions
-ℹ️ Learn how Earth Talk works
-
-Type START to begin.`,
-
-  UNKNOWN: `🪨 I'm Earth Talk.
-
-Send me a photo or short video of something geological, or type HELP to see what I can do.`,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 };
 
 export interface MediaJobPayload extends Record<string, unknown> {
@@ -133,7 +103,6 @@ export interface UnsupportedJobPayload extends Record<string, unknown> {
   reply: string;
 }
 
-<<<<<<< HEAD
 function isGreeting(normalized: string): boolean {
   const words = ['start', 'hello', 'hi', 'hey', 'yo', 'greetings', 'muraho', 'habari'];
   if (words.includes(normalized)) return true;
@@ -163,12 +132,6 @@ async function determineTextResponse(body: string): Promise<string> {
     logger.debug('Direct Gemini Q&A failed for WhatsApp text, falling back to unknown response', { error: err });
   }
 
-=======
-function determineTextResponse(body: string): string {
-  const normalized = (body || '').trim().toLowerCase();
-  if (normalized === 'start' || normalized === 'hello' || normalized === 'hi') return RESPONSES.START;
-  if (normalized === 'help') return RESPONSES.HELP;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return RESPONSES.UNKNOWN;
 }
 
@@ -283,10 +246,7 @@ export class WebhookQueueService {
       return { providerMessageId: message.id, jobType: 'unsupported', payload };
     }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (message.type === 'location' && message.location) {
       const { latitude, longitude, name, address } = message.location;
       if (typeof latitude === 'number' && typeof longitude === 'number') {
@@ -355,17 +315,11 @@ export class WebhookQueueService {
   }
 
   protected async dispatch(job: WebhookJob): Promise<ProcessOutcome> {
-<<<<<<< HEAD
     switch (job.job_type as string) {
       case 'media':
         return geoscienceAnalysisService.processRockImage(job.payload as unknown as MediaJobPayload);
       case 'audio':
         return this.handleAudio(job.payload as { senderPhoneNumber: string });
-=======
-    switch (job.job_type) {
-      case 'media':
-        return geoscienceAnalysisService.processRockImage(job.payload as unknown as MediaJobPayload);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       case 'location':
         return this.handleLocation(job.payload as unknown as LocationJobPayload);
       case 'text':
@@ -377,7 +331,6 @@ export class WebhookQueueService {
     }
   }
 
-<<<<<<< HEAD
   private async handleAudio(payload: { senderPhoneNumber: string }): Promise<ProcessOutcome> {
     try {
       await whatsappService.sendTextMessage(
@@ -392,8 +345,6 @@ export class WebhookQueueService {
     }
   }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   private async handleLocation(payload: LocationJobPayload): Promise<ProcessOutcome> {
     try {
       await geoscienceAnalysisService.recordSharedLocation(payload);
@@ -413,16 +364,10 @@ export class WebhookQueueService {
       );
       if (handled) return { state: 'completed' };
 
-<<<<<<< HEAD
       const replyText = await determineTextResponse(payload.body);
       await whatsappService.sendTextMessage(
         payload.senderPhoneNumber,
         replyText
-=======
-      await whatsappService.sendTextMessage(
-        payload.senderPhoneNumber,
-        determineTextResponse(payload.body)
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       );
       return { state: 'completed' };
     } catch (err: unknown) {
@@ -565,7 +510,6 @@ export class WebhookQueueService {
     }
   }
 
-<<<<<<< HEAD
   /**
    * Stops claiming new jobs and waits for any in-flight tick to finish before
    * process shutdown, bounded by `timeoutMs`.
@@ -578,8 +522,6 @@ export class WebhookQueueService {
     }
   }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   private schedule(intervalMs: number): void {
     this.timer = setTimeout(() => {
       void this.tick(intervalMs);
@@ -599,10 +541,7 @@ export class WebhookQueueService {
     try {
       // Drain a bounded batch so one busy instance cannot monopolise the queue.
       for (let i = 0; i < 10; i++) {
-<<<<<<< HEAD
         if (!this.started) break;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         const result = await this.processOnce();
         if (result === 'idle') break;
       }
@@ -611,11 +550,7 @@ export class WebhookQueueService {
       // is deliberately much longer than the poll cadence: recovery is a
       // safety net, not part of the request path.
       this.tickCount += 1;
-<<<<<<< HEAD
       if (this.started && this.tickCount % RECOVERY_SWEEP_TICKS === 0) {
-=======
-      if (this.tickCount % RECOVERY_SWEEP_TICKS === 0) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         await this.recoverStaleWork();
       }
     } catch (err: unknown) {

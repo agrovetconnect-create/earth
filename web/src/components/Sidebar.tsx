@@ -4,11 +4,8 @@ import {
   LogIn,
   LogOut,
   ShieldCheck,
-<<<<<<< HEAD
   Smartphone,
   Upload,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   Menu,
   X,
 } from 'lucide-react';
@@ -21,11 +18,8 @@ import {
 } from '../navigation.js';
 import { useTranslator } from '../i18n.js';
 import { LanguageCard } from './LanguageCard.js';
-<<<<<<< HEAD
 import { PWAInstallButton } from './PWAInstallButton.js';
 import { appDistributionApi } from '../services/appDistributionApi.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { ExpertUser } from '../types/expert.js';
 import type { CommunityUser } from '../types/communityPosts.js';
 
@@ -34,11 +28,8 @@ interface SidebarProps {
   /** `panel` jumps a view straight to one of its sections. */
   onNavigate: (view: AppView, panel?: CommunityPanel) => void;
   onOpenWhatsApp: () => void;
-<<<<<<< HEAD
   /** Opens the direct Web Photo & Supporting Media submission modal. */
   onOpenWebUpload: () => void;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /** Opens the general sign-in modal (contributor phone or administrator email). */
   onOpenLogin: () => void;
   onSignOut: () => void;
@@ -94,10 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   view,
   onNavigate,
   onOpenWhatsApp,
-<<<<<<< HEAD
   onOpenWebUpload,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   onOpenLogin,
   onSignOut,
   currentExpert,
@@ -115,7 +103,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // The icon rail hides the sign-out button; the reader's avatar opens this
   // small menu instead, so the session is still reachable in the narrow column.
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
-<<<<<<< HEAD
   const [showGetApp, setShowGetApp] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
 
@@ -156,8 +143,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       appDistributionApi.triggerDirectDownload('earthtalk.apk');
     }
   };
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   // Navigation chrome follows the language chosen in Language settings.
   const t = useTranslator();
@@ -177,16 +162,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // An entry is active when it matches the open view and, for a view split
   // across several entries (the four Community sections), the section the view
   // is currently showing.
-<<<<<<< HEAD
   const isEntryActive = (entry: NavEntry) => {
     if (entry.id === 'about' && (view === 'about' || view === 'how-it-works')) return true;
     if (entry.id === 'terms' && (view === 'terms' || view === 'privacy')) return true;
     return entry.id === view && (entry.panel ? entry.panel === activePanel : activePanel == null);
   };
-=======
-  const isEntryActive = (entry: NavEntry) =>
-    entry.id === view && (entry.panel ? entry.panel === activePanel : activePanel == null);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   const iconButton = (
     label: string,
@@ -292,7 +272,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className={`g-sidebar ${collapsed ? 'g-sidebar--rail' : ''}`}>
-<<<<<<< HEAD
       {/* Header — fixed above the scroll region. The expand control (the
           three lines) lives only in the icon rail: the full column is opened
           by it, and closed from its X, which narrows the column straight back
@@ -300,20 +279,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex h-16 shrink-0 items-center justify-between px-3">
         {collapsed ? (
           <div className="flex w-full justify-center">
-=======
-      {/* Header — fixed above the scroll region. The export control (the
-          three lines) lives only in the icon rail: the full column is opened
-          by it, and closed from its X, which narrows the column straight back
-          to this top-left control rather than removing it from the page. */}
-      <div className="shrink-0 border-b border-[#e3e3e3]">
-        {collapsed ? (
-          <div className="flex items-center justify-center py-2">
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             {onToggleCollapsed &&
               iconButton(
                 'Show the full sidebar',
                 onToggleCollapsed,
-<<<<<<< HEAD
                 <Menu className="h-5 w-5" aria-hidden="true" />,
               )}
           </div>
@@ -332,25 +301,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 '!h-9 !w-9',
               )}
           </>
-=======
-                <Menu className="w-5 h-5" aria-hidden="true" />,
-              )}
-          </div>
-        ) : (
-          <div className="flex h-14 items-center gap-1 px-3">
-            <img
-              src="/logo_withsubtitle.png"
-              alt="Earth Talk"
-              className="mr-auto h-9 w-auto max-w-full object-contain select-none"
-            />
-            {onClose && iconButton('Collapse sidebar', onClose, <X className="w-5 h-5" aria-hidden="true" />)}
-          </div>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         )}
       </div>
 
       {/* Navigation + contextual panel — the one scroll region, with the
-<<<<<<< HEAD
           header and the footer held outside it. */}
       <nav className="flex-1 overflow-y-auto g-scroll" aria-label="Primary navigation">
         <div className="py-1">
@@ -433,96 +387,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
       )}
-=======
-          header, the switch and the footer held outside it. */}
-      <div className="g-scroll min-h-0 flex-1 overflow-y-auto pb-2">
-        {visibleGroups.map((group, groupIndex) => {
-          return (
-            <nav
-              key={group.id}
-              aria-label={group.title}
-              className={groupIndex > 0 ? 'mt-1 pt-1' : 'pt-1'}
-            >
-              {group.id === 'learn' && !collapsed && (
-                <div className="relative">
-                  {NAV_FOOTER_UTILS.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className="et-menu-item"
-                      data-menu-id={item.id}
-                      aria-haspopup="menu"
-                      aria-expanded={languageOpen}
-                      aria-label={item.label}
-                      title={item.subtitle}
-                      onClick={() => setLanguageOpen((prev) => !prev)}
-                    >
-                      <item.icon className="h-6 w-6 shrink-0" strokeWidth={1.75} aria-hidden="true" />
-                      <span className="et-menu-label">{t(item.label)}</span>
-                    </button>
-                  ))}
-
-                  {languageOpen && (
-                    <>
-                      {/* A full-surface catcher dismisses the popover on the next click anywhere. */}
-                      <div
-                        className="fixed inset-0 z-40"
-                        aria-hidden="true"
-                        onClick={() => setLanguageOpen(false)}
-                      />
-                      <div className="absolute bottom-full left-2 z-50 mb-1">
-                        <LanguageCard onSelect={() => setLanguageOpen(false)} />
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {group.entries.map((entry) => {
-                const Icon = entry.icon;
-                const isActive = isEntryActive(entry);
-
-                return (
-                  <button
-                    key={`${entry.id}-${entry.panel ?? 'default'}`}
-                    type="button"
-                    className={`et-menu-item ${collapsed ? 'et-menu-item--rail' : ''}`}
-                    aria-current={isActive ? 'page' : undefined}
-                    aria-label={entry.label}
-                    title={collapsed ? entry.label : undefined}
-                    onClick={() => handleEntry(entry)}
-                  >
-                    <Icon
-                      className="h-6 w-6 shrink-0"
-                      strokeWidth={isActive ? 2.1 : 1.75}
-                      aria-hidden="true"
-                    />
-                    <span className="et-menu-label">{t(entry.label)}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          );
-        })}
-
-        {!collapsed && children}
-      </div>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
       {/* Primary action + session state — pinned to the bottom, outside the
           scroll region, so starting on WhatsApp is always one click away. */}
       <div
-<<<<<<< HEAD
         className={`shrink-0 bg-white space-y-2 ${
-=======
-        className={`shrink-0 border-t border-[#e3e3e3] bg-[#f8fafd] space-y-2 ${
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           collapsed ? 'flex flex-col items-center px-2 py-3' : 'px-3 py-3'
         }`}
       >
         {collapsed ? (
           <>
-<<<<<<< HEAD
             <PWAInstallButton compact />
             {showGetApp && (
               <button
@@ -554,16 +428,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onOpenWebUpload}
             >
               <Upload className="h-5 w-5" />
-=======
-            <button
-              type="button"
-              className="g-icon-btn h-11 w-11"
-              title={whatsAppLabel}
-              aria-label={whatsAppLabel}
-              onClick={onOpenWhatsApp}
-            >
-              <MessageSquarePlus className="h-5 w-5" />
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </button>
             {identity ? (
               <div className="relative">
@@ -594,7 +458,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </>
         ) : (
           <>
-<<<<<<< HEAD
             {showGetApp && (
               <button
                 type="button"
@@ -624,15 +487,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <Upload className="h-4 w-4 shrink-0" aria-hidden="true" />
               <span className="truncate">{t('Submit Field Observation')}</span>
-=======
-            <button
-              type="button"
-              className="g-btn g-btn-filled h-11 w-full"
-              onClick={onOpenWhatsApp}
-            >
-              <MessageSquarePlus className="h-4 w-4" aria-hidden="true" />
-              <span>{whatsAppLabel}</span>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </button>
 
             {identity ? (
@@ -676,10 +530,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </>
         )}
       </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     </aside>
   );
 };

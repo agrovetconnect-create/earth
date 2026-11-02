@@ -13,7 +13,6 @@ import { abuseReportService, AbuseReportError } from '../services/abuse-report.s
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
 import { isServiceUnavailableError } from '../utils/service-error.js';
 import {
-<<<<<<< HEAD
   CONTRIBUTOR_COOKIE_NAME,
   CONTRIBUTOR_SESSION_TTL_MS,
   extractRawContributorToken,
@@ -27,13 +26,6 @@ import { hashRequestIp } from '../utils/user-auth.js';
 import { logger } from '../utils/logger.js';
 import { setPublicHeaders } from '../utils/http.js';
 import { env } from '../config/env.js';
-=======
-  resolveContributorHashFromRequest,
-  publicContributorHandle,
-} from '../utils/contributor.js';
-import { logger } from '../utils/logger.js';
-import { setPublicHeaders } from '../utils/http.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * Community Discovery controller.
@@ -48,21 +40,11 @@ import { setPublicHeaders } from '../utils/http.js';
  */
 
 /**
-<<<<<<< HEAD
  * Resolves and verifies the contributor key for a request against server-side
  * revocation and expiry state.
  */
 async function contributorOf(req: Request): Promise<string | null> {
   return resolveVerifiedContributorHashFromRequest(req);
-=======
- * Resolves the contributor key for a write request.
- *
- * Returns null when no usable token was supplied so the handler can decide
- * whether the action is allowed without identity.
- */
-function contributorOf(req: Request): string | null {
-  return resolveContributorHashFromRequest(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 function requireDatabase(res: Response): boolean {
@@ -135,11 +117,7 @@ function respondWithError(res: Response, err: unknown, context: string): void {
 /** GET /api/community/investigations */
 export async function listInvestigations(req: Request, res: Response): Promise<void> {
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     // The response carries a per-caller `viewer_is_owner` flag, so an
     // identified caller must not receive a shared, cacheable response.
     if (contributor) {
@@ -172,11 +150,7 @@ export async function openInvestigation(req: Request, res: Response): Promise<vo
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const body = req.body ?? {};
     const investigation = await communityService.openInvestigation(
       {
@@ -201,11 +175,7 @@ export async function openInvestigation(req: Request, res: Response): Promise<vo
 /** GET /api/community/investigations/:publicId */
 export async function getInvestigation(req: Request, res: Response): Promise<void> {
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const investigation = await communityService.getInvestigation(req.params.publicId, contributor);
     if (!investigation) {
       res.status(404).json({
@@ -229,11 +199,7 @@ export async function updateInvestigation(req: Request, res: Response): Promise<
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!contributor) {
       res.status(401).json({
         error: {
@@ -280,11 +246,7 @@ export async function castVote(req: Request, res: Response): Promise<void> {
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!contributor) {
       res.status(401).json({
         error: {
@@ -311,11 +273,7 @@ export async function toggleChecklist(req: Request, res: Response): Promise<void
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!contributor) {
       res.status(401).json({
         error: {
@@ -365,11 +323,7 @@ export async function submitEvidence(req: Request, res: Response): Promise<void>
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const body = req.body ?? {};
     const item = await communityService.submitEvidence(
       {
@@ -418,11 +372,7 @@ export async function askQuestion(req: Request, res: Response): Promise<void> {
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const body = req.body ?? {};
     const question = await communityService.askQuestion(
       {
@@ -465,11 +415,7 @@ export async function postAnswer(req: Request, res: Response): Promise<void> {
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const answer = await communityService.postAnswer(
       {
         questionPublicId: req.params.publicId,
@@ -505,11 +451,7 @@ export async function recordVisit(req: Request, res: Response): Promise<void> {
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const body = req.body ?? {};
     const visit = await communityService.recordVisit(
       {
@@ -533,11 +475,7 @@ export async function recordVisit(req: Request, res: Response): Promise<void> {
 /** GET /api/community/me/reputation */
 export async function getMyReputation(req: Request, res: Response): Promise<void> {
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const reputation = await communityService.getReputation(contributor ?? '');
     res.setHeader('Cache-Control', 'private, no-store');
     res.status(200).json(reputation);
@@ -645,7 +583,6 @@ export async function getSiteTimeline(req: Request, res: Response): Promise<void
 /**
  * POST /api/community/contributor-token
  *
-<<<<<<< HEAD
  * Issues a server-revocable pseudonymous contributor session. Browser clients
  * receive an HttpOnly cookie only (never a JS-readable token in JSON); native
  * mobile SecureStore callers (`X-Client-Platform: mobile`) receive the token.
@@ -684,29 +621,12 @@ export async function issueContributorToken(req: Request, res: Response): Promis
       note: isMobile
         ? 'This token is stored in native SecureStore and contains no personal data.'
         : 'This session is stored exclusively in an HttpOnly cookie. It contains no personal data and cannot be read by scripts.',
-=======
- * Issues the pseudonymous browser token used for duplicate-vote prevention. The
- * token carries no personal data and is not linked to a phone number or account.
- */
-export async function issueContributorToken(req: Request, res: Response): Promise<void> {
-  try {
-    const { createContributorToken } = await import('../utils/contributor.js');
-    const token = createContributorToken();
-    res.setHeader('Cache-Control', 'no-store');
-    res.status(200).json({
-      contributor_token: token,
-      handle_preview: publicContributorHandle(
-        (await import('../utils/contributor.js')).hashContributor(`web:${token}`)
-      ),
-      note: 'This token is stored in your browser only. It contains no personal data and cannot be linked to you.',
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     });
   } catch (err) {
     respondWithError(res, err, 'issueContributorToken');
   }
 }
 
-<<<<<<< HEAD
 /**
  * POST /api/community/contributor-token/logout
  *
@@ -729,8 +649,6 @@ export async function logoutContributorToken(req: Request, res: Response): Promi
   }
 }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 // =============================================================================
 // Community media
 // =============================================================================
@@ -746,11 +664,7 @@ export async function addCommunityMedia(req: Request, res: Response): Promise<vo
   if (!requireDatabase(res)) return;
 
   try {
-<<<<<<< HEAD
     const contributor = await contributorOf(req);
-=======
-    const contributor = contributorOf(req);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const media = await communityMediaService.add(
       {
         contentBase64: typeof req.body?.content_base64 === 'string' ? req.body.content_base64 : '',
@@ -761,13 +675,10 @@ export async function addCommunityMedia(req: Request, res: Response): Promise<vo
     );
     res.status(201).json(media);
   } catch (err) {
-<<<<<<< HEAD
     if (isServiceUnavailableError(err)) {
       respondWithError(res, err, 'addCommunityMedia');
       return;
     }
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const msg = err instanceof Error ? err.message : 'The file could not be attached.';
     res.status(400).json({ error: { code: 'MEDIA_REJECTED', message: msg } });
   }
@@ -811,34 +722,18 @@ export async function getCommunityMedia(req: Request, res: Response): Promise<vo
  * POST /api/community/reports
  *
  * Files an abuse report against a record, question, comment or site.
-<<<<<<< HEAD
-=======
- *
- * Anyone may file one, including a signed-out visitor: a reader who cannot
- * report harmful content cannot protect themselves. When a contributor token is
- * present its one-way hash is recorded for duplicate suppression, but no
- * personal data is collected and the hash is never returned.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 export async function fileAbuseReport(req: Request, res: Response): Promise<void> {
   try {
     const body = req.body ?? {};
     const result = await abuseReportService.fileReport({
       targetType: typeof body.target_type === 'string' ? body.target_type : '',
-<<<<<<< HEAD
-=======
-      // (target type is validated by the service; a non-string becomes empty)
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       targetId: typeof body.target_id === 'string' ? body.target_id : '',
       reasonCode: typeof body.reason_code === 'string' ? body.reason_code : '',
       details: typeof body.details === 'string' ? body.details : null,
       observationPassportId:
         typeof body.observation_passport_id === 'string' ? body.observation_passport_id : null,
-<<<<<<< HEAD
       reporterHash: await contributorOf(req),
-=======
-      reporterHash: contributorOf(req),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     });
     res.status(201).json(result);
   } catch (err) {

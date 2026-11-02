@@ -4,7 +4,6 @@ import { publicObservationRepository } from '../repositories/public-observation.
 import { geoscienceIntelligenceService } from '../services/geoscience-intelligence.service.js';
 import { logger } from '../utils/logger.js';
 import { setPublicHeaders } from '../utils/http.js';
-<<<<<<< HEAD
 import { isServiceUnavailableError } from '../utils/service-error.js';
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
 import { hashRequestIp } from '../utils/user-auth.js';
@@ -47,28 +46,6 @@ async function enforcePublicRateLimit(req: Request, res: Response): Promise<bool
     });
     return false;
   }
-=======
-
-// Simple in-memory rate limiter for public endpoints (100 req / 15 min / IP)
-const ipRequestCounts = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 100;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = ipRequestCounts.get(ip);
-
-  if (!record || now > record.resetTime) {
-    ipRequestCounts.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-
-  record.count++;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return true;
 }
 
@@ -76,38 +53,14 @@ function checkRateLimit(ip: string): boolean {
  * GET /api/public/observations
  */
 export async function getPublicObservations(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 30);
     const result = await publicObservationService.getObservations(req.query);
     res.status(200).json(result);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching public observations', 'Failed to retrieve geological observations.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching public observations', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve geological observations.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -118,43 +71,19 @@ export async function getPublicObservations(req: Request, res: Response): Promis
  * record whose location was kept private is not placed at a guessed point.
  */
 export async function getUnlocatedObservations(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 30);
     const result = await publicObservationService.getUnlocatedObservations(req.query);
     res.status(200).json(result);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(
       res,
       err,
       'Error fetching unlocated public observations',
       'Failed to retrieve observations without a location.'
     );
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching unlocated public observations', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve observations without a location.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -162,20 +91,7 @@ export async function getUnlocatedObservations(req: Request, res: Response): Pro
  * GET /api/public/observations.geojson
  */
 export async function getPublicObservationsGeoJson(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 30);
@@ -183,18 +99,7 @@ export async function getPublicObservationsGeoJson(req: Request, res: Response):
     const geojson = await publicObservationService.getObservationsGeoJson(req.query);
     res.status(200).json(geojson);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error generating public GeoJSON', 'Failed to generate map data.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error generating public GeoJSON', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to generate map data.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -202,20 +107,7 @@ export async function getPublicObservationsGeoJson(req: Request, res: Response):
  * GET /api/public/observations/:passportId
  */
 export async function getPublicObservationByPassportId(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const { passportId } = req.params;
@@ -235,18 +127,7 @@ export async function getPublicObservationByPassportId(req: Request, res: Respon
     setPublicHeaders(res, 60);
     res.status(200).json(observation);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching public observation by ID', 'Failed to retrieve the Geoscience Passport.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching public observation by ID', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve the Geoscience Passport.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -254,38 +135,14 @@ export async function getPublicObservationByPassportId(req: Request, res: Respon
  * GET /api/public/stats
  */
 export async function getPublicStats(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 60);
     const stats = await publicObservationService.getStats();
     res.status(200).json(stats);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching public stats', 'Failed to retrieve statistics.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching public stats', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve statistics.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -293,38 +150,14 @@ export async function getPublicStats(req: Request, res: Response): Promise<void>
  * GET /api/public/districts
  */
 export async function getPublicDistricts(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 120);
     const districts = await publicObservationService.getDistricts();
     res.status(200).json(districts);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching public districts', 'Failed to retrieve districts.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching public districts', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve districts.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -337,38 +170,14 @@ export async function getPublicDistricts(req: Request, res: Response): Promise<v
  * invent a count for a category it has not heard of.
  */
 export async function getPublicCategories(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: {
-        code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests. Please try again later.',
-      },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     setPublicHeaders(res, 120);
     const categories = await publicObservationService.getCategoryCounts();
     res.status(200).json(categories);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching public categories', 'Failed to retrieve observation categories.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching public categories', { error: msg });
-    res.status(500).json({
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to retrieve observation categories.',
-      },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -379,17 +188,7 @@ export async function getPublicCategories(req: Request, res: Response): Promise<
  * observation from its stored analysis and the genuinely available context.
  */
 export async function getObservationIntelligence(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const { passportId } = req.params;
@@ -403,20 +202,12 @@ export async function getObservationIntelligence(req: Request, res: Response): P
     setPublicHeaders(res, 60);
     res.status(200).json(intelligence);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(
       res,
       err,
       'Error fetching observation intelligence',
       'Failed to assemble the observation intelligence.'
     );
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching observation intelligence', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to assemble the observation intelligence.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -428,17 +219,7 @@ export async function getObservationIntelligence(req: Request, res: Response): P
  * dataset status. Unavailable sources are reported as unavailable.
  */
 export async function getObservationContext(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const { passportId } = req.params;
@@ -453,15 +234,7 @@ export async function getObservationContext(req: Request, res: Response): Promis
     const context = await geoscienceIntelligenceService.collectObservationContext(passportId);
     res.status(200).json(context);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching observation context', 'Failed to assemble the observation context.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching observation context', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to assemble the observation context.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -472,17 +245,7 @@ export async function getObservationContext(req: Request, res: Response): Promis
  * reported as density and never translated into geological abundance.
  */
 export async function getNearbyObservations(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const { passportId } = req.params;
@@ -510,15 +273,7 @@ export async function getNearbyObservations(req: Request, res: Response): Promis
           : 'No nearby public observations share an exact published coordinate within the search radius.',
     });
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching nearby observations', 'Failed to retrieve nearby observations.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching nearby observations', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to retrieve nearby observations.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -529,17 +284,7 @@ export async function getNearbyObservations(req: Request, res: Response): Promis
  * (the nearest similarity signal the public data exposes).
  */
 export async function getSimilarObservations(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const { passportId } = req.params;
@@ -565,15 +310,7 @@ export async function getSimilarObservations(req: Request, res: Response): Promi
           : 'No public observations share the same category and subcategory.',
     });
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error fetching similar observations', 'Failed to retrieve similar observations.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error fetching similar observations', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to retrieve similar observations.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -584,17 +321,7 @@ export async function getSimilarObservations(req: Request, res: Response): Promi
  * are never merged into one answer.
  */
 export async function compareObservations(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const passportA = String(req.query.a ?? '').trim().toUpperCase();
@@ -615,15 +342,7 @@ export async function compareObservations(req: Request, res: Response): Promise<
     setPublicHeaders(res, 60);
     res.status(200).json(comparison);
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error comparing observations', 'Failed to compare the observations.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error comparing observations', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to compare the observations.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
@@ -634,17 +353,7 @@ export async function compareObservations(req: Request, res: Response): Promise<
  * flagged observations and research-interest investigations.
  */
 export async function listResearchOpportunities(req: Request, res: Response): Promise<void> {
-<<<<<<< HEAD
   if (!(await enforcePublicRateLimit(req, res))) return;
-=======
-  const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(clientIp)) {
-    res.status(429).json({
-      error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests. Please try again later.' },
-    });
-    return;
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   try {
     const siteCode = String(req.query.site ?? '').trim() || undefined;
@@ -652,14 +361,6 @@ export async function listResearchOpportunities(req: Request, res: Response): Pr
     setPublicHeaders(res, 120);
     res.status(200).json({ count: opportunities.length, items: opportunities });
   } catch (err: unknown) {
-<<<<<<< HEAD
     respondPublicError(res, err, 'Error listing research opportunities', 'Failed to retrieve research opportunities.');
-=======
-    const msg = err instanceof Error ? err.message : 'Unknown error';
-    logger.error('Error listing research opportunities', { error: msg });
-    res.status(500).json({
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to retrieve research opportunities.' },
-    });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }

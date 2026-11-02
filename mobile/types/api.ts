@@ -19,10 +19,7 @@ export interface ObservationSummary {
   is_research_opportunity?: boolean | null;
   is_demo?: boolean;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export interface ObservationDetail extends ObservationSummary {
   geological_context?: string | null;
   observed_features: string[];
@@ -42,7 +39,6 @@ export interface ObservationDetail extends ObservationSummary {
   site_code?: string | null;
   sector?: string | null;
 }
-<<<<<<< HEAD
 
 export interface Paginated<T> {
   data: T[];
@@ -644,29 +640,3 @@ export interface PhotoSubmissionResponse {
   gps_mismatch_km?: number | null;
   disclaimer: string;
 }
-=======
-export interface Paginated<T> { data: T[]; pagination: { page: number; limit: number; total: number; totalPages: number } }
-export interface PublicSite { site_id: string; site_code: string; title: string; district: string | null; description: string | null; is_demo?: boolean }
-export interface SitesResponse { rows: PublicSite[]; total: number }
-export interface PublicCategory { category: string; label: string; observation_count: number }
-export interface ObservationFilters { search?: string; category?: string }
-export interface GeoJsonFeature { type: 'Feature'; geometry: { type?: unknown; coordinates?: unknown } | null; properties?: Record<string, unknown> }
-export interface GeoJsonCollection { type: 'FeatureCollection'; features: GeoJsonFeature[] }
-export interface CommunityInvestigation {
-  public_id: string; question: string; status: string; site_id: string | null; observation_id: string | null; passport_id: string | null;
-  site_code?: string | null; participant_count: number; evidence_count: number; vote_count: number; research_interest?: boolean;
-  options: string[]; checklist?: Array<{ id: string; text: string; check_count: number; viewer_checked: boolean }>;
-  context?: string | null; category?: string | null; media_ids?: string[]; vote_distribution: Array<{ option: string; count: number; share_pct?: number }>;
-  opened_by_handle?: string | null; viewer_is_owner?: boolean; is_demo: boolean; created_at: string; updated_at?: string; disclaimer?: string;
-}
-export interface CommunityInvestigationsResponse { rows: CommunityInvestigation[]; total: number }
-export interface CommunityVoteResult { option: string; changed: boolean; message: string }
-export interface ContributorTokenResponse { contributor_token: string; handle_preview: string; note: string }
-export interface PublicVisit { id: string; site_id: string; contributor_handle: string; visited_on: string; notes: string | null; media_id: string | null; created_at: string }
-export interface PublicVisitsResponse { rows: PublicVisit[] }
-export interface PublicComment {
-  comment_id: string; parent_comment_id: string | null; author: { public_user_id: string; display_name: string; is_demo?: boolean };
-  body: string; created_at: string; edited_at?: string | null; moderation_status: string; reply_count: number; replies: PublicComment[]; is_demo?: boolean;
-}
-export interface PublicCommentResponse { data: PublicComment[]; total: number }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

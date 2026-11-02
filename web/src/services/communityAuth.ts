@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useSyncExternalStore } from 'react';
 import type { CommunitySession, CommunityUser } from '../types/communityPosts.js';
 import { apiUrl, requestJson } from './http.js';
@@ -43,44 +42,6 @@ export function setCommunitySession(next: CommunitySession | null): void {
 
 export function useCommunitySession(): CommunitySession | null {
   return useSyncExternalStore(subscribe, getCommunitySession, () => null);
-=======
-import type { CommunitySession, CommunityUser } from '../types/communityPosts.js';
-import { apiUrl, bearerHeaders, requestJson } from './http.js';
-import { createPersistedStore } from './localStore.js';
-
-const TOKEN_STORAGE_KEY = 'rt_community_token';
-
-/**
- * WhatsApp verification session state (Stage 12).
- *
- * The signed-in contributor is a single shared, reactive value: the side card
- * and the MY EARTH TALK dashboard both need it, and it must change in both the
- * moment a session is established or lost. A persisted store keeps that
- * guarantee without a context provider or a global event emitter to debug.
- */
-
-const store = createPersistedStore<CommunitySession | null>(TOKEN_STORAGE_KEY, null, {
-  deserialize: (raw, fallback) => {
-    const parsed = raw as CommunitySession | null;
-    return parsed && parsed.token && parsed.user ? parsed : fallback;
-  },
-});
-
-export function getCommunitySession(): CommunitySession | null {
-  return store.get();
-}
-
-export function getCommunityToken(): string | null {
-  return getCommunitySession()?.token ?? null;
-}
-
-export function setCommunitySession(next: CommunitySession | null): void {
-  store.set(next);
-}
-
-export function useCommunitySession(): CommunitySession | null {
-  return store.use();
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 export function useCommunityUser(): CommunityUser | null {
@@ -93,53 +54,30 @@ export interface RequestCodeResult {
   expires_in_seconds: number;
 }
 
-<<<<<<< HEAD
 /** POST /api/auth/request-code — @deprecated Use requestEmailCode */
 export async function requestCode(phone: string): Promise<RequestCodeResult> {
   return requestJson<RequestCodeResult>('/api/auth/request-code', {
     method: 'POST',
-=======
-/** POST /api/auth/request-code */
-export async function requestCode(phone: string): Promise<RequestCodeResult> {
-  return requestJson<RequestCodeResult>('/api/auth/request-code', {
-    method: 'POST',
-    headers: bearerHeaders(null),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     json: { phone },
     errorMessage: 'Sign-in request failed.',
   });
 }
 
-<<<<<<< HEAD
 /** POST /api/auth/verify-code — @deprecated Use verifyEmailCode */
 export async function verifyCode(phone: string, code: string): Promise<CommunitySession> {
   const data = await requestJson<{ token?: string; expires_at: string; user: CommunityUser }>(
     '/api/auth/verify-code',
     {
       method: 'POST',
-=======
-/** POST /api/auth/verify-code — returns a token exactly once. */
-export async function verifyCode(phone: string, code: string): Promise<CommunitySession> {
-  const data = await requestJson<{ token: string; expires_at: string; user: CommunityUser }>(
-    '/api/auth/verify-code',
-    {
-      method: 'POST',
-      headers: bearerHeaders(null),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       json: { phone, code },
       errorMessage: 'The code could not be verified.',
     }
   );
-<<<<<<< HEAD
   const next: CommunitySession = { token: '', expires_at: data.expires_at, user: data.user };
-=======
-  const next: CommunitySession = { token: data.token, expires_at: data.expires_at, user: data.user };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   setCommunitySession(next);
   return next;
 }
 
-<<<<<<< HEAD
 /** POST /api/auth/request-email-code */
 export async function requestEmailCode(email: string, purpose: string = 'registration'): Promise<any> {
   return requestJson<any>('/api/auth/request-email-code', {
@@ -196,20 +134,6 @@ export async function refreshSession(): Promise<CommunityUser | null> {
       expires_at: typeof data.expires_at === 'string' ? data.expires_at : '',
       user: data.user,
     });
-=======
-/** GET /api/auth/session — reconciles a stored token with the server. */
-export async function refreshSession(): Promise<CommunityUser | null> {
-  const token = getCommunityToken();
-  if (!token) return null;
-  const res = await fetch(apiUrl('/api/auth/session'), { headers: bearerHeaders(token) });
-  if (!res.ok) return null;
-  const data = await res.json();
-  if (data.authenticated && data.user) {
-    const current = getCommunitySession();
-    if (current) {
-      setCommunitySession({ ...current, user: data.user });
-    }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return data.user;
   }
   setCommunitySession(null);
@@ -218,40 +142,18 @@ export async function refreshSession(): Promise<CommunityUser | null> {
 
 /** POST /api/auth/sign-out */
 export async function signOut(): Promise<void> {
-<<<<<<< HEAD
   await Promise.allSettled([
     requestJson('/api/auth/sign-out', { method: 'POST' }),
     logoutContributorSession(),
   ]);
-=======
-  const token = getCommunityToken();
-  try {
-    if (token) {
-      await fetch(apiUrl('/api/auth/sign-out'), {
-        method: 'POST',
-        headers: bearerHeaders(token),
-      });
-    }
-  } catch {
-    // A signed-out identity is still signed out locally.
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   setCommunitySession(null);
 }
 
 /** PATCH /api/auth/profile */
 export async function updateProfile(displayName: string | null): Promise<CommunityUser> {
-<<<<<<< HEAD
   if (!getCommunitySession()?.user) throw new Error('Signed out.');
   const data = await requestJson<{ user: CommunityUser }>('/api/auth/profile', {
     method: 'PATCH',
-=======
-  const token = getCommunityToken();
-  if (!token) throw new Error('Signed out.');
-  const data = await requestJson<{ user: CommunityUser }>('/api/auth/profile', {
-    method: 'PATCH',
-    headers: bearerHeaders(token),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     json: { display_name: displayName },
     errorMessage: 'Profile update failed.',
   });
@@ -262,12 +164,6 @@ export async function updateProfile(displayName: string | null): Promise<Communi
 
 /**
  * URL for a contributor's profile photo, or null without a public id.
-<<<<<<< HEAD
-=======
- *
- * `version` busts the browser cache after a change so a replaced or removed
- * photo is not served from the old cache entry.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 export function userAvatarSrc(
   publicUserId: string | null | undefined,
@@ -283,17 +179,9 @@ export async function setAvatar(
   contentBase64: string,
   mimeType: string
 ): Promise<{ updatedAt: string }> {
-<<<<<<< HEAD
   if (!getCommunitySession()?.user) throw new Error('Signed out.');
   const data = await requestJson<{ updatedAt: string }>('/api/auth/avatar', {
     method: 'POST',
-=======
-  const token = getCommunityToken();
-  if (!token) throw new Error('Signed out.');
-  const data = await requestJson<{ updatedAt: string }>('/api/auth/avatar', {
-    method: 'POST',
-    headers: bearerHeaders(token),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     json: { content_base64: contentBase64, mime_type: mimeType },
     errorMessage: 'The photo could not be saved.',
   });
@@ -302,22 +190,13 @@ export async function setAvatar(
 
 /** DELETE /api/auth/avatar — removes the signed-in contributor's profile photo. */
 export async function clearAvatar(): Promise<void> {
-<<<<<<< HEAD
   if (!getCommunitySession()?.user) throw new Error('Signed out.');
   await requestJson('/api/auth/avatar', {
     method: 'DELETE',
-=======
-  const token = getCommunityToken();
-  if (!token) throw new Error('Signed out.');
-  await requestJson('/api/auth/avatar', {
-    method: 'DELETE',
-    headers: bearerHeaders(token),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     errorMessage: 'The photo could not be removed.',
   });
 }
 
-<<<<<<< HEAD
 export interface GoogleAuthResponse {
   authenticated?: boolean;
   verification_required?: boolean;
@@ -406,9 +285,4 @@ export async function fetchUserProfile(): Promise<any> {
 /** Content headers for community post APIs; auth is carried via HttpOnly cookie. */
 export function getCommunityAuthHeaders(): Record<string, string> {
   return { 'Content-Type': 'application/json' };
-=======
-/** Auth header for community post APIs; empty when signed out. */
-export function getCommunityAuthHeaders(): Record<string, string> {
-  return bearerHeaders(getCommunityToken());
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }

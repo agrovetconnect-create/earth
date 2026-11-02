@@ -74,12 +74,9 @@ export function removeHistory(id: string): void {
 }
 
 export function clearHistory(): void {
-<<<<<<< HEAD
   try {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch {}
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   store.reset();
 }
 

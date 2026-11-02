@@ -1,12 +1,9 @@
 import { GoogleGenAI } from '@google/genai';
 import { env } from '../config/env.js';
-<<<<<<< HEAD
 import {
   buildUnsupportedInputWarning,
   detectOffTopicText,
 } from '../ai/domain-scope.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { logger } from '../utils/logger.js';
 import { GEOLOGICAL_SYSTEM_INSTRUCTION, buildGeologicalUserPrompt } from '../ai/geological.prompt.js';
 import { geologicalResponseSchema, validateGeologicalResponse } from '../ai/geological.schema.js';
@@ -49,7 +46,6 @@ export class GeminiService {
     mediaBuffer: Buffer,
     mimeType: string,
     userCaption?: string | null,
-<<<<<<< HEAD
     mediaType: 'image' | 'video' = 'image',
     supportingImages?: Array<{ buffer: Buffer; mimeType: string }>
   ): Promise<GeoscienceAnalysisResult> {
@@ -59,15 +55,6 @@ export class GeminiService {
       'gemini-2.5-flash',
       'gemini-3.1-flash-lite',
     ].filter((m): m is string => Boolean(m && m.trim()));
-=======
-    mediaType: 'image' | 'video' = 'image'
-  ): Promise<GeoscienceAnalysisResult> {
-    const modelsToTry = [
-      env.GEMINI_MODEL,
-      env.GEMINI_MODEL !== 'gemini-2.5-flash' ? 'gemini-2.5-flash' : null,
-      'gemini-2.5-flash-lite',
-    ].filter((m): m is string => Boolean(m) && m !== '');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const uniqueModels = Array.from(new Set(modelsToTry));
     let lastError: unknown = null;
@@ -79,10 +66,7 @@ export class GeminiService {
           mimeType,
           mediaType,
           mediaBytes: mediaBuffer.length,
-<<<<<<< HEAD
           supportingCount: supportingImages?.length ?? 0,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         });
 
         const result = await this.executeAnalysisWithTimeout(
@@ -90,12 +74,8 @@ export class GeminiService {
           mimeType,
           userCaption,
           model,
-<<<<<<< HEAD
           mediaType,
           supportingImages
-=======
-          mediaType
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         );
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         logger.info(`Gemini geoscience analysis completed in ${duration}s using ${model}`, {
@@ -188,16 +168,10 @@ export class GeminiService {
 
     const modelsToTry = [
       env.GEMINI_MODEL,
-<<<<<<< HEAD
       'gemini-3.8-flash',
       'gemini-2.5-flash',
       'gemini-3.1-flash-lite',
     ].filter((m): m is string => Boolean(m && m.trim()));
-=======
-      env.GEMINI_MODEL !== 'gemini-2.5-flash' ? 'gemini-2.5-flash' : null,
-      'gemini-2.5-flash-lite',
-    ].filter((m): m is string => Boolean(m) && m !== '');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const uniqueModels = Array.from(new Set(modelsToTry));
     let lastError: unknown = null;
@@ -345,7 +319,6 @@ export class GeminiService {
     mimeType: string,
     userCaption: string | null | undefined,
     modelName: string = env.GEMINI_MODEL,
-<<<<<<< HEAD
     mediaType: 'image' | 'video' = 'image',
     supportingImages?: Array<{ buffer: Buffer; mimeType: string }>
   ): Promise<GeoscienceAnalysisResult> {
@@ -357,12 +330,6 @@ export class GeminiService {
         data: img.buffer.toString('base64'),
       },
     }));
-=======
-    mediaType: 'image' | 'video' = 'image'
-  ): Promise<GeoscienceAnalysisResult> {
-    const base64Data = mediaBuffer.toString('base64');
-    const userPrompt = buildGeologicalUserPrompt({ userCaption, mediaType });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const callPromise = this.ai.models.generateContent({
       model: modelName,
@@ -374,10 +341,7 @@ export class GeminiService {
               data: base64Data,
             },
           },
-<<<<<<< HEAD
           ...extraImageParts,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           {
             text: userPrompt,
           },
@@ -430,7 +394,6 @@ export class GeminiService {
       );
     }
   }
-<<<<<<< HEAD
   /**
    * Answers geoscience Q&A and follow-up questions about an active observation.
    */
@@ -636,8 +599,3 @@ export class GeminiService {
 export const geminiService = new GeminiService();
 
 
-=======
-}
-
-export const geminiService = new GeminiService();
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

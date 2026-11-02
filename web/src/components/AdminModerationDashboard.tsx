@@ -163,19 +163,8 @@ export const AdminModerationDashboard: React.FC<AdminModerationDashboardProps> =
               <span>{reportsError}</span>
             </div>
           ) : visibleReports.length === 0 ? (
-<<<<<<< HEAD
             <div className="p-8 text-center text-xs text-[#5e5e5e]">
               No results found
-=======
-            <div className="p-8 rounded-xl bg-white/40 border border-dashed border-[#c7c7c7] text-center">
-              <Flag className="w-6 h-6 text-[#8f8f8f] mx-auto" aria-hidden="true" />
-              <div className="mt-2 text-base font-medium text-[#3c4043]">
-                {reportFilter === 'open' ? 'No open reports' : `No ${reportFilter} reports`}
-              </div>
-              <p className="text-sm text-[#8f8f8f] mt-1">
-                When a reader reports a record, it appears here for review.
-              </p>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </div>
           ) : (
             <div className="rounded-xl border border-[#e3e3e3] overflow-hidden bg-white">
@@ -444,14 +433,8 @@ const CommentsTab: React.FC = () => {
           <span>{error}</span>
         </div>
       ) : visible.length === 0 ? (
-<<<<<<< HEAD
         <div className="py-8 text-center text-xs text-[#5e5e5e]">
           No results found
-=======
-        <div className="p-8 rounded-xl bg-white/40 border border-dashed border-[#c7c7c7] text-center">
-          <MessageSquare className="w-6 h-6 text-[#8f8f8f] mx-auto" aria-hidden="true" />
-          <div className="mt-2 text-base font-medium text-[#3c4043]">No comments in this view</div>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         </div>
       ) : (
         <div className="space-y-2">

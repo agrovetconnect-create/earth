@@ -1,17 +1,10 @@
 import type { Response } from 'express';
-<<<<<<< HEAD
 import { communityPostService } from '../services/community-post.service.js';
 import { resolveVerifiedContributorTokenFromRequest } from '../utils/contributor.js';
-=======
-import {
-  communityPostService,
-} from '../services/community-post.service.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { bodyOf, sendError } from '../utils/http.js';
 import type { AuthenticatedUserRequest, Viewer } from '../utils/user-auth.js';
 
 /**
-<<<<<<< HEAD
  * Community post endpoints (Stage 12 + contributor-token parity).
  *
  * Handlers never build a response from request data: every field in a reply is
@@ -20,41 +13,26 @@ import type { AuthenticatedUserRequest, Viewer } from '../utils/user-auth.js';
  * session owners (`et_contributor_token` cookie or `X-Contributor-Token` mobile
  * header) can edit, unpin, privatise, or attach/remove supporting field media
  * on their own posts.
-=======
- * Community post endpoints (Stage 12).
- *
- * Handlers never build a response from request data: every field in a reply is
- * produced by the service, which decides what this caller may see. Errors are
- * reported with the same `{ error: { code, message } }` shape used by the
- * public API so the client has one contract to handle.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 
 function viewerOf(req: AuthenticatedUserRequest): Viewer | null {
   return req.viewer ?? null;
 }
 
-<<<<<<< HEAD
 async function contributorTokenOf(req: AuthenticatedUserRequest): Promise<string | null> {
   return resolveVerifiedContributorTokenFromRequest(req);
 }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 /**
  * GET /api/posts/:passportId
  */
 export async function getPostHandler(req: AuthenticatedUserRequest, res: Response): Promise<void> {
   try {
-<<<<<<< HEAD
     const post = await communityPostService.getPost(
       String(req.params.passportId ?? ''),
       viewerOf(req),
       await contributorTokenOf(req)
     );
-=======
-    const post = await communityPostService.getPost(String(req.params.passportId ?? ''), viewerOf(req));
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!post) {
       res.status(404).json({
         error: { code: 'POST_NOT_FOUND', message: 'That observation does not exist.' },
@@ -68,7 +46,6 @@ export async function getPostHandler(req: AuthenticatedUserRequest, res: Respons
 }
 
 /**
-<<<<<<< HEAD
  * GET /api/posts/:passportId/media/:mediaId
  * Streams binary media bytes for stored images and supporting videos.
  */
@@ -98,8 +75,6 @@ export async function servePostMediaHandler(
 }
 
 /**
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  * GET /api/posts/:passportId/same-place
  */
 export async function samePlaceHandler(
@@ -124,12 +99,8 @@ export async function listCommentsHandler(
   try {
     const comments = await communityPostService.listComments(
       String(req.params.passportId ?? ''),
-<<<<<<< HEAD
       viewerOf(req),
       await contributorTokenOf(req)
-=======
-      viewerOf(req)
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     );
     res.status(200).json({ data: comments, total: comments.length });
   } catch (err) {
@@ -174,24 +145,16 @@ export async function createCommentHandler(
 
 /**
  * PATCH /api/posts/:passportId
-<<<<<<< HEAD
  * Body: { post_title?, user_report?, is_public?, location_precision?, latitude?, longitude?, district?, location_text? }
-=======
- * Body: { post_title?, user_report?, is_public?, location_precision? }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 export async function updatePostHandler(
   req: AuthenticatedUserRequest,
   res: Response
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const viewer = viewerOf(req);
     const contributorToken = await contributorTokenOf(req);
     if (!viewer && !contributorToken) {
-=======
-    if (!req.viewer) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       res.status(401).json({
         error: { code: 'AUTH_REQUIRED', message: 'Sign in to edit your post.' },
       });
@@ -201,7 +164,6 @@ export async function updatePostHandler(
     const body = bodyOf(req);
     const post = await communityPostService.updatePost(
       String(req.params.passportId ?? ''),
-<<<<<<< HEAD
       viewer,
       {
         post_title:
@@ -227,16 +189,6 @@ export async function updatePostHandler(
             : undefined,
       },
       contributorToken
-=======
-      req.viewer,
-      {
-        post_title: typeof body.post_title === 'string' || body.post_title === null ? body.post_title : undefined,
-        user_report: typeof body.user_report === 'string' || body.user_report === null ? body.user_report : undefined,
-        is_public: typeof body.is_public === 'boolean' ? body.is_public : undefined,
-        location_precision:
-          typeof body.location_precision === 'string' ? body.location_precision : undefined,
-      }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     );
 
     res.status(200).json(post);
@@ -254,13 +206,9 @@ export async function updateAttachmentDownloadHandler(
   res: Response
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const viewer = viewerOf(req);
     const contributorToken = await contributorTokenOf(req);
     if (!viewer && !contributorToken) {
-=======
-    if (!req.viewer) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       res.status(401).json({
         error: { code: 'AUTH_REQUIRED', message: 'Sign in to set download rights on your post.' },
       });
@@ -277,16 +225,10 @@ export async function updateAttachmentDownloadHandler(
 
     const post = await communityPostService.updateAttachmentDownload(
       String(req.params.passportId ?? ''),
-<<<<<<< HEAD
       viewer,
       String(req.params.attachmentId ?? ''),
       body.allow_download,
       contributorToken
-=======
-      req.viewer,
-      String(req.params.attachmentId ?? ''),
-      body.allow_download
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     );
 
     res.status(200).json(post);
@@ -304,13 +246,9 @@ export async function answerQuestionHandler(
   res: Response
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const viewer = viewerOf(req);
     const contributorToken = await contributorTokenOf(req);
     if (!viewer && !contributorToken) {
-=======
-    if (!req.viewer) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       res.status(401).json({
         error: { code: 'AUTH_REQUIRED', message: 'Sign in to answer a question about your post.' },
       });
@@ -320,16 +258,10 @@ export async function answerQuestionHandler(
     const body = bodyOf(req);
     const post = await communityPostService.answerQuestion(
       String(req.params.passportId ?? ''),
-<<<<<<< HEAD
       viewer,
       String(req.params.questionId ?? ''),
       typeof body.answer === 'string' ? body.answer : '',
       contributorToken
-=======
-      req.viewer,
-      String(req.params.questionId ?? ''),
-      typeof body.answer === 'string' ? body.answer : ''
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     );
 
     res.status(200).json(post);
@@ -347,13 +279,9 @@ export async function addMediaHandler(
   res: Response
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const viewer = viewerOf(req);
     const contributorToken = await contributorTokenOf(req);
     if (!viewer && !contributorToken) {
-=======
-    if (!req.viewer) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       res.status(401).json({
         error: { code: 'AUTH_REQUIRED', message: 'Sign in to add a file to your post.' },
       });
@@ -363,22 +291,14 @@ export async function addMediaHandler(
     const body = bodyOf(req);
     const media = await communityPostService.addMedia(
       String(req.params.passportId ?? ''),
-<<<<<<< HEAD
       viewer,
-=======
-      req.viewer,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       {
         content_base64: typeof body.content_base64 === 'string' ? body.content_base64 : '',
         mime_type: typeof body.mime_type === 'string' ? body.mime_type : undefined,
         caption: typeof body.caption === 'string' ? body.caption : undefined,
         role: typeof body.role === 'string' ? body.role : undefined,
-<<<<<<< HEAD
       },
       contributorToken
-=======
-      }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     );
 
     res.status(201).json({ media });
@@ -388,7 +308,6 @@ export async function addMediaHandler(
 }
 
 /**
-<<<<<<< HEAD
  * DELETE /api/posts/:passportId/media/:mediaId
  */
 export async function removeMediaHandler(
@@ -419,8 +338,6 @@ export async function removeMediaHandler(
 }
 
 /**
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  * GET /api/me/observations
  *
  * The contributor's own dashboard: every post they own, public and private,
@@ -431,24 +348,16 @@ export async function listMyPostsHandler(
   res: Response
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const viewer = viewerOf(req);
     const contributorToken = await contributorTokenOf(req);
     if (!viewer && !contributorToken) {
-=======
-    if (!req.viewer) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       res.status(401).json({
         error: { code: 'AUTH_REQUIRED', message: 'Sign in to see your own posts.' },
       });
       return;
     }
 
-<<<<<<< HEAD
     const result = await communityPostService.listMyPosts(viewer, contributorToken);
-=======
-    const result = await communityPostService.listMyPosts(req.viewer);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(200).json(result);
   } catch (err) {
     sendError(res, err);

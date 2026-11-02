@@ -57,11 +57,7 @@ export const MyMapView: React.FC<MyMapViewProps> = ({
             have kept private.
           </p>
           <button type="button" className="g-btn g-btn-filled mt-4" onClick={onRequestLogin}>
-<<<<<<< HEAD
             Sign in to Earth Talk
-=======
-            Sign in with WhatsApp
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </button>
         </div>
       </div>

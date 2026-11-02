@@ -13,13 +13,8 @@ expertRouter.post('/api/expert/auth/login', expertController.login);
 
 expertRouter.get('/api/expert/auth/me', requireSuperAdmin, expertController.getMe);
 expertRouter.get('/api/expert/session', requireSuperAdmin, expertController.getMe);
-<<<<<<< HEAD
 expertRouter.post('/api/expert/auth/logout', expertController.logout);
 expertRouter.post('/api/expert/logout', expertController.logout);
-=======
-expertRouter.post('/api/expert/auth/logout', requireSuperAdmin, expertController.logout);
-expertRouter.post('/api/expert/logout', requireSuperAdmin, expertController.logout);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 expertRouter.get('/api/expert/stats', requireSuperAdmin, expertController.getStats);
 expertRouter.get('/api/expert/observations', requireSuperAdmin, expertController.getObservations);
 expertRouter.get(

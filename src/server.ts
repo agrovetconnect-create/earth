@@ -1,5 +1,4 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
-<<<<<<< HEAD
 import http from 'node:http';
 import path from 'path';
 import fs from 'fs';
@@ -7,12 +6,6 @@ import crypto from 'node:crypto';
 import { env, verifyInternalServiceKey } from './config/env.js';
 import { supabase } from './config/supabase.js';
 import { isDatabaseConfigured } from './utils/admin-auth.js';
-=======
-import path from 'path';
-import fs from 'fs';
-import crypto from 'node:crypto';
-import { env } from './config/env.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { logger } from './utils/logger.js';
 import { webhookRouter } from './routes/webhook.routes.js';
 import { publicRouter } from './routes/public.routes.js';
@@ -25,7 +18,6 @@ import { communityRouter } from './routes/community.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { userRouter } from './routes/user.routes.js';
 import { postsRouter } from './routes/posts.routes.js';
-<<<<<<< HEAD
 import { submissionRouter } from './routes/submission.routes.js';
 import { staffRouter } from './routes/staff.routes.js';
 import { appDistributionRouter } from './routes/app-distribution.routes.js';
@@ -36,10 +28,6 @@ import {
   startRateLimitCleanupTimer,
   stopRateLimitCleanupTimer,
 } from './utils/rate-limiter.js';
-=======
-import { observationService } from './services/observation.service.js';
-import { webhookQueueService } from './services/webhook-queue.service.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { registerDemoObservationRecords } from './data/demo-map-records.js';
 import { registerDemoCommunityRecords } from './data/demo-community.registration.js';
 
@@ -65,12 +53,6 @@ if (env.DEMO_POSTS_ENABLED) {
   logger.info(`Registered ${registeredDemoCommunity} labelled demonstration community records`);
 }
 
-<<<<<<< HEAD
-=======
-// Initialize Express app
-const app = express();
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 /**
  * Product identity. Defined once so the name, the tagline and the current
  * stage cannot drift apart between `/health`, `/` and the startup log, which is
@@ -84,7 +66,6 @@ const PLATFORM = {
   stage: 13,
 } as const;
 
-<<<<<<< HEAD
 const healthPayload = async () => {
   const dbConfigured = isDatabaseConfigured();
   let dbStatus = 'unconfigured';
@@ -122,14 +103,6 @@ const server = http.createServer(app);
 
 // Trust first reverse proxy (Render / load balancers) so req.ip is correct
 app.set('trust proxy', 1);
-=======
-const healthPayload = () => ({
-  project: PLATFORM.name,
-  tagline: PLATFORM.tagline,
-  status: 'online',
-  stage: PLATFORM.stage,
-});
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 // Request ID and Request Logging Middleware (Section 17)
 app.use((req: any, res: Response, next: NextFunction) => {
@@ -144,20 +117,15 @@ if (env.ENABLE_SECURITY_HEADERS) {
   app.use((_req: Request, res: Response, next: NextFunction) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-<<<<<<< HEAD
     if (env.IS_PRODUCTION) {
       res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     }
-=======
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     next();
   });
 }
 
 // Explicit CORS configuration (Section 29)
 app.use((req: Request, res: Response, next: NextFunction) => {
-<<<<<<< HEAD
   res.setHeader('Vary', 'Origin');
   const allowed = (env.CORS_ALLOWED_ORIGINS || '')
     .split(',')
@@ -171,17 +139,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       'Access-Control-Allow-Headers',
       'Content-Type, Authorization, X-CSRF-Token, X-Staff-Token, X-Expert-Token, X-Contributor-Token, X-Client-Platform, X-Request-Id'
     );
-=======
-  const allowed = (env.CORS_ALLOWED_ORIGINS || '').split(',').map((s) => s.trim());
-  const origin = req.headers.origin;
-  if (origin && allowed.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    // PATCH is required: the admin moderation routes (media visibility,
-    // media moderation, observation publication) are all PATCH. Omitting it
-    // made the browser preflight reject those calls before they were sent.
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Expert-Token, X-Request-Id');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
 
@@ -193,13 +150,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Parse incoming JSON requests with safe body-size limit (Section 7)
-<<<<<<< HEAD
-=======
-//
-// The `verify` hook keeps the exact raw bytes of the request. Meta signs the
-// raw body, so the webhook signature can only be checked against these bytes,
-// never against a re-serialized object.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 app.use(
   express.json({
     limit: '10mb',
@@ -209,7 +159,6 @@ app.use(
   })
 );
 
-<<<<<<< HEAD
 // MapLibre Web Worker handler — ensures CSP-safe, non-module worker script is always served without syntax errors
 app.get('/maplibre-gl-worker.mjs', (_req: Request, res: Response) => {
   const workerPath = path.resolve(process.cwd(), 'public/maplibre-gl-worker.mjs');
@@ -223,16 +172,11 @@ app.get('/maplibre-gl-worker.mjs', (_req: Request, res: Response) => {
 });
 
 // Public static client bundle in production
-=======
-// Public static client bundle in production
-const clientDist = path.resolve(process.cwd(), 'dist/client');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 if (env.IS_PRODUCTION && fs.existsSync(clientDist)) {
   app.use(express.static(clientDist, { index: false }));
 }
 
 // Health Check endpoint
-<<<<<<< HEAD
 app.get('/health', async (_req: Request, res: Response) => {
   const payload = await healthPayload();
   const status = payload.database.status === 'error' || payload.database.status === 'unreachable' ? 503 : 200;
@@ -241,25 +185,13 @@ app.get('/health', async (_req: Request, res: Response) => {
 
 // Root endpoint
 app.get('/', async (req: Request, res: Response, next: NextFunction) => {
-=======
-app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json(healthPayload());
-});
-
-// Root endpoint: returns JSON health status for API/curl clients, and passes browser requests to SPA
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const isBrowser = req.headers.accept?.includes('text/html');
   const isExplicitJson = req.headers.accept?.includes('application/json') || req.query.format === 'json';
   const isCurl = req.headers['user-agent']?.toLowerCase().includes('curl');
 
   if (isExplicitJson || (isCurl && !isBrowser)) {
-<<<<<<< HEAD
     const payload = await healthPayload();
     res.status(200).json(payload);
-=======
-    res.status(200).json(healthPayload());
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return;
   }
 
@@ -272,7 +204,6 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-<<<<<<< HEAD
 // Safe cookie parsing middleware preserving '=' padding and resisting malformed '%' sequences
 app.use((req: Request, _res: Response, next: NextFunction) => {
   (req as any).cookies = parseCookieHeader(req.headers.cookie);
@@ -287,13 +218,6 @@ app.get('/internal/observations/:passportId', async (req: Request, res: Response
   const internalKey = req.headers['x-internal-key'] || req.headers['x-admin-key'];
   if (!verifyInternalServiceKey(internalKey)) {
     res.status(401).json({ error: 'Unauthorized internal service key' });
-=======
-// Section 54: Optional internal authenticated test endpoint for development
-app.get('/internal/observations/:passportId', async (req: Request, res: Response) => {
-  const adminKey = req.headers['x-admin-key'];
-  if (!adminKey || adminKey !== env.SUPABASE_SECRET_KEY) {
-    res.status(401).json({ error: 'Unauthorized' });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return;
   }
 
@@ -304,10 +228,6 @@ app.get('/internal/observations/:passportId', async (req: Request, res: Response
       return;
     }
 
-<<<<<<< HEAD
-=======
-    // Never expose secret database credentials or sensitive details
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(200).json(observation);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Database lookup error';
@@ -341,7 +261,6 @@ app.use(userRouter);
 // Register community observation post, comment and media routes (Stage 12)
 app.use(postsRouter);
 
-<<<<<<< HEAD
 // Register Staff & Control Center routes (Stage 13)
 app.use(staffRouter);
 
@@ -410,27 +329,6 @@ if (!env.IS_PRODUCTION) {
 
     next();
   });
-=======
-// Register Webhook routes (Stages 1-3)
-app.use(webhookRouter);
-
-// Vite middleware in development mode
-if (!env.IS_PRODUCTION) {
-  try {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true, hmr: false },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    logger.warn('Could not initialize Vite dev middleware; falling back to static files', { error: msg });
-    if (fs.existsSync(clientDist)) {
-      app.use(express.static(clientDist, { index: false }));
-    }
-  }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 // SPA client routing fallback for HTML GET requests (excluding /api and /webhook)
@@ -463,7 +361,6 @@ app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Start HTTP server on configured port
-<<<<<<< HEAD
 server.on('error', (error: NodeJS.ErrnoException) => {
   if (error.code === 'EADDRINUSE') {
     const fallbackPort = env.PORT === 3000 ? 3001 : 3000;
@@ -473,9 +370,6 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 });
 
 server.listen(env.PORT, '0.0.0.0', () => {
-=======
-const server = app.listen(env.PORT, '0.0.0.0', () => {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   logger.info('Server started');
   logger.info(`${PLATFORM.name} Stage ${PLATFORM.stage} listening on port ${env.PORT} in ${env.NODE_ENV} mode`);
   logger.info(`Gemini model configured: ${env.GEMINI_MODEL}`);
@@ -506,11 +400,8 @@ if (validationIsDurable) {
   // "Durable webhook queue enabled" only after that check passes; otherwise it
   // reports the exact blocker (or, with no database at all, warns that the
   // process-local queue is not durable).
-<<<<<<< HEAD
   startRateLimitCleanupTimer();
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   void webhookQueueService.start().catch((err: unknown) => {
     logger.error('Failed to start webhook queue worker', {
       error: err instanceof Error ? err.message : String(err),
@@ -537,7 +428,6 @@ process.on('unhandledRejection', (reason: unknown) => {
   });
 });
 
-<<<<<<< HEAD
 // Graceful shutdown: stop accepting new connections, drain in-flight webhook
 // queue work, then exit cleanly.
 let shuttingDown = false;
@@ -560,22 +450,6 @@ const shutdown = (signal: string) => {
       process.exit(0);
     });
   })();
-=======
-// Graceful shutdown: stop accepting new connections, let in-flight requests
-// finish, then exit. A hard timeout guarantees the process still goes down if a
-// connection refuses to close.
-const shutdown = (signal: string) => {
-  logger.info(`Received ${signal}; shutting down`);
-  webhookQueueService.stop();
-  server.close(() => {
-    logger.info('HTTP server closed');
-    process.exit(0);
-  });
-  setTimeout(() => {
-    logger.warn('Forcing shutdown after timeout');
-    process.exit(1);
-  }, 10_000).unref();
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 };
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));

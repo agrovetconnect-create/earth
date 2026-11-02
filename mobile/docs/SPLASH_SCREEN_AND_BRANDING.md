@@ -18,7 +18,6 @@ Generated assets live at `mobile/assets/images/`:
 
 `mobile/app.json` configures the Expo SDK 58 `expo-splash-screen` plugin, using `splash-icon.png`, a 190 dp image width, `resizeMode: contain`, and `#F5F7F4` background. SDK 58's installed plugin supports the `dark` variant; it uses `splash-icon-dark.png` on `#141B17`, matching the app's dark canvas. The icon and Android adaptive layers point at the app assets above. App name, slug, scheme, version, Android package, and iOS deployment configuration were preserved. Expo SDK 58 plugin configuration was validated by `npm run check:expo` and included in the Android JavaScript export.
 
-<<<<<<< HEAD
 The light/dark native splash backgrounds match the two app canvases and hand off via `expo-splash-screen` (`preventAutoHideAsync` -> `hideAsync`) into the full-screen `AnimatedSplashScreen` (`mobile/components/AnimatedSplashScreen.tsx`):
 
 1. **Background Image (`splash-bg.jpg`)**: Full-bleed vertical Rwanda Virunga geological highlands backdrop with a gentle Ken Burns camera drift.
@@ -29,10 +28,3 @@ The light/dark native splash backgrounds match the two app canvases and hand off
 ## Platform and verification
 
 The splash configuration is consumed by native iOS and Android builds through Expo prebuild/config plugins, while `AnimatedSplashScreen` uses React Native's native-driver `Animated` API (`transform` and `opacity` only) for 60fps execution across iOS, Android, and Expo Web.
-=======
-The light/dark native splash backgrounds match the two app canvases. The splash is allowed to finish as soon as the actual app root renders; no fake progress or arbitrary delay is added. Theme preference loads asynchronously, and the system appearance selects the native splash variant; a manually saved theme that differs from the system appearance can still transition after startup. The app has no required startup network call. No `preventAutoHideAsync` hold is added for nonessential initialization.
-
-## Platform and verification
-
-The splash configuration is consumed by native iOS and Android builds through Expo prebuild/config plugins. Config resolution and JS export do not prove native splash appearance, asset masking, or launch transition. No iOS/Android native build, emulator, simulator, or physical-device preview was available during this task. Splash rendering and adaptive-icon masks remain device-build verification items. No provider token is required for branding assets.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

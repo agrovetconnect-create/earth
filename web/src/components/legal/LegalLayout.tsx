@@ -23,10 +23,7 @@ export const LegalLayout: React.FC<LegalLayoutProps> = ({
   title,
   subtitle,
   lastUpdated,
-<<<<<<< HEAD
   sections,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   onNavigateTab,
   onBackToApp,
   children,
@@ -98,7 +95,6 @@ export const LegalLayout: React.FC<LegalLayoutProps> = ({
         </div>
       </header>
 
-<<<<<<< HEAD
       {/* Main Content Area with Left Table of Contents */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full flex flex-col lg:flex-row gap-8 items-start">
         {/* Left Table of Contents Sidebar */}
@@ -123,11 +119,6 @@ export const LegalLayout: React.FC<LegalLayoutProps> = ({
         )}
 
         <main className="bg-white rounded-2xl border border-[#e3e3e3] p-6 sm:p-10 lg:p-12 shadow-sm flex-1 min-w-0 w-full">
-=======
-      {/* Main Content Area */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full">
-        <main className="bg-white rounded-2xl border border-[#e3e3e3] p-6 sm:p-10 lg:p-12 shadow-sm">
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           {/* Header section */}
           <div className="border-b border-[#e3e3e3] pb-8 mb-8">
             <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#5e5e5e] font-mono mb-3">

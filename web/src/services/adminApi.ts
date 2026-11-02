@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
-import { getStoredExpertToken } from './expertApi.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { bearerHeaders, requestJson } from './http.js';
 
 /**
  * Super-Admin moderation APIs.
  *
-<<<<<<< HEAD
  * These call the `/api/admin/*` routes behind `requireSuperAdmin`, authenticated
  * via the server-managed `et_staff_session` HttpOnly cookie.
-=======
- * These call the `/api/admin/*` routes, which are behind `requireSuperAdmin`.
- * The session is the same one the expert/AI-review portal uses, stored under
- * `rt_expert_token`, so an administrator who is already signed in for reviews
- * can moderate without a second sign-in.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 
 export type AbuseReportStatus = 'open' | 'acknowledged' | 'actioned' | 'dismissed';
@@ -66,11 +55,7 @@ export interface AdminModerationComment {
 }
 
 function authHeaders(): Record<string, string> {
-<<<<<<< HEAD
   return bearerHeaders(null);
-=======
-  return bearerHeaders(getStoredExpertToken());
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** GET /api/admin/community/reports */

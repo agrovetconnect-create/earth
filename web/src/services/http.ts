@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   isCacheableReadPath,
   matchOfflineCacheFallback,
@@ -12,15 +11,6 @@ import { preferencesStore } from './preferences.js';
  * Authentication credentials on the web travel exclusively via HttpOnly cookies
  * (`credentials: 'include'`), paired with double-submit CSRF tokens (`et_csrf`
  * cookie echoed in `X-CSRF-Token`) on state-changing requests.
-=======
-/**
- * Shared fetch helpers for the web API clients.
- *
- * Each service used to declare its own base URL, JSON headers, `res.ok` check
- * and error-message extraction. They live here now so the backend error
- * envelope (`{ error: { code, message } }`, or a bare `{ error }` string) is
- * interpreted in exactly one place.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 
 export const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '';
@@ -29,7 +19,6 @@ export function apiUrl(path: string): string {
   return `${API_BASE_URL}${path}`;
 }
 
-<<<<<<< HEAD
 const CSRF_COOKIE_NAME = 'et_csrf';
 const STATE_CHANGING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 let csrfInFlight: Promise<string | null> | null = null;
@@ -87,9 +76,6 @@ export async function ensureCsrfToken(forceRefresh = false): Promise<string | nu
 }
 
 /** JSON content type plus an optional bearer token when explicitly supplied. */
-=======
-/** JSON content type plus a bearer token when one is present. */
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function bearerHeaders(
   token: string | null | undefined,
   extra: Record<string, string> = {}
@@ -112,13 +98,6 @@ export interface JsonRequestInit extends Omit<RequestInit, 'body'> {
 
 /**
  * Extracts a readable message from an error response, whatever its shape.
-<<<<<<< HEAD
-=======
- *
- * The community routes nest the message (`{ error: { code, message } }`) while
- * older routes send a bare string (`{ error: '...' }`); both are handled, and a
- * 503 is named plainly because the caller acted on a feature that is simply off.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 export async function readErrorMessage(res: Response, fallback?: string): Promise<string> {
   const body = await res.json().catch(() => null);
@@ -136,7 +115,6 @@ export async function readErrorMessage(res: Response, fallback?: string): Promis
   return fallback && fallback.length > 0 ? fallback : `Request failed (${res.status})`;
 }
 
-<<<<<<< HEAD
 async function buildInitWithCsrf(
   init: Omit<JsonRequestInit, 'nullOn404' | 'errorMessage'>,
   forceCsrfRefresh = false
@@ -168,16 +146,6 @@ async function buildInitWithCsrf(
     credentials: rest.credentials ?? 'include',
     ...rest,
     headers: mergedHeaders,
-=======
-function buildInit(init: Omit<JsonRequestInit, 'nullOn404' | 'errorMessage'>): RequestInit {
-  const { json, headers, ...rest } = init;
-  return {
-    ...rest,
-    headers:
-      json === undefined
-        ? headers
-        : { 'Content-Type': 'application/json', ...(headers as Record<string, string>) },
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     ...(json === undefined ? {} : { body: JSON.stringify(json) }),
   };
 }
@@ -189,7 +157,6 @@ function resolveFallback(
   return typeof errorMessage === 'function' ? errorMessage(res) : errorMessage;
 }
 
-<<<<<<< HEAD
 const NETWORK_ERROR_MESSAGE =
   'Unable to reach the server right now. Please check your connection and try again.';
 
@@ -297,12 +264,6 @@ export async function requestJson<T>(path: string, init: JsonRequestInit = {}): 
   if (STATE_CHANGING_METHODS.has(method) && (await isCsrfErrorResponse(res))) {
     res = await fetchWithRetry(apiUrl(path), await buildInitWithCsrf(rest, true));
   }
-=======
-/** Fetches JSON, throwing a readable `Error` for any non-2xx response. */
-export async function requestJson<T>(path: string, init: JsonRequestInit = {}): Promise<T> {
-  const { nullOn404, errorMessage, ...rest } = init;
-  const res = await fetch(apiUrl(path), buildInit(rest));
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   if (nullOn404 && res.status === 404) return null as unknown as T;
   if (!res.ok) throw new Error(await readErrorMessage(res, resolveFallback(errorMessage, res)));
   return (await res.json()) as T;
@@ -311,15 +272,11 @@ export async function requestJson<T>(path: string, init: JsonRequestInit = {}): 
 /** Fetches a binary body (CSV/GeoJSON download), throwing for non-2xx. */
 export async function requestBlob(path: string, init: JsonRequestInit = {}): Promise<Blob> {
   const { nullOn404, errorMessage, ...rest } = init;
-<<<<<<< HEAD
   const method = (rest.method ?? 'GET').toUpperCase();
   let res = await fetchWithRetry(apiUrl(path), await buildInitWithCsrf(rest, false));
   if (STATE_CHANGING_METHODS.has(method) && (await isCsrfErrorResponse(res))) {
     res = await fetchWithRetry(apiUrl(path), await buildInitWithCsrf(rest, true));
   }
-=======
-  const res = await fetch(apiUrl(path), buildInit(rest));
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   if (nullOn404 && res.status === 404) return null as unknown as Blob;
   if (!res.ok) throw new Error(await readErrorMessage(res, resolveFallback(errorMessage, res)));
   return res.blob();

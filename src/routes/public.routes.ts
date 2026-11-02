@@ -14,18 +14,12 @@ import {
   compareObservations,
   listResearchOpportunities,
 } from '../controllers/public.controller.js';
-<<<<<<< HEAD
 import { staffController } from '../controllers/staff.controller.js';
 import { cmsService } from '../services/cms.service.js';
 
 export const publicRouter = Router();
 
 
-=======
-
-export const publicRouter = Router();
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 // Section 14: Public API endpoints
 publicRouter.get('/api/public/observations', getPublicObservations);
 publicRouter.get('/api/public/observations.geojson', getPublicObservationsGeoJson);
@@ -41,7 +35,6 @@ publicRouter.get('/api/public/research-opportunities', listResearchOpportunities
 publicRouter.get('/api/public/stats', getPublicStats);
 publicRouter.get('/api/public/districts', getPublicDistricts);
 publicRouter.get('/api/public/categories', getPublicCategories);
-<<<<<<< HEAD
 
 // Public CMS endpoint
 publicRouter.get('/api/public/cms/:page', async (req, res) => {
@@ -56,5 +49,3 @@ publicRouter.get('/api/public/cms/:page', async (req, res) => {
 // Public FAQ endpoint
 publicRouter.get('/api/public/faqs', staffController.getFaqs);
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

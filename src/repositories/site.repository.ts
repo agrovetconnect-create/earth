@@ -2,10 +2,7 @@ import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
-<<<<<<< HEAD
 import { ServiceUnavailableError } from '../utils/service-error.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { resolvePublicCoordinates } from '../utils/public-location.js';
 import { haversineKm } from '../utils/geo.js';
 import { demoSites, siteObservationRows, demoSiteEvidenceState } from '../data/demo-community.js';
@@ -40,11 +37,7 @@ export class SiteRepository {
 
   /** True when the labelled demonstration sites should be served. */
   get demoActive(): boolean {
-<<<<<<< HEAD
     return env.DEMO_POSTS_ENABLED;
-=======
-    return env.DEMO_POSTS_ENABLED && !isDatabaseConfigured();
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   private demoStore: GeologicalSiteRecord[] = [];
@@ -99,7 +92,6 @@ export class SiteRepository {
       .select()
       .single();
 
-<<<<<<< HEAD
     if (error || !data) {
       throw new ServiceUnavailableError(
         'geological site create',
@@ -107,9 +99,6 @@ export class SiteRepository {
         `Could not create geological site: ${error?.message ?? 'unknown error'}`
       );
     }
-=======
-    if (error || !data) throw new Error(`Could not create geological site: ${error?.message ?? 'unknown error'}`);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return data as GeologicalSiteRecord;
   }
 
@@ -123,13 +112,8 @@ export class SiteRepository {
       .eq('id', id)
       .maybeSingle();
     if (error) {
-<<<<<<< HEAD
       logger.error('Failed to read geological site; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('geological site read', error);
-=======
-      logger.warn('Failed to read geological site', { error: error.message });
-      return null;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as GeologicalSiteRecord) ?? null;
   }
@@ -148,13 +132,8 @@ export class SiteRepository {
       .eq('site_code', clean)
       .maybeSingle();
     if (error) {
-<<<<<<< HEAD
       logger.error('Failed to read geological site by code; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('geological site lookup by code', error);
-=======
-      logger.warn('Failed to read geological site by code', { error: error.message });
-      return null;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as GeologicalSiteRecord) ?? null;
   }
@@ -189,13 +168,8 @@ export class SiteRepository {
       .range(options.offset, options.offset + options.limit - 1);
 
     if (error) {
-<<<<<<< HEAD
       logger.error('Failed to list public geological sites; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('public geological sites list', error);
-=======
-      logger.warn('Failed to list public geological sites', { error: error.message });
-      return { rows: [], total: 0 };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     return { rows: ((data ?? []) as any[]).map((row) => this.mapViewToSummary(row)), total: count ?? 0 };
@@ -221,15 +195,10 @@ export class SiteRepository {
       .maybeSingle();
 
     if (error) {
-<<<<<<< HEAD
       logger.error('Failed to read public geological site summary; refusing to mask database error', {
         error: error.message,
       });
       throw new ServiceUnavailableError('public geological site summary', error);
-=======
-      logger.warn('Failed to read public geological site summary', { error: error.message });
-      return null;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const row = (data ?? null) as any;
@@ -304,15 +273,10 @@ export class SiteRepository {
 
     const { data, error } = await query.order('created_at', { ascending: false }).limit(options.limit);
     if (error) {
-<<<<<<< HEAD
       logger.error('Failed to list public geological sites GeoJSON; refusing to mask database error', {
         error: error.message,
       });
       throw new ServiceUnavailableError('public geological sites geojson', error);
-=======
-      logger.warn('Failed to list public geological sites GeoJSON', { error: error.message });
-      return { ...empty, features: [] };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const features: Array<Record<string, unknown>> = [];

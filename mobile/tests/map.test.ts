@@ -70,7 +70,6 @@ test('camera bounds handle large unpaginated result sets without argument-limit 
   assert.deepEqual([camera.latitude, camera.longitude], [-1.5, 30]);
   assert.ok(Number.isFinite(camera.zoom));
 });
-<<<<<<< HEAD
 
 test('parses backend GeoJSON classification/confidence/verification_status and strictly enforces multi-attribute filters', () => {
   const data = {
@@ -123,5 +122,3 @@ test('parses backend GeoJSON classification/confidence/verification_status and s
   );
 });
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

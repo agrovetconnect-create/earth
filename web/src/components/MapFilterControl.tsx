@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { FilterPanel } from './FilterPanel.js';
-<<<<<<< HEAD
 import { closeMapSearch, onCloseMapFilter } from '../services/mapOverlayEvents.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { ObservationFilters } from '../types/public.js';
 
 interface MapFilterControlProps {
@@ -49,11 +46,8 @@ export const MapFilterControl: React.FC<MapFilterControlProps> = ({
     filters.search,
   ].filter((value) => value !== undefined && value !== '' && value !== false).length;
 
-<<<<<<< HEAD
   useEffect(() => onCloseMapFilter(() => setIsOpen(false)), []);
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   useEffect(() => {
     if (!isOpen) return;
 
@@ -82,7 +76,6 @@ export const MapFilterControl: React.FC<MapFilterControlProps> = ({
         title={activeCount > 0 ? `Filters (${activeCount} active)` : 'Filters'}
         aria-label={activeCount > 0 ? `Filters, ${activeCount} active` : 'Filters'}
         aria-expanded={isOpen}
-<<<<<<< HEAD
         onClick={() =>
           setIsOpen((prev) => {
             const next = !prev;
@@ -90,9 +83,6 @@ export const MapFilterControl: React.FC<MapFilterControlProps> = ({
             return next;
           })
         }
-=======
-        onClick={() => setIsOpen((prev) => !prev)}
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       >
         <SlidersHorizontal className="w-[18px] h-[18px]" />
       </button>
@@ -114,10 +104,7 @@ export const MapFilterControl: React.FC<MapFilterControlProps> = ({
             onReset={onReset}
             districts={districts}
             categories={categories}
-<<<<<<< HEAD
             variant="bare"
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             idPrefix="map-filter"
           />
         </div>

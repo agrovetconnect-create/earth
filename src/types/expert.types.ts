@@ -109,11 +109,7 @@ export interface ExpertObservationDetail {
     sector: string | null;
     cell: string | null;
     village: string | null;
-<<<<<<< HEAD
     precision: 'district' | 'approximate' | 'exact' | 'private';
-=======
-    precision: 'district' | 'approximate' | 'exact';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     latitude: number | null;
     longitude: number | null;
     is_public: boolean;

@@ -83,11 +83,8 @@ export type PublicObservationFeature = {
   };
   properties: {
     passport_id: string;
-<<<<<<< HEAD
     post_title?: string | null;
     title?: string | null;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     observation_category: string;
     observation_subcategory: string;
     primary_interpretation: string | null;

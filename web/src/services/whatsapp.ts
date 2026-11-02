@@ -18,7 +18,6 @@ export const WHATSAPP_START_MESSAGE = 'START';
 export const WHATSAPP_MY_EARTH_TALK_MESSAGE = 'MY EARTH TALK';
 
 /** The `wa.me` deep link for a message, with or without a configured number. */
-<<<<<<< HEAD
 export function whatsAppUrl(
   message: string = WHATSAPP_START_MESSAGE,
   customNumber?: string,
@@ -27,12 +26,6 @@ export function whatsAppUrl(
   const resolvedNumber = String(customNumber || WHATSAPP_NUMBER || '').replace(/\D/g, '');
   return resolvedNumber
     ? `https://wa.me/${resolvedNumber}?text=${text}`
-=======
-export function whatsAppUrl(message: string = WHATSAPP_START_MESSAGE): string {
-  const text = encodeURIComponent(message);
-  return WHATSAPP_NUMBER
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     : `https://wa.me/?text=${text}`;
 }
 
@@ -48,18 +41,12 @@ export function whatsAppUrl(message: string = WHATSAPP_START_MESSAGE): string {
  * after a successful open, which keeps the same protection without losing the
  * ability to detect a blocked popup.
  */
-<<<<<<< HEAD
 export function openWhatsApp(
   message: string = WHATSAPP_START_MESSAGE,
   customNumber?: string,
 ): boolean {
   if (typeof window === 'undefined') return false;
   const opened = window.open(whatsAppUrl(message, customNumber), '_blank');
-=======
-export function openWhatsApp(message: string = WHATSAPP_START_MESSAGE): boolean {
-  if (typeof window === 'undefined') return false;
-  const opened = window.open(whatsAppUrl(message), '_blank');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   if (!opened) return false;
   try {
     opened.opener = null;

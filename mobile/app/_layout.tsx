@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-<<<<<<< HEAD
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,20 +14,11 @@ import { useAppLanguage } from '../utils/language';
 import { shouldRetryRead } from '../utils/queryPolicy';
 
 void SplashScreen.preventAutoHideAsync().catch(() => undefined);
-=======
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ThemeProvider, useAppTheme } from '../theme/theme-provider';
-import { shouldRetryRead } from '../utils/queryPolicy';
-import { AuthProvider } from '../auth/AuthProvider';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 export default function RootLayout() {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: { queries: { staleTime: 30_000, retry: shouldRetryRead, refetchOnWindowFocus: false } },
   }));
-<<<<<<< HEAD
   useEffect(() => {
     void registerMobileServiceWorker();
   }, []);
@@ -45,14 +35,10 @@ export default function RootLayout() {
       </ThemeProvider>
     </SafeAreaProvider>
   );
-=======
-  return <SafeAreaProvider><ThemeProvider><QueryClientProvider client={queryClient}><AuthProvider><AppShell /></AuthProvider></QueryClientProvider></ThemeProvider></SafeAreaProvider>;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 function AppShell() {
   const { colors, isDark } = useAppTheme();
-<<<<<<< HEAD
   const { ready: authReady } = useAuth();
   const { t } = useAppLanguage();
   const [splashVisible, setSplashVisible] = useState(true);
@@ -101,11 +87,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-=======
-  return <><StatusBar style={isDark ? 'light' : 'dark'} /><Stack screenOptions={{ headerTintColor: colors.forest, headerTitleStyle: { color: colors.ink }, headerStyle: { backgroundColor: colors.canvas }, contentStyle: { backgroundColor: colors.canvas } }}>
-    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    <Stack.Screen name="observations/[id]" options={{ title: 'Observation', headerBackTitle: 'Back' }} />
-    <Stack.Screen name="settings" options={{ title: 'Settings' }} />
-  </Stack></>;
-}
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

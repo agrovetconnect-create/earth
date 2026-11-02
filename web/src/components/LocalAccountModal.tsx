@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-<<<<<<< HEAD
 import { AlertCircle, ArrowLeft, Mail, UserRound, X } from 'lucide-react';
-=======
-import { AlertCircle, ArrowLeft, MessageCircle, UserRound, X } from 'lucide-react';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import {
   CONTRIBUTOR_ROLES,
   signInLocalAccount,
@@ -16,13 +12,8 @@ interface LocalAccountModalProps {
   onClose: () => void;
   /** Called with the created account so the caller can continue what it was doing. */
   onSignedIn?: (account: LocalAccount) => void;
-<<<<<<< HEAD
   /** Opens the email-verified sign-in when the reader prefers it. */
   onUseEmailLogin?: () => void;
-=======
-  /** Opens the WhatsApp-verified sign-in when the reader prefers it. */
-  onUseWhatsApp?: () => void;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /**
@@ -31,22 +22,14 @@ interface LocalAccountModalProps {
  * Community Discovery is read-only until a reader signs in. This is the
  * low-friction path: a display name and, optionally, how they are involved in
  * geoscience. No phone number, no password and no personal data - the identity
-<<<<<<< HEAD
  * lives only in this browser. A reader who wants the email-verified account
-=======
- * lives only in this browser. A reader who wants the WhatsApp-verified account
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  * (to own posts on the map) can switch to it instead.
  */
 export const LocalAccountModal: React.FC<LocalAccountModalProps> = ({
   isOpen,
   onClose,
   onSignedIn,
-<<<<<<< HEAD
   onUseEmailLogin,
-=======
-  onUseWhatsApp,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }) => {
   const existing = useLocalAccount();
   const [name, setName] = useState('');
@@ -174,30 +157,17 @@ export const LocalAccountModal: React.FC<LocalAccountModalProps> = ({
             >
               Continue
             </button>
-<<<<<<< HEAD
             {onUseEmailLogin && (
-=======
-            {onUseWhatsApp && (
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               <button
                 type="button"
                 onClick={() => {
                   onClose();
-<<<<<<< HEAD
                   onUseEmailLogin();
                 }}
                 className="inline-flex items-center gap-1.5 text-xs text-[#0b57d0] hover:underline"
               >
                 <Mail className="w-3.5 h-3.5" aria-hidden="true" />
                 Sign in with Google / Gmail instead
-=======
-                  onUseWhatsApp();
-                }}
-                className="inline-flex items-center gap-1.5 text-xs text-[#0b57d0] hover:underline"
-              >
-                <MessageCircle className="w-3.5 h-3.5" aria-hidden="true" />
-                Sign in with WhatsApp instead
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               </button>
             )}
           </div>

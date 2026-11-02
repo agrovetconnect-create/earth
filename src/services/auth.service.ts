@@ -1,18 +1,12 @@
 import crypto from 'node:crypto';
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
-<<<<<<< HEAD
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
 import { shortHash } from '../utils/hash.js';
 import { isServiceUnavailableError } from '../utils/service-error.js';
 import { whatsappService } from './whatsapp.service.js';
 import { userRepository } from '../repositories/user.repository.js';
 import { communityPostRepository } from '../repositories/community-post.repository.js';
-=======
-import { checkRateLimit } from '../utils/rate-limiter.js';
-import { whatsappService } from './whatsapp.service.js';
-import { userRepository, type CreateVia } from '../repositories/user.repository.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { UserRow, VerificationCodeRecord } from '../types/community-posts.types.js';
 import type { PublicUserIdentity } from '../types/community-posts.types.js';
 import {
@@ -24,7 +18,6 @@ import {
   phoneHashFromInput,
   revokeUserSession,
   verifyCodeForPhone,
-<<<<<<< HEAD
   hashCodeForEmail,
   verifyCodeForEmail,
   type Viewer,
@@ -33,10 +26,6 @@ import { verificationChallengeRepository } from '../repositories/verification-ch
 import { sendEmail, getOTPTemplate, getEarthTalkVerificationEmailTemplate, isEmailConfigured } from './email.service.js';
 import { profileService } from './profile.service.js';
 import { userAvatarRepository } from '../repositories/user-avatar.repository.js';
-=======
-  type Viewer,
-} from '../utils/user-auth.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { Request } from 'express';
 
 /**
@@ -58,12 +47,9 @@ import type { Request } from 'express';
 
 export type AuthErrorCode =
   | 'INVALID_PHONE'
-<<<<<<< HEAD
   | 'INVALID_EMAIL'
   | 'INVALID_REQUEST'
   | 'PHONE_ALREADY_LINKED'
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   | 'RATE_LIMITED'
   | 'DELIVERY_FAILED'
   | 'INVALID_CODE'
@@ -87,11 +73,8 @@ export const DISPLAY_NAME_EDIT_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
  */
 export interface SessionUserIdentity extends PublicUserIdentity {
   display_name_updated_at: string | null;
-<<<<<<< HEAD
   email: string | null;
   is_whatsapp_linked: boolean;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 export interface AuthFailure {
@@ -140,7 +123,6 @@ function identityOf(user: UserRow): PublicUserIdentity {
   };
 }
 
-<<<<<<< HEAD
 async function sessionUserOf(user: UserRow): Promise<SessionUserIdentity> {
   const isLinked = await userRepository.isWhatsAppLinked(user.id);
   return {
@@ -148,12 +130,6 @@ async function sessionUserOf(user: UserRow): Promise<SessionUserIdentity> {
     display_name_updated_at: user.display_name_updated_at ?? null,
     email: user.email ?? null,
     is_whatsapp_linked: isLinked,
-=======
-function sessionUserOf(user: UserRow): SessionUserIdentity {
-  return {
-    ...identityOf(user),
-    display_name_updated_at: user.display_name_updated_at ?? null,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   };
 }
 
@@ -184,7 +160,6 @@ export async function requestCode(
   }
 
   const ipHash = hashRequestIp(req);
-<<<<<<< HEAD
   const phoneAllowed = await checkDistributedRateLimit(
     `auth_request:${phoneHash}`,
     env.AUTH_REQUEST_RATE_LIMIT_PER_MINUTE
@@ -194,12 +169,6 @@ export async function requestCode(
     env.AUTH_IP_RATE_LIMIT_PER_MINUTE
   );
   if (!phoneAllowed || !ipAllowed) {
-=======
-  if (
-    !checkRateLimit(`auth_request:${phoneHash}`, env.AUTH_REQUEST_RATE_LIMIT_PER_MINUTE) ||
-    !checkRateLimit(`auth_ip:${ipHash}`, env.AUTH_IP_RATE_LIMIT_PER_MINUTE)
-  ) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return failure(
       429,
       'RATE_LIMITED',
@@ -292,16 +261,11 @@ export async function verifyCode(
     return failure(400, 'INVALID_CODE', 'Enter the six digit code from your WhatsApp message.');
   }
 
-<<<<<<< HEAD
   const verifyAllowed = await checkDistributedRateLimit(
     `auth_verify:${phoneHash}`,
     env.AUTH_REQUEST_RATE_LIMIT_PER_MINUTE
   );
   if (!verifyAllowed) {
-=======
-  const ipHash = hashRequestIp(req);
-  if (!checkRateLimit(`auth_verify:${phoneHash}`, env.AUTH_REQUEST_RATE_LIMIT_PER_MINUTE)) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return failure(
       429,
       'RATE_LIMITED',
@@ -377,7 +341,6 @@ export async function verifyCode(
     ok: true,
     token: session.token,
     expiresAt: session.expiresAt,
-<<<<<<< HEAD
     user: await sessionUserOf(user),
   };
 }
@@ -885,12 +848,6 @@ export async function restoreGoogleAvatar(viewer: Viewer): Promise<any> {
   return { ok: true, profile };
 }
 
-=======
-    user: sessionUserOf(user),
-  };
-}
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 /** Signs the caller out by revoking the presented token. */
 export async function signOut(token: string | undefined): Promise<{ ok: true }> {
   await revokeUserSession(token);
@@ -898,7 +855,6 @@ export async function signOut(token: string | undefined): Promise<{ ok: true }> 
 }
 
 /**
-<<<<<<< HEAD
  * Initiates linking a WhatsApp number to an existing account.
  *
  * A WhatsApp-only user row (`existing && !existing.email`) is allowed to proceed
@@ -1093,8 +1049,6 @@ export async function verifyLinkWhatsApp(
 }
 
 /**
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  * Updates the caller's public name. The account id never changes.
  *
  * A name may be changed once every seven days. The window is enforced here, on
@@ -1118,11 +1072,7 @@ export async function updateProfile(
   const clean = displayName === null ? null : displayName.trim().slice(0, 60) || null;
 
   if (clean === (current.display_name ?? null)) {
-<<<<<<< HEAD
     return { ok: true, user: await sessionUserOf(current) };
-=======
-    return { ok: true, user: sessionUserOf(current) };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   const changedAt = current.display_name_updated_at ? Date.parse(current.display_name_updated_at) : 0;
@@ -1144,9 +1094,5 @@ export async function updateProfile(
       'Your profile could not be updated right now. Please try again.'
     );
   }
-<<<<<<< HEAD
   return { ok: true, user: await sessionUserOf(updated) };
-=======
-  return { ok: true, user: sessionUserOf(updated) };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }

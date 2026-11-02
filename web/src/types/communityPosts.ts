@@ -180,11 +180,8 @@ export interface CommunityUser {
   public_user_id: string;
   display_name: string | null;
   is_demo: boolean;
-<<<<<<< HEAD
   email?: string | null;
   is_whatsapp_linked?: boolean;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /**
    * When this account last changed its display name, from the server session.
    * Absent for a pseudonymous/local account, whose window is tracked in the

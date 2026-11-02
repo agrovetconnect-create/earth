@@ -9,11 +9,7 @@
  */
 
 import type { GeoscienceCategory } from './geoscience-taxonomy.js';
-<<<<<<< HEAD
 import type { RockConfidence, GeoscienceAnalysisResult } from './geological.types.js';
-=======
-import type { RockConfidence } from './geological.types.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * What produced a piece of evidence.
@@ -184,11 +180,8 @@ export interface GeoscienceIntelligenceResult {
   confidenceStatement: string;
   /** A short, honest narrative tying the interpretation to the evidence. */
   summary: string;
-<<<<<<< HEAD
   /** Authoritative underlying base analysis produced during live intelligence evaluation. */
   baseAnalysis?: GeoscienceAnalysisResult;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** Valid view types a contributor may send. */

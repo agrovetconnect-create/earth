@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App.js';
 import { ErrorBoundary } from './components/ErrorBoundary.js';
-<<<<<<< HEAD
 import { OfflineIndicator } from './components/OfflineIndicator.js';
 import { registerOfflineServiceWorker } from './services/offlineCache.js';
 import * as maplibregl from 'maplibre-gl';
@@ -29,20 +28,13 @@ if (typeof window !== 'undefined') {
   }
 }
 
-=======
-import './theme.css';
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>
         <App />
-<<<<<<< HEAD
         <OfflineIndicator />
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       </ErrorBoundary>
     </React.StrictMode>
   );

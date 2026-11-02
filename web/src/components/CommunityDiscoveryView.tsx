@@ -216,7 +216,6 @@ export const CommunityDiscoveryView: React.FC<CommunityDiscoveryViewProps> = ({
                 icon={<Search className="w-6 h-6 text-[#2b7f3f]" />}
                 title="Community investigations"
                 intro="An investigation is a public question about a rock or site that anyone can help settle with fixed choices and photos."
-<<<<<<< HEAD
                 action={
                   <button
                     onClick={() => {
@@ -231,37 +230,6 @@ export const CommunityDiscoveryView: React.FC<CommunityDiscoveryViewProps> = ({
                 }
               />
               <section className="space-y-4">
-=======
-              />
-              <section className="space-y-4">
-                <button
-                  onClick={() => {
-                    if (!requireSignIn()) return;
-                    setShowNewInvestigation(true);
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2b7f3f] hover:bg-[#257036] text-white text-sm font-medium transition-colors"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  Ask the community to investigate
-                </button>
-                {!viewer && (
-                  <div className="p-4 rounded-xl bg-white border border-[#e3e3e3] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
-                    <div className="flex items-center gap-2.5 text-[#3c4043]">
-                      <MessageCircle className="w-4 h-4 text-[#2b7f3f]" />
-                      <span>Sign in with WhatsApp to open an investigation, vote, or add evidence.</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => onRequestLogin?.()}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2b7f3f] hover:bg-[#257036] text-white text-xs font-medium transition-colors shadow-2xs shrink-0"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>Sign in with WhatsApp</span>
-                    </button>
-                  </div>
-                )}
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 {showNewInvestigation && (
                   <CommunityComposer
                     kind="investigation"
@@ -322,7 +290,6 @@ export const CommunityDiscoveryView: React.FC<CommunityDiscoveryViewProps> = ({
                   <EmptyState
                     title="No community investigations yet"
                     body="An investigation is a public question about a rock or site. When one is opened, anyone can vote and add what they observed. Nobody has opened one yet."
-<<<<<<< HEAD
                     illustration={
                       <div className="relative mx-auto mb-5 flex h-28 w-28 items-center justify-center">
                         <span className="absolute inset-0 rounded-full bg-[#e6f4ea]" />
@@ -341,8 +308,6 @@ export const CommunityDiscoveryView: React.FC<CommunityDiscoveryViewProps> = ({
                         </span>
                       </div>
                     }
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                   />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -454,7 +419,6 @@ const SectionHeader: React.FC<{
   title: string;
   intro: React.ReactNode;
   note?: React.ReactNode;
-<<<<<<< HEAD
   action?: React.ReactNode;
 }> = ({ icon, title, intro, note, action }) => (
   <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -484,28 +448,6 @@ const EmptyState: React.FC<{
     {illustration}
     <div className="text-sm font-medium text-[#1f1f1f]">{title}</div>
     <div className="text-xs text-[#5e5e5e] leading-relaxed">{body}</div>
-=======
-}> = ({ icon, title, intro, note }) => (
-  <header className="space-y-2">
-    <div className="flex items-center gap-2">
-      {icon}
-      <h2 className="text-2xl font-medium text-[#1f1f1f]">{title}</h2>
-    </div>
-    <p className="text-sm text-[#5e5e5e] max-w-3xl leading-relaxed">{intro}</p>
-    {note && (
-      <div className="p-3 rounded-xl bg-[#f0f4f9] border border-[#e3e3e3] text-xs text-[#5e5e5e]">
-        <span className="font-semibold text-[#3c4043]">Privacy: </span>
-        {note}
-      </div>
-    )}
-  </header>
-);
-
-const EmptyState: React.FC<{ title: string; body: string }> = ({ title, body }) => (
-  <div className="p-8 rounded-xl bg-white/40 border border-dashed border-[#c7c7c7] text-center">
-    <div className="text-base font-medium text-[#3c4043]">{title}</div>
-    <p className="text-sm text-[#8f8f8f] mt-2 max-w-xl mx-auto leading-relaxed">{body}</p>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   </div>
 );
 
@@ -1014,7 +956,6 @@ const InvestigationCard: React.FC<InvestigationCardProps> = ({
 
   useEffect(() => setChecklist(investigation.checklist), [investigation.checklist]);
 
-<<<<<<< HEAD
   useEffect(() => {
     setVote('');
     setEvidenceText('');
@@ -1027,8 +968,6 @@ const InvestigationCard: React.FC<InvestigationCardProps> = ({
     setExpanded(false);
   }, [investigation.public_id]);
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const isSurvey = investigation.options.length > 0;
@@ -1546,26 +1485,7 @@ const InvestigationCard: React.FC<InvestigationCardProps> = ({
         {/* 3. EXPANDABLE DRAWER: VOTING & EVIDENCE */}
         {expanded && (
           <div className="pt-4 space-y-4 border-t border-[#e3e3e3]">
-<<<<<<< HEAD
             {/* Signed-in notice removed as requested */}
-=======
-            {/* Signed-out notice strictly requesting WhatsApp */}
-            {!canContribute && (
-              <div className="p-3.5 rounded-xl bg-[#f0f4f9] border border-[#e3e3e3] text-xs text-[#5e5e5e] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-[#2b7f3f]" />
-                  <span>Sign in with WhatsApp to cast your vote and contribute evidence.</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onRequireSignIn?.()}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#2b7f3f] hover:bg-[#257036] text-white font-medium text-xs transition-colors shrink-0 shadow-2xs"
-                >
-                  Sign in with WhatsApp
-                </button>
-              </div>
-            )}
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
             {/* Voting Options */}
             <div className="space-y-2">
@@ -1929,11 +1849,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               className="w-full py-2 px-3 rounded-lg bg-[#2b7f3f]/10 text-[#2b7f3f] hover:bg-[#2b7f3f]/20 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
             >
               <MessageCircle className="w-3.5 h-3.5" />
-<<<<<<< HEAD
               <span>Sign in to answer</span>
-=======
-              <span>Sign in with WhatsApp to answer</span>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </button>
           )}
 

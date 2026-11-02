@@ -32,11 +32,8 @@ export interface Viewer {
   userId: string;
   publicUserId: string;
   displayName: string | null;
-<<<<<<< HEAD
   email: string | null;
   isWhatsAppLinked: boolean;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   isDemo: boolean;
 }
 
@@ -105,7 +102,6 @@ export function verifyCodeForPhone(code: string, phoneHash: string, codeHash: st
   return timingSafeEqualString(candidate, codeHash);
 }
 
-<<<<<<< HEAD
 /**
  * Hashes a verification code for email, salted by the session secret and the email.
  */
@@ -120,8 +116,6 @@ export function verifyCodeForEmail(code: string, email: string, codeHash: string
   return timingSafeEqualString(candidate, codeHash);
 }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 // ---------------------------------------------------------------------------
 // Sessions
 // ---------------------------------------------------------------------------
@@ -189,26 +183,18 @@ export async function revokeUserSession(token: string | undefined | null): Promi
   return userRepository.revokeSession(hashToken(token));
 }
 
-<<<<<<< HEAD
 export async function viewerFromUser(user: UserRow): Promise<Viewer> {
   const isLinked = await userRepository.isWhatsAppLinked(user.id);
-=======
-export function viewerFromUser(user: UserRow): Viewer {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return {
     userId: user.id,
     publicUserId: user.public_user_id,
     displayName: user.display_name,
-<<<<<<< HEAD
     email: user.email ?? null,
     isWhatsAppLinked: isLinked,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     isDemo: user.is_demo,
   };
 }
 
-<<<<<<< HEAD
 export const USER_SESSION_COOKIE_NAME = 'et_user_session';
 
 export function extractUserSessionToken(req: Request): string | undefined {
@@ -221,11 +207,6 @@ export function extractUserSessionToken(req: Request): string | undefined {
   if (typeof cookieVal === 'string' && cookieVal.trim().length > 0) {
     return cookieVal.trim();
   }
-=======
-function extractBearer(req: Request): string | undefined {
-  const header = req.headers.authorization;
-  if (header && header.startsWith('Bearer ')) return header.substring(7).trim();
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return undefined;
 }
 
@@ -236,19 +217,11 @@ export async function attachViewer(
   next: NextFunction
 ): Promise<void> {
   try {
-<<<<<<< HEAD
     const token = extractUserSessionToken(req);
     if (token) {
       const resolved = await resolveUserFromToken(token);
       if (resolved) {
         req.viewer = await viewerFromUser(resolved.user);
-=======
-    const token = extractBearer(req);
-    if (token) {
-      const resolved = await resolveUserFromToken(token);
-      if (resolved) {
-        req.viewer = viewerFromUser(resolved.user);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         req.rawUserToken = token;
       }
     }
@@ -266,17 +239,10 @@ export async function requireUser(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-<<<<<<< HEAD
   const token = extractUserSessionToken(req);
   if (!token) {
     res.status(401).json({
       error: 'Sign in with your email to continue.',
-=======
-  const token = extractBearer(req);
-  if (!token) {
-    res.status(401).json({
-      error: 'Sign in with your WhatsApp number to continue.',
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       code: 'AUTH_REQUIRED',
     });
     return;
@@ -306,11 +272,7 @@ export async function requireUser(
     return;
   }
 
-<<<<<<< HEAD
   req.viewer = await viewerFromUser(resolved.user);
-=======
-  req.viewer = viewerFromUser(resolved.user);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   req.rawUserToken = token;
   next();
 }

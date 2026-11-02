@@ -25,7 +25,6 @@ export const LOCALES: LocaleOption[] = [
   { id: 'fr', label: 'French', nativeLabel: 'Français', flag: '/flag-fr.svg' },
 ];
 
-<<<<<<< HEAD
 export function normalizeLocale(value: unknown): Locale {
   if (value === 'en' || value === 'fr') {
     return value;
@@ -33,8 +32,6 @@ export function normalizeLocale(value: unknown): Locale {
   return 'en';
 }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export interface Preferences {
   locale: Locale;
   /**
@@ -50,7 +47,6 @@ export const DEFAULT_PREFERENCES: Preferences = {
   allowLocation: true,
 };
 
-<<<<<<< HEAD
 function deserializePreferences(raw: unknown, fallback: Preferences): Preferences {
   if (!raw || typeof raw !== 'object') {
     return fallback;
@@ -84,13 +80,6 @@ if (typeof document !== 'undefined') {
   });
 }
 
-=======
-export const preferencesStore = createPersistedStore<Preferences>(
-  'et.preferences.v1',
-  DEFAULT_PREFERENCES,
-);
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function usePreferences(): Preferences {
   return preferencesStore.use();
 }
@@ -99,7 +88,6 @@ export function setPreference<K extends keyof Preferences>(
   key: K,
   value: Preferences[K],
 ): void {
-<<<<<<< HEAD
   preferencesStore.update((previous) => {
     const next = { ...previous, [key]: value };
     if (key === 'locale') {
@@ -108,9 +96,6 @@ export function setPreference<K extends keyof Preferences>(
     }
     return next;
   });
-=======
-  preferencesStore.update((previous) => ({ ...previous, [key]: value }));
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 export function clearPreferences(): void {

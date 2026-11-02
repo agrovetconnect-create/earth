@@ -4,11 +4,7 @@ import zlib from 'node:zlib';
 
 // Reproducible, dependency-free Earth Talk geological-layer mark. The source
 // files are generated only inside this mobile app's owned asset directory.
-<<<<<<< HEAD
 const root = path.resolve(import.meta.dirname, '../assets/images');
-=======
-const root = path.resolve('assets/images');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 const size = 1024;
 const scale = 2;
 const high = size * scale;

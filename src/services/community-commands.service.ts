@@ -17,13 +17,10 @@ import {
   EVIDENCE_TYPES,
   type CommunityEvidenceType,
 } from '../types/community.types.js';
-<<<<<<< HEAD
 import {
   buildUnsupportedInputWarning,
   detectOffTopicText,
 } from '../ai/domain-scope.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * WhatsApp Community Discovery commands (spec section 4).
@@ -376,7 +373,6 @@ Use SITES to see the published sites.`;
       return 'Please include the question.\nExample: INVESTIGATE Is this basalt or granite?';
     }
 
-<<<<<<< HEAD
     const offTopic = detectOffTopicText(question);
     if (offTopic.isOffTopic) {
       return buildUnsupportedInputWarning({
@@ -386,8 +382,6 @@ Use SITES to see the published sites.`;
       });
     }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const investigation = await communityService.openInvestigation({ question }, contributor);
 
     return `🔎 Investigation opened.
@@ -452,7 +446,6 @@ It will be read alongside other contributions. Recording evidence does not confi
       return 'Please include your question.\nExample: ASK What mineral makes this green colour?';
     }
 
-<<<<<<< HEAD
     const offTopic = detectOffTopicText(question);
     if (offTopic.isOffTopic) {
       return buildUnsupportedInputWarning({
@@ -462,8 +455,6 @@ It will be read alongside other contributions. Recording evidence does not confi
       });
     }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const asked = await communityService.askQuestion({ question }, contributor);
 
     return `❓ Question posted.

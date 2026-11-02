@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import type { PDFDocumentProxy, PDFPageProxy, RenderTask } from 'pdfjs-dist';
-<<<<<<< HEAD
-=======
-import PdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,11 +14,7 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-<<<<<<< HEAD
 GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-=======
-GlobalWorkerOptions.workerSrc = PdfWorkerUrl;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 interface PdfPreviewProps {
   url: string;

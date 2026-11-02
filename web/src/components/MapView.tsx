@@ -12,29 +12,14 @@ import {
 } from '../types/community.js';
 import { MAP_CONFIG } from '../config/map.js';
 import {
-<<<<<<< HEAD
-=======
-  ChevronDown,
-  ChevronUp,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   Crosshair,
   Eye,
   EyeOff,
   Globe,
   Maximize2,
-<<<<<<< HEAD
   Minus,
   Navigation,
   Plus,
-=======
-  Menu,
-  Minus,
-  Navigation,
-  Plus,
-  Rotate3d,
-  RotateCcw,
-  RotateCw,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   X,
 } from 'lucide-react';
 import { MapStyleSelector, type MapStyleId } from './MapStyleSelector.js';
@@ -490,10 +475,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [styleError, setStyleError] = useState(false);
   const [locating, setLocating] = useState(false);
-<<<<<<< HEAD
   const [locateNotice, setLocateNotice] = useState<string | null>(null);
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const [base, setBase] = useState<BaseLayerId>('map');
   const [terrainOn, setTerrainOn] = useState(false);
   // Camera orientation, mirrored from the map so the compass and the tilt
@@ -501,7 +483,6 @@ export const MapView: React.FC<MapViewProps> = ({
   const [bearing, setBearing] = useState(0);
   const [pitch, setPitch] = useState(0);
   const [globeOn, setGlobeOn] = useState(false);
-<<<<<<< HEAD
   const preGlobeView = useRef<{
     center: { lng: number; lat: number };
     zoom: number;
@@ -512,17 +493,12 @@ export const MapView: React.FC<MapViewProps> = ({
   // switches to satellite so the sphere reads as a planet rather than a pale,
   // nearly-white disc, then restores this style when it is switched back.
   const preGlobeStyle = useRef<{ base: BaseLayerId; terrainOn: boolean } | null>(null);
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   // Whether the contributor's own private overlay is drawn. Starts off so a
   // reader is never shown their withheld locations before asking for them.
   const [showOwn, setShowOwn] = useState(ownOnly);
   // Width and label of the scale bar drawn beside the attribution.
-<<<<<<< HEAD
   const [zoomLevel, setZoomLevel] = useState<number>(MAP_CONFIG.initialZoom);
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const [scaleBar, setScaleBar] = useState({ width: 64, label: '100 m' });
   const hoveredPassport = useRef<string | null>(null);
   // In-map navigation: the destination being reached, the phase of the attempt,
@@ -564,12 +540,9 @@ export const MapView: React.FC<MapViewProps> = ({
 
   // One entry point for every style choice the selector offers.
   const handleStyleSelect = (id: MapStyleId) => {
-<<<<<<< HEAD
     // A style chosen while the globe is showing is the reader's own choice, so
     // it should survive leaving the globe rather than snap back to the old one.
     if (globeOn) preGlobeStyle.current = null;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (id === 'terrain') {
       setTerrainOn(true);
       return;
@@ -581,15 +554,10 @@ export const MapView: React.FC<MapViewProps> = ({
   /** Recomputes the scale bar for the map's current centre and zoom. */
   const updateScaleBar = (map: MapLibreMap) => {
     const latitude = map.getCenter().lat;
-<<<<<<< HEAD
     const z = map.getZoom();
     setZoomLevel(z);
     const metresPerPixel =
       (40075016.686 * Math.cos((latitude * Math.PI) / 180)) / (256 * 2 ** z);
-=======
-    const metresPerPixel =
-      (40075016.686 * Math.cos((latitude * Math.PI) / 180)) / (256 * 2 ** map.getZoom());
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     let step = SCALE_STEPS_METRES[0];
     for (const candidate of SCALE_STEPS_METRES) {
       if (candidate / metresPerPixel <= 100) step = candidate;
@@ -670,7 +638,6 @@ export const MapView: React.FC<MapViewProps> = ({
         attributionControl: false, // Customized visible attribution below
       });
 
-<<<<<<< HEAD
       let loadedOnce = false;
       let fallbackApplied = false;
 
@@ -703,10 +670,6 @@ export const MapView: React.FC<MapViewProps> = ({
           }
         }
         setStyleError(true);
-=======
-      map.on('error', (e) => {
-        console.warn('MapLibre notice:', e?.error?.message || e);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       });
 
       // The camera controls read from the map, not from a guess: when the user
@@ -720,10 +683,7 @@ export const MapView: React.FC<MapViewProps> = ({
       // the attribution instead of down here, where it crowded the style card.
 
       map.on('load', () => {
-<<<<<<< HEAD
         loadedOnce = true;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         setMapLoaded(true);
 
 
@@ -809,63 +769,10 @@ export const MapView: React.FC<MapViewProps> = ({
         map.addSource('observations', {
           type: 'geojson',
           data: geojson || { type: 'FeatureCollection', features: [] },
-<<<<<<< HEAD
           cluster: false,
         });
 
 
-=======
-          cluster: true,
-          clusterMaxZoom: 14,
-          clusterRadius: 45,
-        });
-
-        // 1. Cluster circles
-        map.addLayer({
-          id: 'clusters',
-          type: 'circle',
-          source: 'observations',
-          filter: ['has', 'point_count'],
-          paint: {
-            'circle-color': [
-              'step',
-              ['get', 'point_count'],
-              '#d97706', // amber-600 (small clusters)
-              5,
-              '#b45309', // amber-700
-              15,
-              '#78350f', // amber-900 (large clusters)
-            ],
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              16,
-              5,
-              22,
-              15,
-              28,
-            ],
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff',
-          },
-        });
-
-        // 2. Cluster text counts
-        map.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'observations',
-          filter: ['has', 'point_count'],
-          layout: {
-            'text-field': '{point_count_abbreviated}',
-            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-          },
-          paint: {
-            'text-color': '#ffffff',
-          },
-        });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
         // 3. Individual observation points. Pins are registered as images so
         //    the whole set can fail together and degrade to the plain
@@ -979,16 +886,7 @@ export const MapView: React.FC<MapViewProps> = ({
         // Any pan or zoom invalidates the preview's pixel anchor, so it closes
         // rather than drift away from the pin it describes.
         map.on('movestart', () => setHoverCard(null));
-<<<<<<< HEAD
 
-=======
-        map.on('mouseenter', 'clusters', () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'clusters', () => {
-          map.getCanvas().style.cursor = '';
-        });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         map.on('mouseenter', 'unclustered-point', () => {
           map.getCanvas().style.cursor = 'pointer';
         });
@@ -1048,38 +946,7 @@ export const MapView: React.FC<MapViewProps> = ({
           }
         });
 
-<<<<<<< HEAD
 
-=======
-        // Click on cluster -> zoom in
-        map.on('click', 'clusters', (e) => {
-          const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-          const clusterId = features[0]?.properties?.cluster_id;
-          const source = map.getSource('observations') as GeoJSONSource;
-
-          if (source && clusterId !== undefined) {
-            source
-              .getClusterExpansionZoom(clusterId)
-              .then((zoom) => {
-                const geom = features[0]?.geometry;
-                if (geom && geom.type === 'Point') {
-                  map.easeTo({
-                    center: geom.coordinates as [number, number],
-                    zoom: (zoom ?? 10) + 0.5,
-                  });
-                }
-              })
-              .catch(() => {
-                // Ignore zoom error
-              });
-          }
-        });
-      });
-
-      map.on('error', () => {
-        // Safe fallback if tile provider temporarily fails
-        setStyleError(true);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       });
 
       mapRef.current = map;
@@ -1224,7 +1091,6 @@ export const MapView: React.FC<MapViewProps> = ({
         const evidence = p.evidence_state ? String(p.evidence_state) : null;
         const mediaCount = Number(p.media_count ?? 0);
         const [longitude, latitude] = feature.geometry.coordinates;
-<<<<<<< HEAD
 
         const explicitTitle = (p.title as string)?.trim() || (p.post_title as string)?.trim();
         const possibleName = (p.possible_name as string)?.trim();
@@ -1240,18 +1106,12 @@ export const MapView: React.FC<MapViewProps> = ({
                 ? interpretationLead
                 : categoryLabel(category);
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         cancelHoverCardHide();
         setHoverCard({
           ...anchorHoverCard(map, e.lngLat),
           data: {
             id: String(p.passport_id ?? ''),
-<<<<<<< HEAD
             title: realTitle,
-=======
-            title: (p.possible_name as string) || categoryLabel(category),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             category: categoryLabel(category),
             rating: p.confidence ? capitalise(String(p.confidence)) : null,
             secondary: mediaCount > 0 ? `${mediaCount} attached` : null,
@@ -1320,13 +1180,8 @@ export const MapView: React.FC<MapViewProps> = ({
           // 1x SVG was the source. 0.34 is the medium pin: about 14px wide.
           'icon-size': 0.34 * PIN_PIXEL_RATIO,
           'icon-anchor': 'bottom',
-<<<<<<< HEAD
           'icon-allow-overlap': true,
           'icon-ignore-placement': true,
-=======
-          'icon-allow-overlap': false,
-          'icon-ignore-placement': false,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         },
       });
       // Hover emphasis, Google-Maps style: a second symbol layer draws the
@@ -1380,13 +1235,8 @@ export const MapView: React.FC<MapViewProps> = ({
           'icon-image': SITE_PIN_EXPRESSION,
           'icon-size': 0.30 * PIN_PIXEL_RATIO,
           'icon-anchor': 'bottom',
-<<<<<<< HEAD
           'icon-allow-overlap': true,
           'icon-ignore-placement': true,
-=======
-          'icon-allow-overlap': false,
-          'icon-ignore-placement': false,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         },
       });
       wire();
@@ -1433,7 +1283,6 @@ export const MapView: React.FC<MapViewProps> = ({
     if (mapRef.current) mapRef.current.zoomOut();
   };
 
-<<<<<<< HEAD
   // Google Maps-style 3D control: one tap tilts the camera to 45 degrees,
   // another returns it to the flat 2D view.
   const handleToggleTilt = () => {
@@ -1441,25 +1290,6 @@ export const MapView: React.FC<MapViewProps> = ({
     if (!map) return;
     const next = map.getPitch() > 0 ? 0 : 45;
     map.easeTo({ pitch: next, duration: 300 });
-=======
-  // Continuous tilt: the slider is the camera, not a 2D/3D switch. The map is
-  // the source of truth, so we drive it and let the 'pitch' event echo back.
-  const handlePitchChange = (value: number) => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.setPitch(value);
-    setPitch(value);
-  };
-
-  // Rotate in 45-degree steps, in both directions. A negative delta turns the
-  // map one way, a positive delta the other.
-  const handleRotate = (delta: number) => {
-    const map = mapRef.current;
-    if (!map) return;
-    const next = map.getBearing() + delta;
-    map.setBearing(next);
-    setBearing(next);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   };
 
   // The compass returns the camera to true north.
@@ -1470,21 +1300,15 @@ export const MapView: React.FC<MapViewProps> = ({
     setBearing(0);
   };
 
-<<<<<<< HEAD
   // Swap the whole projection between the globe and the flat map. Globe view
   // only becomes visible below the adaptive transition zoom, so enabling it
   // saves the current camera, zooms out to show the sphere, then restores the
   // saved view when switching back.
-=======
-  // Swap the whole projection between the globe and the flat map. Older
-  // renderers that lack globe support simply keep the flat map.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const handleToggleGlobe = () => {
     const map = mapRef.current;
     if (!map) return;
     const next = !globeOn;
     try {
-<<<<<<< HEAD
       if (next) {
         // Remember the reader's basemap and show satellite imagery on the
         // sphere. The default vector style is so light that the globe reads as
@@ -1539,34 +1363,11 @@ export const MapView: React.FC<MapViewProps> = ({
     if (!preferencesStore.get().allowLocation) {
       setLocateNotice(
         'Location sharing is switched off in your preferences.'
-=======
-      map.setProjection({ type: next ? 'globe' : 'mercator' });
-    } catch (err: unknown) {
-      console.warn('Projection switch is unavailable:', err);
-      return;
-    }
-    setGlobeOn(next);
-  };
-
-
-
-  // "Show my location": one honest attempt at a real GPS fix, then a blue dot on
-  // the map. The browser prompts for permission; denial is reported, not silent.
-  const handleLocate = () => {
-    if (!mapRef.current || locating) return;
-    if (!preferencesStore.get().allowLocation) {
-      alert(
-        'Location is switched off. Turn it on in Location sharing (sidebar, Personal tools) to use this.'
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       );
       return;
     }
     if (!('geolocation' in navigator)) {
-<<<<<<< HEAD
       setLocateNotice('Your browser does not support geolocation.');
-=======
-      alert('Your browser does not support geolocation.');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       return;
     }
     setLocating(true);
@@ -1603,11 +1404,7 @@ export const MapView: React.FC<MapViewProps> = ({
           2: 'Your location could not be determined right now.',
           3: 'Timed out waiting for your location.',
         };
-<<<<<<< HEAD
         setLocateNotice(messages[error.code] ?? 'Unable to get your location.');
-=======
-        alert(messages[error.code] ?? 'Unable to get your location.');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
     );
@@ -1732,7 +1529,6 @@ export const MapView: React.FC<MapViewProps> = ({
   }, [navTarget]);
 
   return (
-<<<<<<< HEAD
     <div
       className={`relative w-full h-full min-h-[420px] overflow-hidden transition-colors ${
         globeOn ? 'bg-[#061525]' : 'bg-[#f0f4f9]'
@@ -1741,16 +1537,6 @@ export const MapView: React.FC<MapViewProps> = ({
       {/* Map Container */}
       <div ref={mapContainerRef} className="w-full h-full min-h-[420px]" />
 
-=======
-    <div className="relative w-full h-full min-h-[420px] bg-[#f0f4f9] overflow-hidden">
-      {/* Map Container */}
-      <div ref={mapContainerRef} className="w-full h-full min-h-[420px]" />
-
-      {/* Map controls. Bottom-right stack like Google Maps: reset, show my
-          location, then the zoom buttons. The search field owns the top of the
-          map. */}
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       {/* Loading is a 3px progress line on the very top edge of the canvas, the
           way Google Maps indicates a fetch. It never overlaps the search field. */}
       {loading && (
@@ -1758,7 +1544,6 @@ export const MapView: React.FC<MapViewProps> = ({
           <div className="h-full w-1/3 bg-[#0b57d0] animate-pulse" />
         </div>
       )}
-<<<<<<< HEAD
 
       {/* Inline geolocation notice (replaces browser alert dialogs). */}
       {locateNotice && (
@@ -1803,62 +1588,12 @@ export const MapView: React.FC<MapViewProps> = ({
           </button>
         )}
 
-=======
-      {/* Camera controls: continuous tilt, both-way rotation, a compass that
-          returns to north, and the globe/flat switch. Anchored beside the zoom
-          stack so the search band along the top is never covered. */}
-      <div className="absolute bottom-8 right-16 z-10 flex items-center gap-0.5 rounded-xl border border-[#e3e3e3] shadow-[var(--g-elev-1)] bg-white text-[#5e5e5e] px-1">
-        <button
-          type="button"
-          onClick={handleResetNorth}
-          title="Reset to north"
-          aria-label="Reset to north"
-          className="h-9 w-9 flex items-center justify-center rounded-lg hover:bg-[#f0f4f9] transition-colors"
-        >
-          <Navigation
-            className="w-4 h-4"
-            style={{ transform: `rotate(${-bearing}deg)` }}
-          />
-        </button>
-        <button
-          type="button"
-          onClick={() => handleRotate(-45)}
-          title="Rotate left"
-          aria-label="Rotate left"
-          className="h-9 w-9 flex items-center justify-center rounded-lg hover:bg-[#f0f4f9] transition-colors"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => handleRotate(45)}
-          title="Rotate right"
-          aria-label="Rotate right"
-          className="h-9 w-9 flex items-center justify-center rounded-lg hover:bg-[#f0f4f9] transition-colors"
-        >
-          <RotateCw className="w-4 h-4" />
-        </button>
-        <label className="flex items-center gap-1.5 h-9 pl-1 pr-2" title="Map tilt">
-          <Rotate3d className="w-4 h-4" aria-hidden="true" />
-          <input
-            type="range"
-            min={0}
-            max={60}
-            step={1}
-            value={Math.round(pitch)}
-            onChange={(e) => handlePitchChange(Number(e.target.value))}
-            aria-label="Map tilt"
-            className="w-24 accent-[#0b57d0]"
-          />
-        </label>
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         <button
           type="button"
           onClick={handleToggleGlobe}
           title={globeOn ? 'Switch to the flat map' : 'Switch to the globe'}
           aria-label={globeOn ? 'Switch to the flat map' : 'Switch to the globe'}
           aria-pressed={globeOn}
-<<<<<<< HEAD
           className={`flex h-8 w-8 items-center justify-center rounded-full border shadow-[var(--g-elev-2)] transition-colors ${
             globeOn
               ? 'border-[#0b57d0] bg-[#e8f0fe] text-[#0b57d0]'
@@ -1915,47 +1650,10 @@ export const MapView: React.FC<MapViewProps> = ({
 
         <button
           type="button"
-=======
-          className={`h-9 w-9 flex items-center justify-center rounded-lg transition-colors ${
-            globeOn ? 'bg-[#e8f0fe] text-[#0b57d0]' : 'hover:bg-[#f0f4f9]'
-          }`}
-        >
-          <Globe className="w-4 h-4" />
-        </button>
-      </div>
-
-      <div className="absolute bottom-8 right-3 z-10 flex flex-col items-center overflow-hidden rounded-xl border border-[#e3e3e3] shadow-[var(--g-elev-1)] bg-white text-[#5e5e5e]">
-        {/* Show the reader's own posts. Only offered when they actually have a
-            located post of their own to show, and never in "My Map", where the
-            overlay is the view itself rather than an optional layer. */}
-        {!ownOnly && ownerPosts && ownerPosts.length > 0 && (
-          <button
-            onClick={() => setShowOwn((prev) => !prev)}
-            title={showOwn ? 'Hide my posts' : 'Show my posts'}
-            aria-label={showOwn ? 'Hide my posts' : 'Show my posts'}
-            aria-pressed={showOwn}
-            className={`h-9 w-9 flex items-center justify-center transition-colors border-b border-[#e3e3e3] ${
-              showOwn ? 'bg-[#ede9fe] text-[#6d28d9]' : 'hover:bg-[#f0f4f9]'
-            }`}
-          >
-            {showOwn ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        )}
-        <button
-          onClick={handleResetRwanda}
-          title="Reset View to Rwanda"
-          aria-label="Reset view to Rwanda"
-          className="h-9 w-9 flex items-center justify-center hover:bg-[#f0f4f9] transition-colors border-b border-[#e3e3e3]"
-        >
-          <Maximize2 className="w-4 h-4" />
-        </button>
-        <button
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           onClick={handleLocate}
           disabled={locating}
           title="Show my location"
           aria-label="Show my location"
-<<<<<<< HEAD
           className={`flex h-8 w-8 items-center justify-center rounded-full border border-[#e3e3e3] bg-white shadow-[var(--g-elev-2)] transition-colors hover:bg-[#f0f4f9] ${
             locating ? 'text-[#0b57d0]' : 'text-[#444746]'
           }`}
@@ -1989,48 +1687,6 @@ export const MapView: React.FC<MapViewProps> = ({
       {/* Google-style map chrome, bottom-left. The style selector changes the
           basemap (and offers the visual-only layers). */}
       <div className="absolute bottom-8 left-3 z-20 flex flex-col items-start gap-2">
-=======
-          className="h-9 w-9 flex items-center justify-center hover:bg-[#f0f4f9] transition-colors border-b border-[#e3e3e3] disabled:opacity-50"
-        >
-          <Crosshair className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleZoomIn}
-          title="Zoom in"
-          aria-label="Zoom in"
-          className="h-9 w-9 flex items-center justify-center hover:bg-[#f0f4f9] transition-colors border-b border-[#e3e3e3]"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleZoomOut}
-          title="Zoom out"
-          aria-label="Zoom out"
-          className="h-9 w-9 flex items-center justify-center hover:bg-[#f0f4f9] transition-colors"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Google-style map chrome, bottom-left. The style selector changes the
-          basemap (and offers the visual-only layers); the "show sidebar"
-          button brings the navigation column back after it has been closed
-          with its X. */}
-      <div className="absolute bottom-8 left-3 z-20 flex flex-col items-start gap-2">
-        {sidebarHidden && onOpenSidebar && (
-          <button
-            type="button"
-            onClick={onOpenSidebar}
-            className="h-10 pl-3 pr-4 flex items-center gap-2 rounded-full border border-[#e3e3e3] bg-white shadow-[var(--g-elev-2)] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f0f4f9] transition-colors"
-          >
-            <Menu className="w-4 h-4 text-[#5e5e5e]" aria-hidden="true" />
-            Show sidebar
-          </button>
-        )}
-        {/* The map-style selector: a medium 96x96 card that grows sideways
-            into the style panel on hover, exactly like desktop Google Maps.
-            Satellite is one of the tiles, so no second card is needed. */}
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         <MapStyleSelector active={activeStyle} onSelect={handleStyleSelect} />
       </div>
 

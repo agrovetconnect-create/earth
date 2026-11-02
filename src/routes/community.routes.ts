@@ -20,10 +20,7 @@ import {
   getSiteExplorer,
   getSiteTimeline,
   issueContributorToken,
-<<<<<<< HEAD
   logoutContributorToken,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   addCommunityMedia,
   getCommunityMedia,
   fileAbuseReport,
@@ -41,10 +38,7 @@ export const communityRouter = Router();
 
 // -- Contributor identity ----------------------------------------------------
 communityRouter.post('/api/community/contributor-token', issueContributorToken);
-<<<<<<< HEAD
 communityRouter.post('/api/community/contributor-token/logout', logoutContributorToken);
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 communityRouter.get('/api/community/me/reputation', getMyReputation);
 
 // -- Abuse reports (specification section 25) ---------------------------------

@@ -36,11 +36,8 @@ export interface MapLocationCardProps {
    *  platform's map - nothing here ever opens an outside map. */
   onNavigate?: () => void;
   onClick?: () => void;
-<<<<<<< HEAD
   /** Larger type and media band for grid cards; the map hover card stays compact. */
   size?: 'compact' | 'comfortable';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   className?: string;
   style?: React.CSSProperties;
 }
@@ -82,17 +79,11 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
   onToggleSave,
   onNavigate,
   onClick,
-<<<<<<< HEAD
   size = 'compact',
   className = '',
   style,
 }) => {
   const comfortable = size === 'comfortable';
-=======
-  className = '',
-  style,
-}) => {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return (
     <div
       onClick={onClick}
@@ -103,11 +94,7 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
     >
       {/* Wide landscape header, corners rounded by the card's own overflow. */}
       <div
-<<<<<<< HEAD
         className={`relative w-full ${comfortable ? 'h-[170px]' : 'h-[112px]'}`}
-=======
-        className="relative h-[112px] w-full"
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         style={{ background: imageUrl ? '#f0f4f9' : `${accentColor}1f` }}
       >
         {imageUrl ? (
@@ -127,7 +114,6 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
         )}
       </div>
 
-<<<<<<< HEAD
       {/* Information block with a little more breathing room for comfortable cards. */}
       <div className={comfortable ? 'p-4 sm:p-5' : 'p-3.5'}>
         <div className="flex items-start gap-2">
@@ -136,12 +122,6 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
               comfortable ? 'text-[17px]' : 'text-[14px]'
             }`}
           >
-=======
-      {/* Compact information block. */}
-      <div className="p-3.5">
-        <div className="flex items-start gap-2">
-          <h3 className="min-w-0 flex-1 truncate text-[14px] font-semibold leading-tight text-[#202124]">
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             {title}
           </h3>
           <div className="flex shrink-0 items-center gap-1.5">
@@ -185,15 +165,11 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
           </div>
         </div>
 
-<<<<<<< HEAD
         <div
           className={`mt-1.5 flex items-center gap-1.5 text-[#5f6368] ${
             comfortable ? 'text-[13px]' : 'text-[12px]'
           }`}
         >
-=======
-        <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#5f6368]">
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           {categoryIcon ?? <Tag className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
           <span className="truncate">{category}</span>
         </div>
@@ -206,26 +182,18 @@ export const MapLocationCard: React.FC<MapLocationCardProps> = ({
         )}
 
         {description && (
-<<<<<<< HEAD
           <p
             className={`mt-2 line-clamp-2 leading-snug text-[#5f6368] ${
               comfortable ? 'text-[13px]' : 'text-[11.5px]'
             }`}
           >
-=======
-          <p className="mt-1.5 line-clamp-2 text-[11.5px] leading-snug text-[#5f6368]">
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             {description}
           </p>
         )}
 
         {status && (
           <div
-<<<<<<< HEAD
             className={`mt-2.5 flex items-center gap-1.5 text-[11.5px] font-medium ${TONE_TEXT[status.tone]}`}
-=======
-            className={`mt-2 flex items-center gap-1.5 text-[11.5px] font-medium ${TONE_TEXT[status.tone]}`}
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           >
             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${TONE_DOT[status.tone]}`} />
             <span className="truncate">{status.label}</span>

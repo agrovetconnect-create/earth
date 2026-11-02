@@ -8,25 +8,6 @@ interface ViewNote {
 }
 
 const VIEW_NOTES: Partial<Record<AppView, ViewNote>> = {
-<<<<<<< HEAD
-=======
-  sites: {
-    title: 'Grouping and evidence',
-    bullets: [
-      'Every site states its grouping basis: admin curated, observation cluster, or community suggested.',
-      'Observations are never silently clustered by a distance threshold.',
-      'The evidence ladder is enforced server-side: community activity alone can never reach expert reviewed or scientifically confirmed.',
-    ],
-  },
-  community: {
-    title: 'Community discovery',
-    bullets: [
-      'Investigations, votes, evidence, questions, answers and visits.',
-      'Participation only. There are no user accounts, and raw phone numbers are never stored.',
-      'Reputation reflects participation only, never authority over a scientific claim.',
-    ],
-  },
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   research: {
     title: 'Research analytics',
     bullets: [

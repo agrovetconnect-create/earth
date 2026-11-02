@@ -57,11 +57,7 @@ export interface InMemoryObservationStore {
   sector: string | null;
   cell: string | null;
   village: string | null;
-<<<<<<< HEAD
   public_location_precision: 'private' | 'district' | 'approximate' | 'exact';
-=======
-  public_location_precision: 'district' | 'approximate' | 'exact';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   latitude: number | null;
   longitude: number | null;
   ai_model: string;
@@ -70,10 +66,7 @@ export interface InMemoryObservationStore {
   created_at: string;
   updated_at: string;
   media_id: string;
-<<<<<<< HEAD
   is_demo?: boolean;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 export class ExpertRepository {
@@ -128,13 +121,9 @@ export class ExpertRepository {
     // when no database is configured at all (development/demo).
     if (isDatabaseConfigured()) {
       try {
-<<<<<<< HEAD
         let query = (supabase.from('observations') as any)
           .select('*, observation_locations(district), observation_media(id)', { count: 'exact' })
           .eq('is_demo', false);
-=======
-        let query = supabase.from('observations').select('*, observation_locations(district)', { count: 'exact' });
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
         if (filters.status && filters.status !== 'all') {
           query = query.eq('verification_status', filters.status);
@@ -152,7 +141,6 @@ export class ExpertRepository {
         if (error) throw new Error(error.message);
         if (!Array.isArray(data)) throw new Error('observation review query returned no data array');
 
-<<<<<<< HEAD
         let rows = data as any[];
         if (filters.district) {
           const wantedDistrict = filters.district.toLowerCase();
@@ -198,24 +186,6 @@ export class ExpertRepository {
           };
         });
         return { data: mapped, total: filters.district ? mapped.length : count ?? mapped.length, page, limit };
-=======
-        const mapped: ExpertObservationSummary[] = (data as any[]).map((row) => ({
-          id: row.id,
-          passport_id: row.passport_id,
-          created_at: row.created_at,
-          district: row.observation_locations?.[0]?.district || null,
-          ai_classification: row.primary_classification,
-          ai_possible_name: row.possible_name,
-          ai_confidence: row.confidence,
-          ai_confidence_score: row.confidence_score,
-          verification_status: row.verification_status,
-          publication_status: row.publication_status,
-          expert_rock_name: null,
-          reviewer_name: null,
-          has_media: true,
-        }));
-        return { data: mapped, total: count || mapped.length, page, limit };
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         logger.error('Database read failed in findObservationsForReview; refusing to fall back to process memory', {
           error: String(err),
@@ -225,11 +195,7 @@ export class ExpertRepository {
     }
 
     // In-memory filter implementation (no database configured)
-<<<<<<< HEAD
     let filtered = this.inMemoryObservations.filter((o) => !o.is_demo);
-=======
-    let filtered = [...this.inMemoryObservations];
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     if (filters.status && filters.status !== 'all') {
       filtered = filtered.filter((o) => o.verification_status === filters.status);
@@ -364,7 +330,6 @@ verification_status: obs.verification_status,
     };
   }
 
-<<<<<<< HEAD
   private rowToStore(row: any, loc: any, media: any): InMemoryObservationStore {
     return {
       id: row.id,
@@ -409,8 +374,6 @@ verification_status: obs.verification_status,
     };
   }
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /**
    * Retrieves single observation details for expert review, strictly preserving
    * the immutable AI preliminary assessment side-by-side with expert findings.
@@ -418,7 +381,6 @@ verification_status: obs.verification_status,
   async getObservationForExpert(passportId: string): Promise<ExpertObservationDetail | null> {
     const cleanId = passportId.trim().toUpperCase();
 
-<<<<<<< HEAD
     if (isDatabaseConfigured()) {
       try {
         const { data: row, error: obsErr } = await (supabase.from('observations') as any)
@@ -507,28 +469,17 @@ verification_status: obs.verification_status,
 
     // Check in-memory store (development/hermetic tests only)
     const obs = this.inMemoryObservations.find((o) => o.passport_id === cleanId && !o.is_demo);
-=======
-    // Check in-memory store
-    const obs = this.inMemoryObservations.find((o) => o.passport_id === cleanId);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!obs) {
       return null;
     }
 
     const verifs = this.inMemoryVerifications.get(obs.passport_id) || [];
     const auditLogs = this.inMemoryAuditLogs.filter((l) => l.passport_id === obs.passport_id);
-<<<<<<< HEAD
     const baseDetail = this.mapToDetail(obs, verifs, auditLogs);
 
     return {
       ...baseDetail,
       data_quality: dataQualityService.assessObservationQuality(baseDetail),
-=======
-
-    return {
-      ...this.mapToDetail(obs, verifs, auditLogs),
-      data_quality: dataQualityService.assessObservationQuality(this.mapToDetail(obs, verifs, auditLogs)),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     };
   }
 
@@ -548,7 +499,6 @@ verification_status: obs.verification_status,
     updatedObservation: ExpertObservationDetail;
   }> {
     const cleanId = passportId.trim().toUpperCase();
-<<<<<<< HEAD
     const newStatus = input.verification_status;
     let action: AuditAction = 'status_changed';
     if (newStatus === 'expert_verified') action = 'verified';
@@ -653,16 +603,12 @@ verification_status: obs.verification_status,
     }
 
     const obs = this.inMemoryObservations.find((o) => o.passport_id === cleanId && !o.is_demo);
-=======
-    const obs = this.inMemoryObservations.find((o) => o.passport_id === cleanId);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     if (!obs) {
       throw new Error(`Observation with passport ID '${passportId}' not found.`);
     }
 
     const previousStatus = obs.verification_status;
-<<<<<<< HEAD
 
     // Update observation metadata (in-memory dev/test mode only)
     obs.verification_status = newStatus;
@@ -673,12 +619,6 @@ verification_status: obs.verification_status,
     } else if (newStatus === 'rejected') {
       obs.evidence_state = 'rejected';
     }
-=======
-    const newStatus = input.verification_status;
-
-    // Update observation metadata
-    obs.verification_status = newStatus;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     obs.updated_at = new Date().toISOString();
 
     if (input.publication_status) {
@@ -691,15 +631,6 @@ verification_status: obs.verification_status,
       obs.public_visibility_reason = input.public_visibility_reason;
     }
 
-<<<<<<< HEAD
-=======
-    // Determine audit action
-    let action: AuditAction = 'status_changed';
-    if (newStatus === 'expert_verified') action = 'verified';
-    else if (newStatus === 'rejected') action = 'rejected';
-    else if (newStatus === 'under_review') action = 'assigned_review';
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     // Create verification record
     const verificationRecord: ExpertVerificationRecord = {
       id: `ver-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -720,20 +651,12 @@ verification_status: obs.verification_status,
       updated_at: new Date().toISOString(),
     };
 
-<<<<<<< HEAD
     const existingVerifs = (this.inMemoryVerifications.get(obs.passport_id) || []).map((v) => ({
       ...v,
       updated_at: new Date().toISOString(),
     }));
     this.inMemoryVerifications.set(obs.passport_id, [verificationRecord, ...existingVerifs]);
 
-=======
-    // Store in-memory
-    const existingVerifs = this.inMemoryVerifications.get(obs.passport_id) || [];
-    this.inMemoryVerifications.set(obs.passport_id, [verificationRecord, ...existingVerifs]);
-
-    // Create audit log entry
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const auditLog: VerificationAuditLogRecord = {
       id: `audit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       observation_id: obs.id,
@@ -754,50 +677,6 @@ verification_status: obs.verification_status,
 
     this.inMemoryAuditLogs.unshift(auditLog);
 
-<<<<<<< HEAD
-=======
-    // Also attempt persisting to live Supabase if connected
-    const isMock = !env.SUPABASE_URL || env.SUPABASE_URL.includes('mock-project-id');
-    if (!isMock) {
-      try {
-        await (supabase.from('observations') as any)
-          .update({
-            verification_status: newStatus,
-            publication_status: obs.publication_status,
-            updated_at: obs.updated_at,
-          })
-          .eq('passport_id', obs.passport_id);
-
-        await (supabase.from('expert_verifications') as any).insert({
-          observation_id: obs.id,
-          reviewer_id: reviewer.id,
-          reviewer_name: reviewer.name,
-          reviewer_role: reviewer.role,
-          reviewer_organization: reviewer.organization,
-          status: newStatus,
-          expert_classification: verificationRecord.expert_classification,
-          expert_rock_name: verificationRecord.expert_rock_name,
-          expert_confidence: verificationRecord.expert_confidence,
-          expert_notes: verificationRecord.expert_notes,
-          scientific_remarks: verificationRecord.scientific_remarks,
-        });
-
-        await (supabase.from('verification_audit_logs') as any).insert({
-          observation_id: obs.id,
-          passport_id: obs.passport_id,
-          reviewer_id: reviewer.id,
-          reviewer_name: reviewer.name,
-          action,
-          previous_status: previousStatus,
-          new_status: newStatus,
-          notes: auditLog.notes,
-        });
-      } catch (dbErr) {
-        logger.warn('Could not mirror verification to Supabase, local state intact', { error: String(dbErr) });
-      }
-    }
-
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const updatedDetail = (await this.getObservationForExpert(obs.passport_id))!;
     return {
       success: true,
@@ -808,7 +687,6 @@ verification_status: obs.verification_status,
   }
 
   /**
-<<<<<<< HEAD
    * Aggregates verification statistics across real (non-demo) observations only.
    */
   async getReviewStats(): Promise<ExpertReviewStats> {
@@ -833,12 +711,6 @@ verification_status: obs.verification_status,
     }
 
     const total = rows.length;
-=======
-   * Aggregates verification statistics across the entire observation queue.
-   */
-  async getReviewStats(): Promise<ExpertReviewStats> {
-    const total = this.inMemoryObservations.length;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     let awaitingReview = 0;
     let underReview = 0;
     let verified = 0;
@@ -847,11 +719,7 @@ verification_status: obs.verification_status,
     const classificationBreakdown: Record<string, number> = {};
     const verifiedBreakdown: Record<string, number> = {};
 
-<<<<<<< HEAD
     for (const obs of rows) {
-=======
-    for (const obs of this.inMemoryObservations) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       if (obs.verification_status === 'unverified') awaitingReview += 1;
       else if (obs.verification_status === 'under_review') underReview += 1;
       else if (obs.verification_status === 'expert_verified') {
@@ -883,7 +751,6 @@ verification_status: obs.verification_status,
    * Retrieves recent audit logs across all observations.
    */
   async getAuditLogs(limit = 50): Promise<VerificationAuditLogRecord[]> {
-<<<<<<< HEAD
     const safeLimit = Math.min(Math.max(limit, 1), 500);
     if (isDatabaseConfigured()) {
       try {
@@ -914,16 +781,12 @@ verification_status: obs.verification_status,
       }
     }
     return this.inMemoryAuditLogs.slice(0, safeLimit);
-=======
-    return this.inMemoryAuditLogs.slice(0, limit);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
    * Appends an audit log record.
    */
   async recordAuditLog(entry: VerificationAuditLogRecord): Promise<void> {
-<<<<<<< HEAD
     if (isDatabaseConfigured()) {
       try {
         const { error } = await (supabase.from('verification_audit_logs') as any).insert({
@@ -943,13 +806,10 @@ verification_status: obs.verification_status,
         throw new ServiceUnavailableError('expert audit log write', err);
       }
     }
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     this.inMemoryAuditLogs.unshift(entry);
   }
 
   /**
-<<<<<<< HEAD
    * Retrieves all raw non-demo observations for analytics and exports.
    */
   async getAllRawObservations(): Promise<InMemoryObservationStore[]> {
@@ -978,12 +838,6 @@ verification_status: obs.verification_status,
       }
     }
     return this.inMemoryObservations.filter((o) => !o.is_demo);
-=======
-   * Retrieves all raw observations for analytics and exports.
-   */
-  async getAllRawObservations(): Promise<InMemoryObservationStore[]> {
-    return [...this.inMemoryObservations];
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -997,17 +851,8 @@ verification_status: obs.verification_status,
    * Retrieves real processing events for monitoring.
    *
    * REAL DATA POLICY: this queries the `processing_events` table written by the
-<<<<<<< HEAD
    * live pipeline. Returns an empty array when no database is configured in dev,
    * and throws ServiceUnavailableError when a configured database fails.
-=======
-   * live pipeline. The previous implementation returned six hard-coded rows with
-   * invented latencies and a fabricated failure, which made the monitoring view
-   * show activity that never happened.
-   *
-   * Returns an empty array when the database is unavailable or has no events.
-   * Callers must render an explicit "no data available yet" state.
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
    */
   async getProcessingEvents(
     limit = 100
@@ -1034,13 +879,8 @@ verification_status: obs.verification_status,
         created_at: String(row.created_at),
       }));
     } catch (err) {
-<<<<<<< HEAD
       logger.error('Could not read processing events; refusing to mask database error', { error: String(err) });
       throw new ServiceUnavailableError('processing events read', err);
-=======
-      logger.warn('Could not read processing events', { error: String(err) });
-      return [];
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
   }
 }

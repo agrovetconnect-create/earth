@@ -1,6 +1,5 @@
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
-<<<<<<< HEAD
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
 import { publicContributorHandle } from '../utils/contributor.js';
 import {
@@ -8,11 +7,6 @@ import {
   verifyPersistedConfirmationBasis,
 } from '../utils/scientific-evidence.js';
 import {
-=======
-import { checkRateLimit } from '../utils/rate-limiter.js';
-import { publicContributorHandle } from '../utils/contributor.js';
-import {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   communityRepository,
   CommunityRepository,
 } from '../repositories/community.repository.js';
@@ -22,13 +16,10 @@ import {
   normalizeDistrictName,
 } from '../utils/public-location.js';
 import {
-<<<<<<< HEAD
   buildUnsupportedInputWarning,
   detectOffTopicText,
 } from '../ai/domain-scope.js';
 import {
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   AI_DISCLAIMER,
   COMMUNITY_DISCLAIMER,
   EVIDENCE_STATE_RANK,
@@ -100,15 +91,9 @@ export class CommunityService {
    * Keyed on the hashed contributor identity, never on a phone number, so the
    * limiter itself cannot become a re-identification vector.
    */
-<<<<<<< HEAD
   private async assertWithinRateLimit(contributorHash: string, action: string): Promise<void> {
     const key = `community:${action}:${contributorHash}`;
     if (!(await checkDistributedRateLimit(key, env.COMMUNITY_RATE_LIMIT_PER_MINUTE, 60_000))) {
-=======
-  private assertWithinRateLimit(contributorHash: string, action: string): void {
-    const key = `community:${action}:${contributorHash}`;
-    if (!checkRateLimit(key, env.COMMUNITY_RATE_LIMIT_PER_MINUTE, 60_000)) {
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       throw new CommunityRateLimitError();
     }
   }
@@ -179,7 +164,6 @@ export class CommunityService {
   public deriveEvidenceState(input: {
     hasExpertReview?: boolean;
     expertEvidenceBasis?: string | null;
-<<<<<<< HEAD
     scientificConfirmationBasis?: string | null;
     scientificConfirmedAt?: string | null;
     verifiedScientificConfirmation?: unknown;
@@ -190,8 +174,6 @@ export class CommunityService {
       accreditationVerified: boolean;
       reviewAuthorization: string;
     } | null;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     distinctParticipants?: number;
     substantiveEvidenceCount?: number;
     isDisputed?: boolean;
@@ -199,7 +181,6 @@ export class CommunityService {
     if (input.isDisputed) return 'unresolved';
 
     if (input.hasExpertReview) {
-<<<<<<< HEAD
       // Scientific confirmation NEVER trusts a client-supplied boolean (such as
       // `laboratoryEvidence.accreditationVerified === true`) or free-text keywords.
       // It strictly requires either a server-minted VerifiedScientificConfirmation
@@ -216,20 +197,6 @@ export class CommunityService {
       ) {
         return 'scientifically_confirmed';
       }
-=======
-      const basis = (input.expertEvidenceBasis ?? '').trim().toLowerCase();
-      const laboratoryBacked =
-        basis.includes('laboratory') ||
-        basis.includes('lab ') ||
-        basis.includes('petrograph') ||
-        basis.includes('thin section') ||
-        basis.includes('xrd') ||
-        basis.includes('xrf') ||
-        basis.includes('reference specimen') ||
-        basis.includes('documented reference');
-
-      if (laboratoryBacked) return 'scientifically_confirmed';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       return 'expert_reviewed';
     }
 
@@ -359,7 +326,6 @@ export class CommunityService {
     input: CreateInvestigationInput,
     contributorHash: string
   ): Promise<PublicInvestigationSummary> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'investigation');
 
     const question = CommunityService.clampText(input.question, 500);
@@ -374,12 +340,6 @@ export class CommunityService {
         })
       );
     }
-=======
-    this.assertWithinRateLimit(contributorHash, 'investigation');
-
-    const question = CommunityService.clampText(input.question, 500);
-    if (!question) throw new Error('An investigation question is required.');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     // A survey needs at least two distinct choices and no more than eight, so
     // the vote stays legible and nobody opens a one-option "survey".
@@ -596,11 +556,7 @@ export class CommunityService {
     input: { investigationPublicId: string; option: string },
     contributorHash: string
   ): Promise<{ option: string; changed: boolean; message: string }> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'vote');
-=======
-    this.assertWithinRateLimit(contributorHash, 'vote');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const option = CommunityService.clampText(input.option, 80);
     if (!option) throw new Error('A vote option is required.');
@@ -670,11 +626,7 @@ export class CommunityService {
     input: SubmitEvidenceInput,
     contributorHash: string
   ): Promise<PublicEvidenceItem> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'evidence');
-=======
-    this.assertWithinRateLimit(contributorHash, 'evidence');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const explanation = CommunityService.clampText(input.explanation, 1500);
     const record = await this.repo.addEvidence({ ...input, explanation }, contributorHash);
@@ -695,7 +647,6 @@ export class CommunityService {
   // ==========================================================================
 
   async askQuestion(input: AskQuestionInput, contributorHash: string): Promise<PublicQuestionSummary> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'question');
 
     const question = CommunityService.clampText(input.question, 500);
@@ -710,12 +661,6 @@ export class CommunityService {
         })
       );
     }
-=======
-    this.assertWithinRateLimit(contributorHash, 'question');
-
-    const question = CommunityService.clampText(input.question, 500);
-    if (!question) throw new Error('A question is required.');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const record = await this.repo.askQuestion({ ...input, question }, contributorHash);
     return CommunityService.toQuestionSummary(record);
@@ -753,11 +698,7 @@ export class CommunityService {
     },
     contributorHash: string
   ): Promise<PublicAnswerItem> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'answer');
-=======
-    this.assertWithinRateLimit(contributorHash, 'answer');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const answer = CommunityService.clampText(input.answer, 2000);
     if (!answer) throw new Error('An answer is required.');
@@ -783,11 +724,7 @@ export class CommunityService {
   // ==========================================================================
 
   async recordVisit(input: RecordVisitInput, contributorHash: string): Promise<PublicVisitSummary> {
-<<<<<<< HEAD
     await this.assertWithinRateLimit(contributorHash, 'visit');
-=======
-    this.assertWithinRateLimit(contributorHash, 'visit');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     const notes = CommunityService.clampText(input.notes, 2000);
     const record = await this.repo.recordVisit({ ...input, notes }, contributorHash);

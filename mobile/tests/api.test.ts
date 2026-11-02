@@ -1,10 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-<<<<<<< HEAD
 import { ApiError, castInvestigationVote, createObservationComment, fetchAuthSession, fetchCategories, fetchContributorToken, fetchInvestigations, fetchMyObservations, fetchObservation, fetchObservationComments, fetchObservations, fetchObservationMapData, fetchSiteVisits, getApiBaseUrl, recordSiteVisit, requestAuthCode, signOutAuthSession, submitPhotoObservation, updateAccountProfile, verifyAuthCode } from '../services/api.ts';
-=======
-import { ApiError, castInvestigationVote, createObservationComment, fetchAuthSession, fetchCategories, fetchContributorToken, fetchInvestigations, fetchMyObservations, fetchObservation, fetchObservationComments, fetchObservations, fetchObservationMapData, fetchSiteVisits, getApiBaseUrl, recordSiteVisit, requestAuthCode, signOutAuthSession, updateAccountProfile, verifyAuthCode } from '../services/api.ts';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { observationCardViewModel } from '../utils/observationCard.ts';
 import { safeMediaUrl } from '../utils/media.ts';
 import { buildWhatsAppStartUrl, hasConfiguredWhatsAppRecipient } from '../utils/whatsapp.ts';
@@ -362,7 +358,6 @@ test('owner observation history uses the authenticated private route and rejects
   await assert.rejects(fetchMyObservations('rt_session_test_only'), (error: unknown) => error instanceof ApiError && error.kind === 'malformed');
   restore();
 });
-<<<<<<< HEAD
 
 test('submitPhotoObservation sends valid payload to /api/observations/submit and parses result', async () => {
   process.env.EXPO_PUBLIC_API_BASE_URL = 'https://earth-talk.test';
@@ -1063,5 +1058,3 @@ test('email OTP verification accepts backend camelCase expiresAt and normalizes 
 
   restore();
 });
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

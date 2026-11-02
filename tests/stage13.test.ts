@@ -18,11 +18,7 @@
 
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-<<<<<<< HEAD
 import { existsSync, readFileSync } from 'node:fs';
-=======
-import { readFileSync } from 'node:fs';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import {
   ABUSE_REPORT_REASONS,
   ABUSE_REPORT_REASON_LABEL,
@@ -163,7 +159,6 @@ await test('the duplicate lookup is wired through the repository and controller'
   const repo = read('src/repositories/abuse-report.repository.ts');
   assert.match(repo, /findExistingReport/);
   const controller = read('src/controllers/community.controller.ts');
-<<<<<<< HEAD
   assert.match(controller, /reporterHash:\s*(?:await\s+)?contributorOf\(req\)/);
 });
 
@@ -172,15 +167,6 @@ await test('the reporter contributor session travels via HttpOnly cookie and is 
   assert.match(api, /ensureContributorToken/);
   assert.ok(!api.includes('X-Contributor-Token'), 'web postsApi must rely on HttpOnly cookie rather than raw header');
   assert.ok(!api.includes('localStorage') && !api.includes('sessionStorage'));
-=======
-  assert.match(controller, /reporterHash:\s*contributorOf\(req\)/);
-});
-
-await test('the reporter browser token travels with a report and is hashed server-side', () => {
-  const api = read('web/src/services/postsApi.ts');
-  assert.match(api, /getContributorToken/);
-  assert.match(api, /X-Contributor-Token/);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 });
 
 await test('migration 022 reconciles the report table and adds the dedup index', () => {
@@ -369,27 +355,9 @@ await test('the avatar endpoints and public route are wired', () => {
 section('The map: tilt, rotation and the globe');
 // -----------------------------------------------------------------------------
 
-<<<<<<< HEAD
 await test('the camera controls reflect map requirements', () => {
   const view = read('web/src/components/MapView.tsx');
   assert.match(view, /handleToggleGlobe/, 'a globe handler exists');
-=======
-await test('the camera can be tilted continuously, not just 2D or 3D', () => {
-  const view = read('web/src/components/MapView.tsx');
-  assert.match(view, /handlePitchChange/, 'a pitch handler exists');
-  assert.match(view, /aria-label="Map tilt"/, 'the slider is labelled');
-  assert.match(view, /type="range"/, 'the control is a slider');
-  assert.match(view, /map\.setPitch\(value\)/, 'the slider drives the camera pitch');
-});
-
-await test('the map can be rotated both ways and returned to north', () => {
-  const view = read('web/src/components/MapView.tsx');
-  assert.match(view, /handleRotate\(-45\)/, 'rotate-left calls the handler');
-  assert.match(view, /handleRotate\(45\)/, 'rotate-right calls the handler');
-  assert.match(view, /aria-label="Rotate left"/, 'the left button is labelled');
-  assert.match(view, /aria-label="Rotate right"/, 'the right button is labelled');
-  assert.match(view, /aria-label="Reset to north"/, 'the compass resets to north');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 });
 
 await test('the map can be switched between the globe and a flat projection', () => {
@@ -632,7 +600,6 @@ await test('moderation is a Super-Admin-only destination wired into the shell', 
   assert.match(app, /view === 'moderation'/);
 });
 
-<<<<<<< HEAD
 await test('Earth Talk keeps its Google Material 3 theme, map controls, and map-drawer sidebar without Esri/Calcite overrides', () => {
   assert.equal(
     existsSync('web/src/components/EsriActionBar.tsx'),
@@ -691,8 +658,6 @@ await test('Service Worker and frontend HTTP client handle offline and preview f
   assert.doesNotMatch(about, /console\.error/, 'About & Guide does not trigger console.error crash overlays on handled errors');
 });
 
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 // -----------------------------------------------------------------------------
 console.log(`\n${'='.repeat(60)}`);
 console.log('Stage 13 - Platform improvements');

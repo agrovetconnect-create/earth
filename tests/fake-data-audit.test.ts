@@ -241,7 +241,6 @@ await test('reviewer identity is published only when the record allows it', () =
 });
 
 await test('the expert login surface offers no preset account', () => {
-<<<<<<< HEAD
   const generalSource = readFileSync(join(ROOT, 'web/src/components/GeneralLoginModal.tsx'), 'utf8');
   const controlSource = readFileSync(join(ROOT, 'web/src/control/ControlLogin.tsx'), 'utf8');
   // A list of one-click accounts bypasses authentication entirely.
@@ -253,17 +252,6 @@ await test('the expert login surface offers no preset account', () => {
   assert.ok(
     /Staff Email Address/i.test(controlSource) && /type="password"/i.test(controlSource),
     'ControlLogin no longer prompts for real staff credentials'
-=======
-  const source = readFileSync(join(ROOT, 'web/src/components/GeneralLoginModal.tsx'), 'utf8');
-  // A list of one-click accounts bypasses authentication entirely.
-  assert.ok(
-    !/(quickLogin|presetAccount|demoAccounts|ONE_CLICK)/i.test(source),
-    'GeneralLoginModal exposes a preset account list'
-  );
-  assert.ok(
-    /administrator email|administrator password/i.test(source),
-    'GeneralLoginModal no longer prompts for real credentials'
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   );
 });
 

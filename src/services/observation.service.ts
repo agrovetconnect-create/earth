@@ -1,11 +1,7 @@
 import { observationRepository, ObservationRepository } from '../repositories/observation.repository.js';
-<<<<<<< HEAD
 import { communityPostRepository } from '../repositories/community-post.repository.js';
 import { hashUserPhoneNumber, computeMediaSha256 } from '../utils/crypto.js';
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
-=======
-import { hashUserPhoneNumber, computeMediaSha256 } from '../utils/crypto.js';
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 import { normalizeDistrictName } from '../utils/public-location.js';
@@ -15,30 +11,20 @@ import {
   type GeoscienceCategory,
 } from '../ai/geoscience-taxonomy.js';
 import type { GeoscienceAnalysisResult } from '../ai/geological.types.js';
-<<<<<<< HEAD
 import type { MediaRole } from '../types/community-posts.types.js';
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type {
   ObservationRow,
   ObservationInsert,
   ObservationMediaInsert,
   ObservationLocationInsert,
-<<<<<<< HEAD
   ObservationLocationRow,
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   LocationStatus,
   DataQualityStatus,
   LocationSource,
   PublicLocationPrecision,
-<<<<<<< HEAD
   PublicationStatus,
   MediaType,
   MediaVisibility,
-=======
-  MediaType,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   EvidenceState,
 } from '../types/database.types.js';
 
@@ -65,7 +51,6 @@ export interface ObservationLocationInput {
 
 export interface CreateObservationParams {
   aiResult: GeoscienceAnalysisResult;
-<<<<<<< HEAD
   senderPhoneNumber?: string;
   sourceUserHash?: string;
   ownerUserId?: string | null;
@@ -73,9 +58,6 @@ export interface CreateObservationParams {
   postTitle?: string | null;
   userReport?: string | null;
   publicationStatus?: PublicationStatus;
-=======
-  senderPhoneNumber: string;
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   messageId: string;
   media: {
     buffer: Buffer;
@@ -87,7 +69,6 @@ export interface CreateObservationParams {
     widthPx?: number | null;
     heightPx?: number | null;
     captureDate?: string | null;
-<<<<<<< HEAD
     contentBase64?: string | null;
     storageStatus?: 'metadata_only' | 'stored';
     mediaRole?: MediaRole;
@@ -96,8 +77,6 @@ export interface CreateObservationParams {
     visibility?: MediaVisibility;
     storedByUserId?: string | null;
     caption?: string | null;
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   };
   userCaption?: string;
   location?: ObservationLocationInput;
@@ -316,17 +295,12 @@ export class ObservationService {
       this.validateCoordinates(location.latitude, location.longitude);
     }
 
-<<<<<<< HEAD
     // 3. User Privacy: Salted HMAC hash of phone number or provided hash (never store raw phone numbers)
     const userHash = params.sourceUserHash
       ? params.sourceUserHash
       : params.senderPhoneNumber
         ? hashUserPhoneNumber(params.senderPhoneNumber)
         : hashUserPhoneNumber(`anonymous-${messageId}`);
-=======
-    // 3. User Privacy: Salted HMAC hash of phone number (never store raw phone numbers)
-    const userHash = hashUserPhoneNumber(senderPhoneNumber);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     // 4. Media checksum for research integrity
     const mediaSha256 = computeMediaSha256(media.buffer);
@@ -361,17 +335,11 @@ export class ObservationService {
 
     // 8. Assemble observation insert payload
     const observationPayload: ObservationInsert = {
-<<<<<<< HEAD
       source: params.source ?? 'whatsapp',
       source_message_id: messageId,
       source_user_hash: userHash,
       owner_user_id: params.ownerUserId ?? null,
       post_title: params.postTitle ?? null,
-=======
-      source: 'whatsapp',
-      source_message_id: messageId,
-      source_user_hash: userHash,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       status: 'processing',
 
       // Category-first fields. These are what the public map filters and the
@@ -399,18 +367,12 @@ export class ObservationService {
       recommended_next_steps: aiResult.recommended_next_steps,
       safety_note: aiResult.safety_note,
       user_caption: userCaption || null,
-<<<<<<< HEAD
       user_report: params.userReport ?? null,
       is_demo: false,
 
       verification_status: 'unverified',
       publication_status: params.publicationStatus ?? 'private',
       published_at: (params.publicationStatus ?? 'private') === 'public' ? new Date().toISOString() : null,
-=======
-
-      verification_status: 'unverified',
-      publication_status: 'private',
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       // A new record has had no community activity and no expert review.
       evidence_state: initialEvidenceState(category.category),
       evidence_state_changed_at: new Date().toISOString(),
@@ -441,10 +403,7 @@ export class ObservationService {
       // because it describes what this specific photograph or video shows. Media
       // is private by default: a row existing never makes it public.
       const mediaType: MediaType = media.mediaType ?? 'image';
-<<<<<<< HEAD
       const mediaIsPublic = Boolean(media.isPublic);
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       const mediaPayload: ObservationMediaInsert = {
         observation_id: createdObservation.id,
         media_type: mediaType,
@@ -452,21 +411,14 @@ export class ObservationService {
         file_size: media.fileSize,
         sha256: mediaSha256,
         source_media_id: media.mediaId,
-<<<<<<< HEAD
         storage_status: media.storageStatus ?? 'metadata_only',
         site_id: siteId ?? null,
         caption: media.caption !== undefined ? media.caption : (userCaption || null),
-=======
-        storage_status: 'metadata_only',
-        site_id: siteId ?? null,
-        caption: userCaption || null,
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         media_category: category.category,
         capture_date: media.captureDate ?? null,
         duration_seconds: media.durationSeconds ?? null,
         width_px: media.widthPx ?? null,
         height_px: media.heightPx ?? null,
-<<<<<<< HEAD
         visibility: media.visibility ?? (mediaIsPublic ? 'public' : 'private'),
         moderation_status: 'visible',
         media_role: media.mediaRole ?? 'main',
@@ -476,19 +428,12 @@ export class ObservationService {
         stored_by_user_id: media.storedByUserId ?? null,
       };
       const savedMedia = await this.repo.saveObservationMedia(mediaPayload);
-=======
-        visibility: 'private',
-        moderation_status: 'visible',
-      };
-      await this.repo.saveObservationMedia(mediaPayload);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
       // 11. Persist Location if voluntarily provided
       //
       // Publication precision defaults to `private`. A sender who shared a pin so
       // Earth Talk could organise their record has not thereby agreed to have the
       // exact point published, so the default is the safest value that exists.
-<<<<<<< HEAD
       let savedLocation: ObservationLocationRow | null = null;
       if (location && (location.latitude !== undefined || location.locationText || location.district)) {
         const district = location.district ?? null;
@@ -499,14 +444,6 @@ export class ObservationService {
         const locationPayload: ObservationLocationInsert = {
           observation_id: createdObservation.id,
           location_source: location.locationSource || (location.latitude != null ? 'user_gps' : 'user_manual'),
-=======
-      if (location && (location.latitude !== undefined || location.locationText)) {
-        const district = location.district ?? null;
-        const normalizedDistrict = district ? normalizeDistrictName(district) : null;
-        const locationPayload: ObservationLocationInsert = {
-          observation_id: createdObservation.id,
-          location_source: location.locationSource || (location.latitude ? 'user_gps' : 'user_manual'),
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           latitude: location.latitude ?? null,
           longitude: location.longitude ?? null,
           accuracy_meters: location.accuracyMeters ?? null,
@@ -515,17 +452,10 @@ export class ObservationService {
           cell: location.cell ?? null,
           village: location.village ?? null,
           location_text: location.locationText ?? null,
-<<<<<<< HEAD
           public_location_precision: effectivePrecision,
           is_public: locationIsPublic,
         };
         savedLocation = await this.repo.saveObservationLocation(locationPayload);
-=======
-          public_location_precision: location.publicLocationPrecision ?? 'private',
-          is_public: false,
-        };
-        await this.repo.saveObservationLocation(locationPayload);
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
 
       // 12. Mark Observation status as completed
@@ -547,7 +477,6 @@ export class ObservationService {
         classification: createdObservation.primary_classification,
       });
 
-<<<<<<< HEAD
       if (category.blockedClaims.length > 0) {
         logger.warn('Analysis contained a prohibited claim; the field was dropped before storage', {
           passportId: createdObservation.passport_id,
@@ -563,14 +492,6 @@ export class ObservationService {
           communityPostRepository.registerLocationRecord(savedLocation);
         }
       }
-=======
-if (category.blockedClaims.length > 0) {
-      logger.warn('Analysis contained a prohibited claim; the field was dropped before storage', {
-        passportId: createdObservation.passport_id,
-        blocked: category.blockedClaims,
-      });
-    }
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
       return createdObservation;
     } catch (err: unknown) {

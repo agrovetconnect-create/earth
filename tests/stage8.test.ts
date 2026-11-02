@@ -20,15 +20,12 @@ import {
   MIN_EVIDENCE_FOR_INVESTIGATED,
 } from '../src/services/community.service.js';
 import {
-<<<<<<< HEAD
   verifyScientificConfirmationEvidence,
   registerAccreditedLaboratoryInMemory,
   registerObservationEvidenceRefInMemory,
   clearScientificEvidenceRegistriesInMemory,
 } from '../src/utils/scientific-evidence.js';
 import {
-=======
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   publicContributorHandle,
   hashContributor,
   whatsappContributorHash,
@@ -221,7 +218,6 @@ console.log('=========================================');
   const reviewed = service.deriveEvidenceState({ hasExpertReview: true });
   assert.equal(reviewed, 'expert_reviewed', 'A recorded review must reach expert_reviewed');
 
-<<<<<<< HEAD
   const freeTextOnly = service.deriveEvidenceState({
     hasExpertReview: true,
     expertEvidenceBasis: 'Thin section petrography compared to a documented reference specimen',
@@ -286,13 +282,6 @@ console.log('=========================================');
   } finally {
     clearScientificEvidenceRegistriesInMemory();
   }
-=======
-  const confirmed = service.deriveEvidenceState({
-    hasExpertReview: true,
-    expertEvidenceBasis: 'Thin section petrography compared to a documented reference specimen',
-  });
-  assert.equal(confirmed, 'scientifically_confirmed', 'A laboratory-backed review must confirm');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   // Community activity must not upgrade a review's basis.
   const communityBoostIgnored = service.deriveEvidenceState({
@@ -306,11 +295,7 @@ console.log('=========================================');
     'expert_reviewed',
     'Community popularity must never upgrade an expert review to scientific confirmation'
   );
-<<<<<<< HEAD
   console.log('✓ Test 8 Passed: scientific confirmation requires traceable accredited laboratory evidence');
-=======
-  console.log('✓ Test 8 Passed: scientific confirmation requires a laboratory-backed expert review');
->>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 // -----------------------------------------------------------------------------
