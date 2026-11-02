@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 import React, { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { LOCALES, setPreference, usePreferences } from '../services/preferences.js';
 import { useTranslator } from '../i18n.js';
+=======
+import React from 'react';
+import { Check } from 'lucide-react';
+import { LOCALES, setPreference, usePreferences } from '../services/preferences.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 interface LanguageCardProps {
   /** Called after a locale is chosen, so a popover can dismiss itself. */
@@ -11,6 +17,7 @@ interface LanguageCardProps {
 /**
  * LANGUAGE.
  *
+<<<<<<< HEAD
  * A compact card of locales that anchors to the footer's Language row or a
  * standalone page header. Choosing one switches the interface language
  * immediately - there is no separate screen to visit and nothing to confirm.
@@ -20,12 +27,26 @@ interface LanguageCardProps {
 export const LanguageCard: React.FC<LanguageCardProps> = ({ onSelect }) => {
   const { locale } = usePreferences();
   const t = useTranslator();
+=======
+ * A compact card of locales that anchors to the footer's Language row. Choosing
+ * one switches the language the sidebar chrome is shown in immediately - there
+ * is no separate screen to visit and nothing to confirm. Record content is
+ * never translated: a contribution keeps the language its author wrote it in.
+ */
+export const LanguageCard: React.FC<LanguageCardProps> = ({ onSelect }) => {
+  const { locale } = usePreferences();
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   return (
     <div
       role="menu"
+<<<<<<< HEAD
       aria-label={t('Language')}
       className="w-60 rounded-xl border border-[#e3e3e3] bg-white p-1.5 shadow-[var(--g-elev-3)]"
+=======
+      aria-label="Language"
+      className="w-56 rounded-xl border border-[#e3e3e3] bg-white p-1.5 shadow-[var(--g-elev-3)]"
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     >
       {LOCALES.map((option) => {
         const active = option.id === locale;
@@ -59,6 +80,7 @@ export const LanguageCard: React.FC<LanguageCardProps> = ({ onSelect }) => {
           </button>
         );
       })}
+<<<<<<< HEAD
 
     </div>
   );
@@ -136,3 +158,8 @@ export const LanguagePickerButton: React.FC<LanguagePickerButtonProps> = ({
   );
 };
 
+=======
+    </div>
+  );
+};
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

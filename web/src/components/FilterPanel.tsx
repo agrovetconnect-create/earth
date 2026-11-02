@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import { RotateCcw, SlidersHorizontal, X } from 'lucide-react';
+=======
+import { RotateCcw, SlidersHorizontal } from 'lucide-react';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { ObservationFilters } from '../types/public.js';
 import {
   EVIDENCE_STATES,
@@ -236,6 +240,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           onChange={(v) => onChange({ ...filters, verification: v || undefined })}
         />
       </div>
+<<<<<<< HEAD
+=======
+
+      <p className="mt-3 text-[10px] leading-snug text-[#5e5e5e]">
+        <strong className="font-medium text-[#1f1f1f]">Scientific note:</strong> confidence is visual AI
+        certainty from a photograph, not laboratory analysis. Evidence state records how far a
+        reading has been checked - only a laboratory or a published reference reaches
+        &quot;scientifically confirmed&quot;.
+      </p>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     </section>
   );
 };

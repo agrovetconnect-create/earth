@@ -9,11 +9,16 @@
  */
 
 :root {
+<<<<<<< HEAD
   /* Google Maps / Material 3 palette */
+=======
+  /* Primary ramp */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   --g-primary: #0b57d0;
   --g-primary-hover: #0842a0;
   --g-primary-pressed: #062e6f;
   --g-primary-container: #d3e3fd;
+<<<<<<< HEAD
   --g-primary-container-hover: #c2d7fc;
   --g-on-primary: #ffffff;
   --g-on-primary-container: #041e49;
@@ -52,6 +57,50 @@
   --g-elev-1: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
   --g-elev-2: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
   --g-elev-3: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
+=======
+  --g-primary-container-hover: #a8c7fa;
+  --g-on-primary: #ffffff;
+  --g-on-primary-container: #041e49;
+
+  /* Neutral surface ramp */
+  --g-surface: #ffffff;
+  --g-surface-container: #f8fafd;
+  --g-surface-container-low: #f0f4f9;
+  --g-surface-container-high: #eef1f6;
+  --g-surface-variant: #e3e3e3;
+  --g-on-surface: #1f1f1f;
+  --g-on-surface-variant: #5e5e5e;
+  --g-on-surface-faint: #8f8f8f;
+  --g-outline: #c7c7c7;
+  --g-outline-soft: #e3e3e3;
+
+  /* Semantic accents (kept sparse; the evidence ladder owns the data colours) */
+  --g-success: #2b7f3f;
+  --g-success-container: #c4eed0;
+  --g-warning: #9f6108;
+  --g-warning-container: #ffdf99;
+  --g-danger: #d32f28;
+  --g-danger-container: #ffdad8;
+
+  /* State layers — Google's 8 / 12 / 16 percent model */
+  --g-state-hover: 0.08;
+  --g-state-pressed: 0.12;
+  --g-state-focus: 0.12;
+  --g-state-hover-focus: 0.16;
+
+  /* Elevation */
+  --g-elev-1: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --g-elev-2: 0 1px 2px rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  --g-elev-3: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px rgba(60, 64, 67, 0.3);
+
+  /* Metrics */
+  --g-radius-s: 4px;
+  --g-radius-m: 8px;
+  --g-radius-l: 12px;
+  --g-radius-xl: 16px;
+  --g-sidebar-w: 280px;
+  --g-sidebar-rail-w: 64px;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 html,
@@ -61,6 +110,7 @@ body,
 }
 
 body {
+<<<<<<< HEAD
   font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--g-surface-container);
   color: var(--g-on-surface);
@@ -73,6 +123,19 @@ body {
 }
 
 /* Text field and textarea, Material 3 outlined style. */
+=======
+  font-family: Roboto, 'Google Sans', Arial, sans-serif;
+  background: var(--g-surface-container);
+  color: var(--g-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono {
+  font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Text field and select, Google-material outline style. */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .g-input,
 .g-textarea {
   width: 100%;
@@ -82,20 +145,29 @@ body {
   border: 1px solid var(--g-outline);
   border-radius: var(--g-radius-m);
   font-family: inherit;
+<<<<<<< HEAD
   font-size: 14px;
   transition: border-color 140ms ease, box-shadow 140ms ease;
+=======
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-input:focus-visible,
 .g-textarea:focus-visible {
   outline: none;
   border-color: var(--g-primary);
+<<<<<<< HEAD
   box-shadow: 0 0 0 1px var(--g-primary);
+=======
+  box-shadow: 0 0 0 2px var(--g-primary-container);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-input::placeholder,
 .g-textarea::placeholder {
   color: var(--g-on-surface-faint);
 }
 
+<<<<<<< HEAD
 /* Professional, thin scrollbars. */
 .g-scroll {
   scrollbar-width: thin;
@@ -108,6 +180,20 @@ body {
 .g-scroll::-webkit-scrollbar-thumb {
   background: var(--g-outline);
   border-radius: 4px;
+=======
+/* Thin, unobtrusive scrollbars, as in Google's own surfaces. */
+.g-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #bdc1c6 transparent;
+}
+.g-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.g-scroll::-webkit-scrollbar-thumb {
+  background: #bdc1c6;
+  border-radius: 8px;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-scroll::-webkit-scrollbar-track {
   background: transparent;
@@ -118,12 +204,17 @@ body {
 .g-card {
   background: var(--g-surface);
   border: 1px solid var(--g-outline-soft);
+<<<<<<< HEAD
   border-radius: var(--g-radius-m);
+=======
+  border-radius: var(--g-radius-l);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   box-shadow: var(--g-elev-1);
 }
 
 .g-section-label {
   font-size: 11px;
+<<<<<<< HEAD
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -132,26 +223,51 @@ body {
 }
 
 /* Collapsible section header. */
+=======
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g-on-surface-variant);
+}
+
+/* Collapsible section header. The label reads as a quiet group title and the
+   chevron is the only affordance; the whole row is the hit target so it
+   clears the 44px touch-target floor. */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .g-group-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
+<<<<<<< HEAD
   height: 40px;
   padding: 0 16px;
+=======
+  height: 44px;
+  padding: 0 16px 0 24px;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   border: 0;
   background: transparent;
   border-radius: var(--g-radius-m);
   font-family: inherit;
   font-size: 12px;
+<<<<<<< HEAD
   font-weight: 600;
+=======
+  font-weight: 500;
+  letter-spacing: 0.04em;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   color: var(--g-on-surface-variant);
   text-align: left;
   cursor: pointer;
   transition: background-color 120ms ease;
 }
 .g-group-toggle:hover {
+<<<<<<< HEAD
   background: var(--g-surface-container-low);
+=======
+  background: rgba(32, 33, 36, var(--g-state-hover));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-group-toggle:focus-visible {
   outline: 2px solid var(--g-primary);
@@ -164,7 +280,12 @@ body {
   transform: rotate(-90deg);
 }
 
+<<<<<<< HEAD
 /* The section body. */
+=======
+/* The section body. Animating the grid row keeps the collapsed height at
+   exactly zero without measuring anything in JavaScript. */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .g-group-body {
   display: grid;
   grid-template-rows: 1fr;
@@ -184,6 +305,7 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 12px;
   height: 48px;
   padding: 0 16px;
@@ -196,6 +318,22 @@ body {
 .g-search:focus-within {
   border-color: var(--g-primary);
   box-shadow: var(--g-elev-2), 0 0 0 1px var(--g-primary);
+=======
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--g-surface);
+  border: 1px solid var(--g-outline);
+  border-radius: 14px;
+  box-shadow: var(--g-elev-1);
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+.g-search:focus-within {
+  border-color: transparent;
+  box-shadow: var(--g-elev-2);
+  outline: 2px solid var(--g-primary);
+  outline-offset: -1px;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-search input {
   flex: 1;
@@ -221,13 +359,21 @@ body {
   border: 1px solid var(--g-outline);
   border-radius: var(--g-radius-m);
   appearance: none;
+<<<<<<< HEAD
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23444746' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+=======
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235e5e5e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   background-repeat: no-repeat;
   background-position: right 10px center;
   cursor: pointer;
 }
 .g-select:hover {
+<<<<<<< HEAD
   background-color: var(--g-surface-container-low);
+=======
+  background-color: rgba(11, 87, 208, var(--g-state-hover));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-select:focus {
   outline: 0;
@@ -243,29 +389,52 @@ body {
   justify-content: center;
   gap: 8px;
   height: 40px;
+<<<<<<< HEAD
   padding: 0 18px;
   border-radius: 9999px;
   border: 1px solid transparent;
   font-family: inherit;
   font-size: 13px;
+=======
+  padding: 0 20px;
+  border-radius: 20px;
+  border: 0;
+  font-family: inherit;
+  font-size: 14px;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;
   white-space: nowrap;
+<<<<<<< HEAD
   transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 .g-btn:focus-visible {
   outline: 2px solid var(--g-primary);
+=======
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+.g-btn:focus-visible {
+  outline: 2px solid var(--g-on-surface);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   outline-offset: 2px;
 }
 
 .g-btn-filled {
   background: var(--g-primary);
   color: var(--g-on-primary);
+<<<<<<< HEAD
 }
 .g-btn-filled:hover {
   background: var(--g-primary-hover);
   box-shadow: var(--g-elev-1);
+=======
+  box-shadow: var(--g-elev-1);
+}
+.g-btn-filled:hover {
+  background: var(--g-primary-hover);
+  box-shadow: var(--g-elev-2);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-btn-filled:active {
   background: var(--g-primary-pressed);
@@ -277,15 +446,26 @@ body {
 }
 .g-btn-tonal:hover {
   background: var(--g-primary-container-hover);
+<<<<<<< HEAD
+=======
+  box-shadow: var(--g-elev-1);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 .g-btn-outlined {
   background: transparent;
   color: var(--g-primary);
+<<<<<<< HEAD
   border-color: var(--g-outline);
 }
 .g-btn-outlined:hover {
   background: var(--g-surface-container-low);
+=======
+  border: 1px solid var(--g-outline);
+}
+.g-btn-outlined:hover {
+  background: rgba(11, 87, 208, var(--g-state-hover));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   border-color: var(--g-primary);
 }
 
@@ -294,16 +474,24 @@ body {
   color: var(--g-primary);
 }
 .g-btn-text:hover {
+<<<<<<< HEAD
   background: var(--g-surface-container-low);
 }
 .g-btn-text:active {
   background: var(--g-primary-container);
+=======
+  background: rgba(11, 87, 208, var(--g-state-hover));
+}
+.g-btn-text:active {
+  background: rgba(11, 87, 208, var(--g-state-pressed));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 .g-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   width: 36px;
   height: 36px;
   border: 0;
@@ -319,6 +507,22 @@ body {
 }
 .g-icon-btn:active {
   background: var(--g-primary-container);
+=======
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--g-on-surface-variant);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.g-icon-btn:hover {
+  background: rgba(32, 33, 36, var(--g-state-hover));
+}
+.g-icon-btn:active {
+  background: rgba(32, 33, 36, var(--g-state-pressed));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .g-icon-btn:focus-visible {
   outline: 2px solid var(--g-primary);
@@ -343,6 +547,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 14px;
   width: calc(100% - 16px);
   height: 44px;
@@ -360,12 +565,33 @@ body {
   transition: background-color 140ms ease, color 140ms ease;
 }
 
+=======
+  gap: 16px;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 24px;
+  border: 0;
+  background: transparent;
+  border-radius: 0 24px 24px 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+/* Icon-only rail. The column is never removed: it narrows to its icons, so the
+   map keeps its room while every destination stays one click away. */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .g-sidebar--rail {
   width: var(--g-sidebar-rail-w);
   min-width: var(--g-sidebar-rail-w);
 }
 
 .g-sidebar--rail .g-nav-item {
+<<<<<<< HEAD
   width: 44px;
   height: 44px;
   margin: 4px auto;
@@ -375,10 +601,20 @@ body {
 }
 
 .g-sidebar--rail .g-nav-label,
+=======
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-radius: 0 20px 20px 0;
+}
+
+.g-sidebar--rail .g-nav-item > span.g-nav-label,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .g-sidebar--rail .g-nav-badge {
   display: none;
 }
 
+<<<<<<< HEAD
 .g-nav-item:hover {
   background: var(--g-surface-container-low);
   color: var(--g-on-surface);
@@ -387,21 +623,77 @@ body {
   background: var(--g-primary-container);
   color: var(--g-on-primary-container);
   font-weight: 600;
+=======
+.g-nav-item--rail {
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-radius: 0 20px 20px 0;
+}
+
+.g-rail-monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eef1f6;
+  border: 1px solid var(--g-outline-soft);
+  font-family: 'Roboto Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--g-on-surface-variant);
+}
+
+.g-nav-item[aria-current='page'] .g-rail-monogram {
+  background: var(--g-primary-container);
+  border-color: var(--g-primary);
+  color: var(--g-on-primary-container);
+}
+.g-nav-item:hover {
+  background: rgba(32, 33, 36, var(--g-state-hover));
+  color: var(--g-on-surface);
+}
+.g-nav-item:focus-visible {
+  background: rgba(32, 33, 36, var(--g-state-focus));
+  outline: 0;
+}
+.g-nav-item[aria-current='page'] {
+  background: #e8f0fe;
+  color: var(--g-primary);
+}
+.g-nav-item[data-locked='true'] {
+  color: var(--g-on-surface-faint);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /* --------------------------------------------------- map-menu rows & switch */
 
+<<<<<<< HEAD
+=======
+/* A row in the map-drawer menu: full-width, icon + label, flat until it is the
+   active destination. This is the menu-item look the map products use, kept
+   separate from `.g-nav-item` so the two can evolve independently. */
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .et-menu-item {
   position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
+<<<<<<< HEAD
   width: calc(100% - 16px);
   min-height: 44px;
   margin: 2px 8px;
   padding: 0 16px;
   border: 0;
   border-radius: 9999px;
+=======
+  width: 100%;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   background: transparent;
   font-family: inherit;
   font-size: 14px;
@@ -409,6 +701,7 @@ body {
   color: var(--g-on-surface);
   text-align: left;
   cursor: pointer;
+<<<<<<< HEAD
   transition: background-color 140ms ease, color 140ms ease;
 }
 .et-menu-item:hover {
@@ -418,20 +711,44 @@ body {
   background: var(--g-primary-container);
   color: var(--g-on-primary-container);
   font-weight: 500;
+=======
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.et-menu-item .et-menu-label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.et-menu-item:hover {
+  background: rgba(32, 33, 36, var(--g-state-hover));
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 .et-menu-item:focus-visible {
   outline: 2px solid var(--g-primary);
   outline-offset: -2px;
 }
+<<<<<<< HEAD
+=======
+.et-menu-item[aria-current='page'] {
+  background: #e8f0fe;
+  color: var(--g-primary);
+  font-weight: 500;
+}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 .et-menu-item[data-locked='true'] {
   color: var(--g-on-surface-faint);
 }
 
 /* Icon-only rail variant of the same row. */
 .et-menu-item--rail {
+<<<<<<< HEAD
   width: 44px;
   min-height: 44px;
   margin: 2px auto;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   justify-content: center;
   gap: 0;
   padding: 0;
@@ -449,10 +766,13 @@ body {
   border-top: 1px solid var(--g-outline-soft);
 }
 
+<<<<<<< HEAD
 .g-sidebar .g-panel {
   border-top: 0;
 }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 /* Section heading whose icon and label share one row. Tailwind's preflight sets
    `svg { display: block }`, so without an explicit row layout the icon stacks
    above the text; this keeps the icon beside the title it describes. */

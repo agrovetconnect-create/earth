@@ -10,7 +10,11 @@
 import type { RockClassification, RockConfidence } from '../ai/geological.types.js';
 import type { GeoscienceCategory } from '../ai/geoscience-taxonomy.js';
 import type { EvidenceState } from './community.types.js';
+<<<<<<< HEAD
 import type { MediaRole, UserRow } from './community-posts.types.js';
+=======
+import type { MediaRole } from './community-posts.types.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * Re-exported so persistence code can reach the evidence type through the
@@ -407,6 +411,7 @@ export interface ProcessingEventInsert {
   created_at?: string;
 }
 
+<<<<<<< HEAD
 export interface StaffRow {
   id: string;
   email: string;
@@ -467,6 +472,8 @@ export interface OperationalSummary {
 
 export type StaffRole = 'owner' | 'security' | 'ops' | 'support' | 'science';
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export interface Database {
   public: {
     Tables: {
@@ -500,6 +507,7 @@ export interface Database {
         Update: Partial<ProcessingEventInsert>;
         Relationships: [];
       };
+<<<<<<< HEAD
       users: {
         Row: UserRow;
         Insert: Omit<UserRow, 'id' | 'created_at' | 'updated_at'>;
@@ -672,6 +680,12 @@ export interface Database {
     Enums: {
       staff_role: StaffRole;
     };
+=======
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     CompositeTypes: Record<string, never>;
   };
 }

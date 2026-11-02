@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { env } from '../config/env.js';
+<<<<<<< HEAD
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
 import { validateMedia } from '../utils/image-validator.js';
 import { normalizeDistrictName, resolvePublicCoordinates } from '../utils/public-location.js';
@@ -7,6 +8,13 @@ import { hashContributor, normalizeContributorToken } from '../utils/contributor
 import { squashText } from '../utils/text.js';
 import { communityPostRepository } from '../repositories/community-post.repository.js';
 import { observationRepository } from '../repositories/observation.repository.js';
+=======
+import { checkRateLimit } from '../utils/rate-limiter.js';
+import { validateMedia } from '../utils/image-validator.js';
+import { resolvePublicCoordinates } from '../utils/public-location.js';
+import { squashText } from '../utils/text.js';
+import { communityPostRepository } from '../repositories/community-post.repository.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { userRepository } from '../repositories/user.repository.js';
 import {
   DEMO_POSTS,
@@ -186,8 +194,13 @@ function buildLocation(params: {
     address: location?.location_text ?? null,
     district: location?.district ?? null,
     sector: location?.sector ?? null,
+<<<<<<< HEAD
     cell: location?.cell ?? null,
     village: location?.village ?? null,
+=======
+    cell: null,
+    village: null,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     country: 'Rwanda',
     latitude,
     longitude,
@@ -397,8 +410,12 @@ export class CommunityPostService {
 
   async getPost(
     passportId: string,
+<<<<<<< HEAD
     viewer: ViewerContext | null,
     contributorToken?: string | null
+=======
+    viewer: ViewerContext | null
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   ): Promise<CommunityPostDetail | null> {
     const wanted = String(passportId ?? '').trim();
     if (!wanted) return null;
@@ -409,7 +426,11 @@ export class CommunityPostService {
     const row = await communityPostRepository.findObservation(wanted);
     if (!row) return null;
 
+<<<<<<< HEAD
     const viewerIsOwner = await this.resolveOwnership(row, viewer, contributorToken);
+=======
+    const viewerIsOwner = await this.resolveOwnership(row, viewer);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const isPublic = row.publication_status === 'public';
     if (!isPublic && !viewerIsOwner) {
       // A private or pending post is indistinguishable from one that does not
@@ -441,10 +462,14 @@ export class CommunityPostService {
       location: buildLocation({ location, viewerIsOwner }),
       user_report: this.reportOf(row),
       ai: this.aiBlockOf(row),
+<<<<<<< HEAD
       media: (viewerIsOwner
         ? mediaRows.filter((m) => m.moderation_status !== 'removed')
         : mediaRows.filter((m) => m.visibility === 'public' && m.is_public === true && m.moderation_status === 'visible')
       ).map(mediaItemFromRow),
+=======
+      media: mediaRows.map(mediaItemFromRow),
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       questions,
       open_questions: questions.filter((question) => question.status === 'open'),
       comment_count: discussion.count,
@@ -534,6 +559,7 @@ export class CommunityPostService {
    */
   private async resolveOwnership(
     row: ObservationRow,
+<<<<<<< HEAD
     viewer: ViewerContext | null,
     contributorToken?: string | null
   ): Promise<boolean> {
@@ -631,6 +657,21 @@ export class CommunityPostService {
       user_report: row.user_report ?? row.user_caption,
       is_demo: false,
     });
+=======
+    viewer: ViewerContext | null
+  ): Promise<boolean> {
+    if (!viewer) return false;
+    if (row.owner_user_id) return row.owner_user_id === viewer.userId;
+
+    const account = await userRepository.findUserById(viewer.userId);
+    if (!account || !account.phone_hash || account.phone_hash !== row.source_user_hash) {
+      return false;
+    }
+
+    await communityPostRepository.linkOwner(row.passport_id, viewer.userId);
+    row.owner_user_id = viewer.userId;
+    return true;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   private titleOf(row: ObservationRow): string {
@@ -783,16 +824,24 @@ export class CommunityPostService {
     return { comments, count };
   }
 
+<<<<<<< HEAD
   async listComments(
     passportId: string,
     viewer: ViewerContext | null,
     contributorToken?: string | null
   ): Promise<PublicComment[]> {
+=======
+  async listComments(passportId: string, viewer: ViewerContext | null): Promise<PublicComment[]> {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const demo = findDemoPost(passportId);
     if (!demo) {
       const row = await communityPostRepository.findObservation(passportId);
       if (!row) return [];
+<<<<<<< HEAD
       const viewerIsOwner = await this.resolveOwnership(row, viewer, contributorToken);
+=======
+      const viewerIsOwner = await this.resolveOwnership(row, viewer);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       if (row.publication_status !== 'public' && !viewerIsOwner) return [];
     }
     return (await this.assembleComments(passportId, Boolean(demo))).comments;
@@ -966,7 +1015,11 @@ export class CommunityPostService {
       );
     }
 
+<<<<<<< HEAD
     if (!(await checkDistributedRateLimit(`comment:${viewer.userId}`, env.COMMENT_RATE_LIMIT_PER_MINUTE))) {
+=======
+    if (!checkRateLimit(`comment:${viewer.userId}`, env.COMMENT_RATE_LIMIT_PER_MINUTE)) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       fail(429, 'RATE_LIMITED', 'You are commenting very quickly. Wait a moment and try again.');
     }
 
@@ -1035,18 +1088,26 @@ export class CommunityPostService {
    */
   async updatePost(
     passportId: string,
+<<<<<<< HEAD
     viewer: ViewerContext | null,
+=======
+    viewer: ViewerContext,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     input: {
       post_title?: string | null;
       user_report?: string | null;
       is_public?: boolean;
       location_precision?: string | null;
+<<<<<<< HEAD
       latitude?: number | null;
       longitude?: number | null;
       district?: string | null;
       location_text?: string | null;
     },
     contributorToken?: string | null
+=======
+    }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   ): Promise<CommunityPostDetail> {
     const row = await communityPostRepository.findObservation(passportId);
     if (!row) {
@@ -1056,6 +1117,7 @@ export class CommunityPostService {
       fail(404, 'POST_NOT_FOUND', 'That observation does not exist.');
     }
 
+<<<<<<< HEAD
     if (!(await this.resolveOwnership(row, viewer, contributorToken))) {
       fail(403, 'NOT_OWNER', 'Only the contributor who made this post can edit it.');
     }
@@ -1071,6 +1133,12 @@ export class CommunityPostService {
       }
     }
 
+=======
+    if (!(await this.resolveOwnership(row, viewer))) {
+      fail(403, 'NOT_OWNER', 'Only the contributor who made this post can edit it.');
+    }
+
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const patch: { post_title?: string | null; user_report?: string | null } = {};
     if (input.post_title !== undefined) {
       const title = input.post_title === null ? null : cleanText(input.post_title, MAX_TITLE_LENGTH);
@@ -1078,33 +1146,50 @@ export class CommunityPostService {
         fail(400, 'INVALID_TITLE', 'A title cannot be empty.');
       }
       patch.post_title = title;
+<<<<<<< HEAD
       row.post_title = title;
     }
     if (input.user_report !== undefined) {
       const rep = input.user_report === null ? null : cleanText(input.user_report, MAX_REPORT_LENGTH);
       patch.user_report = rep;
       row.user_report = rep;
+=======
+    }
+    if (input.user_report !== undefined) {
+      patch.user_report =
+        input.user_report === null ? null : cleanText(input.user_report, MAX_REPORT_LENGTH);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     if (Object.keys(patch).length > 0) {
       await communityPostRepository.updatePostFields(row.passport_id, patch);
     }
 
+<<<<<<< HEAD
     let publicationChanged = false;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (typeof input.is_public === 'boolean') {
       const next: PublicationStatus = input.is_public ? 'public' : 'private';
       if (next !== row.publication_status) {
         await communityPostRepository.setPublicationStatus(row.passport_id, next);
+<<<<<<< HEAD
         await communityPostRepository.setMediaPublicVisibility(row.id, input.is_public);
         await communityPostRepository.recordPrivacyAudit({
           observation_id: row.id,
           actor_user_id: viewer?.userId ?? null,
+=======
+        await communityPostRepository.recordPrivacyAudit({
+          observation_id: row.id,
+          actor_user_id: viewer.userId,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           actor: 'owner',
           previous_privacy: row.publication_status,
           new_privacy: next,
           reason: input.is_public ? 'owner_published' : 'owner_made_private',
         });
         row.publication_status = next;
+<<<<<<< HEAD
         publicationChanged = true;
       }
     }
@@ -1117,11 +1202,17 @@ export class CommunityPostService {
 
     const existingLoc = await communityPostRepository.findLocation(row.id);
 
+=======
+      }
+    }
+
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (input.location_precision !== undefined && input.location_precision !== null) {
       const precision = String(input.location_precision) as PublicLocationPrecision;
       if (!LOCATION_PRECISIONS.includes(precision)) {
         fail(400, 'INVALID_LOCATION_PRECISION', 'That location precision is not supported.');
       }
+<<<<<<< HEAD
       const previous = existingLoc?.public_location_precision ?? 'district';
       if (existingLoc && !hasCoordinateOrPlacePatch) {
         if (previous !== precision || publicationChanged) {
@@ -1223,6 +1314,24 @@ export class CommunityPostService {
     await this.syncPublicObservationIndex(row);
 
     const detail = await this.getPost(row.passport_id, viewer, contributorToken);
+=======
+      const location = await communityPostRepository.findLocation(row.id);
+      const previous = location?.public_location_precision ?? 'district';
+      if (previous !== precision) {
+        await communityPostRepository.setLocationPrecision(row.id, precision);
+        await communityPostRepository.recordPrivacyAudit({
+          observation_id: row.id,
+          actor_user_id: viewer.userId,
+          actor: 'owner',
+          previous_privacy: previous,
+          new_privacy: precision,
+          reason: 'location_precision',
+        });
+      }
+    }
+
+    const detail = await this.getPost(row.passport_id, viewer);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!detail) fail(500, 'POST_UNREADABLE', 'The post could not be reloaded after the update.');
     return detail;
   }
@@ -1234,10 +1343,16 @@ export class CommunityPostService {
    */
   async updateAttachmentDownload(
     passportId: string,
+<<<<<<< HEAD
     viewer: ViewerContext | null,
     attachmentId: string,
     allowDownload: boolean,
     contributorToken?: string | null
+=======
+    viewer: ViewerContext,
+    attachmentId: string,
+    allowDownload: boolean
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   ): Promise<CommunityPostDetail> {
     const row = await communityPostRepository.findObservation(passportId);
     if (!row) {
@@ -1247,7 +1362,11 @@ export class CommunityPostService {
       fail(404, 'POST_NOT_FOUND', 'That observation does not exist.');
     }
 
+<<<<<<< HEAD
     if (!(await this.resolveOwnership(row, viewer, contributorToken))) {
+=======
+    if (!(await this.resolveOwnership(row, viewer))) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       fail(403, 'NOT_OWNER', 'Only the contributor who made this post can set download rights.');
     }
 
@@ -1260,7 +1379,11 @@ export class CommunityPostService {
       fail(404, 'ATTACHMENT_NOT_FOUND', 'That attached document does not exist.');
     }
 
+<<<<<<< HEAD
     const detail = await this.getPost(row.passport_id, viewer, contributorToken);
+=======
+    const detail = await this.getPost(row.passport_id, viewer);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!detail) fail(500, 'POST_UNREADABLE', 'The post could not be reloaded after the update.');
     return detail;
   }
@@ -1273,10 +1396,16 @@ export class CommunityPostService {
    */
   async answerQuestion(
     passportId: string,
+<<<<<<< HEAD
     viewer: ViewerContext | null,
     questionId: string,
     answerInput: string,
     contributorToken?: string | null
+=======
+    viewer: ViewerContext,
+    questionId: string,
+    answerInput: string
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   ): Promise<CommunityPostDetail> {
     const answer = String(answerInput ?? '').trim();
     if (!answer) fail(400, 'ANSWER_EMPTY', 'Write your answer before submitting it.');
@@ -1292,7 +1421,11 @@ export class CommunityPostService {
       fail(404, 'POST_NOT_FOUND', 'That observation does not exist.');
     }
 
+<<<<<<< HEAD
     if (!(await this.resolveOwnership(row, viewer, contributorToken))) {
+=======
+    if (!(await this.resolveOwnership(row, viewer))) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       fail(403, 'NOT_OWNER', 'Only the contributor who made this post can answer its questions.');
     }
 
@@ -1320,15 +1453,23 @@ export class CommunityPostService {
       questionId: target.id,
       answer,
       answeredBy: 'owner',
+<<<<<<< HEAD
       answeredByUserId: viewer?.userId ?? 'contributor_owner',
     });
 
     const detail = await this.getPost(row.passport_id, viewer, contributorToken);
+=======
+      answeredByUserId: viewer.userId,
+    });
+
+    const detail = await this.getPost(row.passport_id, viewer);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!detail) fail(500, 'POST_UNREADABLE', 'The post could not be reloaded after answering.');
     return detail;
   }
 
   // ==========================================================================
+<<<<<<< HEAD
   // Write: gallery (supporting images & videos)
   // ==========================================================================
 
@@ -1344,6 +1485,22 @@ export class CommunityPostService {
     viewer: ViewerContext | null,
     input: { content_base64?: string; mime_type?: string; caption?: string; role?: string },
     contributorToken?: string | null
+=======
+  // Write: gallery
+  // ==========================================================================
+
+  /**
+   * Stores one uploaded image or clip.
+   *
+   * Bytes arrive base64 encoded, are validated by signature rather than by the
+   * declared type, and are refused above the configured size instead of being
+   * silently truncated.
+   */
+  async addMedia(
+    passportId: string,
+    viewer: ViewerContext,
+    input: { content_base64?: string; mime_type?: string; caption?: string; role?: string }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   ): Promise<PublicMediaItem> {
     const row = await communityPostRepository.findObservation(passportId);
     if (!row) {
@@ -1353,7 +1510,11 @@ export class CommunityPostService {
       fail(404, 'POST_NOT_FOUND', 'That observation does not exist.');
     }
 
+<<<<<<< HEAD
     if (!(await this.resolveOwnership(row, viewer, contributorToken))) {
+=======
+    if (!(await this.resolveOwnership(row, viewer))) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       fail(403, 'NOT_OWNER', 'Only the contributor who made this post can add files to it.');
     }
 
@@ -1377,11 +1538,15 @@ export class CommunityPostService {
 
     const validation = validateMedia(buffer, input.mime_type);
     if (!validation.isValid || !validation.mediaKind || !validation.detectedMimeType) {
+<<<<<<< HEAD
       fail(
         415,
         'MEDIA_UNSUPPORTED',
         'Only JPEG, PNG, WebP images and MP4, 3GP, WebM, or QuickTime videos can be attached.'
       );
+=======
+      fail(415, 'MEDIA_UNSUPPORTED', 'Only JPEG, PNG, WebP images and MP4 video can be stored.');
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const role = (input.role ?? 'field') as MediaRole;
@@ -1406,6 +1571,7 @@ export class CommunityPostService {
       sort_order: existing.length,
       is_public: row.publication_status === 'public',
       content_base64: base64,
+<<<<<<< HEAD
       stored_by_user_id: viewer?.userId ?? null,
       visibility: row.publication_status === 'public' ? 'public' : 'private',
     });
@@ -1499,10 +1665,20 @@ export class CommunityPostService {
     };
   }
 
+=======
+      stored_by_user_id: viewer.userId,
+      visibility: row.publication_status === 'public' ? 'public' : 'private',
+    });
+
+    return mediaItemFromRow(stored);
+  }
+
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   // ==========================================================================
   // Read: the contributor's own posts
   // ==========================================================================
 
+<<<<<<< HEAD
   async listMyPosts(
     viewer: ViewerContext | null,
     contributorToken?: string | null
@@ -1536,6 +1712,10 @@ export class CommunityPostService {
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
+=======
+  async listMyPosts(viewer: ViewerContext): Promise<{ data: MyPostSummary[] }> {
+    const rows = await communityPostRepository.listObservationsByOwner(viewer.userId);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const data: MyPostSummary[] = [];
 
     for (const row of rows) {

@@ -1,6 +1,10 @@
 import type { Response } from 'express';
 import { validationEvaluationService, ValidationEvaluationService } from '../services/validation-evaluation.service.js';
+<<<<<<< HEAD
 import type { AuthenticatedStaffRequest } from '../utils/admin-auth.js';
+=======
+import type { AuthenticatedAdminRequest } from '../utils/admin-auth.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { logger } from '../utils/logger.js';
 
 export class ValidationController {
@@ -8,6 +12,13 @@ export class ValidationController {
 
   /**
    * Maps a thrown error onto the status code it deserves.
+<<<<<<< HEAD
+=======
+   *
+   * A missing run is not a malformed request. Answering 400 told an integrator
+   * their call was wrong when in fact the run they asked for does not exist, and
+   * there is no way to recover from that except by guessing a different id.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
    */
   private static fail(res: Response, err: unknown, fallback: string): void {
     const msg = err instanceof Error ? err.message : fallback;
@@ -18,7 +29,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/datasets
    */
+<<<<<<< HEAD
   listDatasets = async (_req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  listDatasets = async (_req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const datasets = await this.service.listDatasets();
       res.status(200).json({ datasets, count: datasets.length });
@@ -32,7 +47,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/datasets
    */
+<<<<<<< HEAD
   createDataset = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  createDataset = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { dataset_code, name, description, version, status, target_classification_level } = req.body || {};
       if (!dataset_code || !name) {
@@ -47,7 +66,11 @@ export class ValidationController {
         version: version || '1.0.0',
         status: status || 'draft',
         target_classification_level: target_classification_level || 'broad_class',
+<<<<<<< HEAD
         created_by: req.staff?.email ?? 'super_admin',
+=======
+        created_by: req.admin?.email ?? 'super_admin',
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       });
 
       res.status(201).json(dataset);
@@ -60,7 +83,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/datasets/:id
    */
+<<<<<<< HEAD
   getDataset = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getDataset = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const dataset = await this.service.getDataset(req.params.id);
       if (!dataset) {
@@ -78,7 +105,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/datasets/:id/lock
    */
+<<<<<<< HEAD
   lockDataset = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  lockDataset = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const dataset = await this.service.lockDataset(req.params.id);
       res.status(200).json({ message: 'Dataset locked successfully for evaluation reproducibility', dataset });
@@ -91,7 +122,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/samples
    */
+<<<<<<< HEAD
   createSample = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  createSample = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const {
         dataset_id,
@@ -137,7 +172,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/samples/:id
    */
+<<<<<<< HEAD
   getSample = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getSample = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const sample = await this.service.getSample(req.params.id);
       if (!sample) {
@@ -154,7 +193,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/samples/:id/images
    */
+<<<<<<< HEAD
   addImage = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  addImage = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const {
         storage_path,
@@ -197,7 +240,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/reference-labels
    */
+<<<<<<< HEAD
   submitReferenceLabel = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  submitReferenceLabel = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const {
         sample_id,
@@ -216,7 +263,11 @@ export class ValidationController {
         return;
       }
 
+<<<<<<< HEAD
       const reviewerId = req.staff?.staffId ?? 'unknown';
+=======
+      const reviewerId = req.admin?.adminId ?? 'unknown';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       const reviewerName = reviewer_label ?? 'Unattributed review';
       const reviewerRole = 'admin';
       const reviewerOrg = organization ?? 'Recorded by the platform owner';
@@ -245,7 +296,11 @@ export class ValidationController {
   /**
    * POST /api/research/validation/runs
    */
+<<<<<<< HEAD
   triggerRun = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  triggerRun = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { dataset_id, model_name, prompt_version, max_samples } = req.body || {};
       if (!dataset_id) {
@@ -269,7 +324,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/evaluations/:runId
    */
+<<<<<<< HEAD
   getEvaluation = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getEvaluation = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const evaluation = await this.service.computeRunEvaluation(req.params.runId);
       res.status(200).json(evaluation);
@@ -281,7 +340,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/errors/:runId
    */
+<<<<<<< HEAD
   getErrors = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getErrors = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const errors = await this.service.getRunErrors(req.params.runId);
       res.status(200).json({ errors, count: errors.length });
@@ -293,7 +356,11 @@ export class ValidationController {
   /**
    * GET /api/research/validation/export/:runId
    */
+<<<<<<< HEAD
   exportResults = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  exportResults = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const format = (req.query.format as string) || 'csv';
       if (format === 'json') {

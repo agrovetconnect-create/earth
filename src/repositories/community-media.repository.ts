@@ -110,6 +110,7 @@ class CommunityMediaRepository {
     actor: string
   ): Promise<CommunityMediaRecord | null> {
     try {
+<<<<<<< HEAD
       const { data, error } = await (supabase as any).rpc('moderate_community_media_transactional', {
         p_media_id: id,
         p_moderation_status: status,
@@ -119,6 +120,21 @@ class CommunityMediaRepository {
       });
       if (error) throw new Error(error.message);
       return (data as unknown as CommunityMediaRecord) ?? null;
+=======
+      const { data, error } = await (supabase.from('community_media') as any)
+        .update({
+          moderation_status: status,
+          is_public: status === 'visible',
+          moderated_by: actor,
+          moderated_at: new Date().toISOString(),
+          moderation_reason: reason,
+        })
+        .eq('id', id)
+        .select('*')
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data as CommunityMediaRecord) ?? null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     } catch (err) {
       this.unavailable('community media moderation', err);
     }

@@ -18,6 +18,7 @@ import type {
 import { apiUrl, requestJson } from './http.js';
 import { fileToDataUrl } from '../lib/file.js';
 
+<<<<<<< HEAD
 let contributorSessionEstablished = false;
 
 /**
@@ -51,11 +52,27 @@ export async function ensureContributorToken(): Promise<string | null> {
     });
     contributorSessionEstablished = true;
     return 'cookie-session';
+=======
+const CONTRIBUTOR_TOKEN_KEY = 'rt_contributor_token';
+const CONTRIBUTOR_HEADER = 'X-Contributor-Token';
+
+/**
+ * Reads the pseudonymous browser contributor token.
+ *
+ * The token is a random value held only in this browser. It carries no personal
+ * data and is not linked to a phone number or account; it exists so the server
+ * can count a vote once and recognise repeat contributions.
+ */
+export function getContributorToken(): string | null {
+  try {
+    return localStorage.getItem(CONTRIBUTOR_TOKEN_KEY);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   } catch {
     return null;
   }
 }
 
+<<<<<<< HEAD
 /**
  * Revokes the current HttpOnly contributor session on the server and clears its cookie.
  */
@@ -67,11 +84,50 @@ export async function logoutContributorSession(): Promise<void> {
     });
   } catch {
     // Best-effort revocation on sign-out.
+=======
+function setContributorToken(token: string): void {
+  try {
+    localStorage.setItem(CONTRIBUTOR_TOKEN_KEY, token);
+  } catch {
+    // Storage unavailable (private mode). Contributions still work, they just
+    // cannot be recognised as coming from this browser again.
+  }
+}
+
+/**
+ * Ensures a contributor token exists, requesting one on first use.
+ *
+ * Failure is non-fatal: reads work without a token, and a write may be rejected
+ * by the server, which is preferable to inventing an identity locally.
+ */
+export async function ensureContributorToken(): Promise<string | null> {
+  const existing = getContributorToken();
+  if (existing) return existing;
+
+  try {
+    const res = await fetch(apiUrl('/api/community/contributor-token'), { method: 'POST' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (typeof data.contributor_token === 'string' && data.contributor_token.length >= 16) {
+      setContributorToken(data.contributor_token);
+      return data.contributor_token;
+    }
+    return null;
+  } catch {
+    return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 
 function authHeaders(): Record<string, string> {
+<<<<<<< HEAD
   return { 'Content-Type': 'application/json' };
+=======
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const token = getContributorToken();
+  if (token) headers[CONTRIBUTOR_HEADER] = token;
+  return headers;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 function getJson<T>(path: string): Promise<T> {

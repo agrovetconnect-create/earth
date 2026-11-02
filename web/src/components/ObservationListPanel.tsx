@@ -39,11 +39,22 @@ export const ObservationListPanel: React.FC<ObservationListPanelProps> = ({
           <span>Loading observations…</span>
         </div>
       ) : observations.length === 0 ? (
+<<<<<<< HEAD
         <div className="py-8 text-center max-w-[200px] mx-auto space-y-1.5">
           <div className="text-sm font-medium text-[#1f1f1f]">No results found</div>
           <div className="text-[11px] text-[#5e5e5e] leading-relaxed">
             Try adjusting your filters or search area.
           </div>
+=======
+        <div className="rounded-lg border border-dashed border-[#c7c7c7] bg-[#f8fafd] px-3 py-4 text-center">
+          <p className="text-[12px] font-medium text-[#1f1f1f]">No public observations match.</p>
+          <p className="text-[11px] text-[#5e5e5e] mt-1">
+            Clear the search term or choose All Districts.
+          </p>
+          <button type="button" className="g-btn g-btn-text h-8 px-2 text-[12px] mt-1" onClick={onResetFilters}>
+            Reset filters
+          </button>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         </div>
       ) : (
         <ul className="-mx-4">

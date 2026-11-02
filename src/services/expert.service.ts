@@ -1,6 +1,10 @@
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
+<<<<<<< HEAD
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
+=======
+import { checkRateLimit } from '../utils/rate-limiter.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { expertRepository, ExpertRepository } from '../repositories/expert.repository.js';
 import type {
   ExpertFilterOptions,
@@ -84,7 +88,11 @@ export class ExpertService {
 
     // Rate limit review submissions per Super Admin session.
     const rateLimitKey = `review:${attribution.enteredBy}`;
+<<<<<<< HEAD
     if (!(await checkDistributedRateLimit(rateLimitKey, env.SUPER_ADMIN_RATE_LIMIT_PER_MINUTE))) {
+=======
+    if (!checkRateLimit(rateLimitKey, env.SUPER_ADMIN_RATE_LIMIT_PER_MINUTE)) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       throw new Error('Review submission rate limit exceeded. Please wait a moment.');
     }
 

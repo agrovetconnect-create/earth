@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { logger } from '../utils/logger.js';
+<<<<<<< HEAD
 import { 
   requestCode, 
   signOut, 
@@ -15,11 +16,15 @@ import {
   restoreGoogleAvatar
 } from '../services/auth.service.js';
 import { profileService } from '../services/profile.service.js';
+=======
+import { requestCode, signOut, updateProfile, verifyCode } from '../services/auth.service.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import {
   UserAvatarError,
   removeAvatar as removeAvatarService,
   setAvatar as setAvatarService,
 } from '../services/user-avatar.service.js';
+<<<<<<< HEAD
 import {
   extractUserSessionToken,
   resolveUserFromToken,
@@ -58,6 +63,24 @@ function clearUserSessionCookie(res: Response): void {
     sameSite: 'lax',
     path: '/',
   });
+=======
+import { resolveUserFromToken } from '../utils/user-auth.js';
+import type { AuthenticatedUserRequest } from '../utils/user-auth.js';
+import { bodyOf, fail } from '../utils/http.js';
+import { isServiceUnavailableError } from '../utils/service-error.js';
+
+/**
+ * WhatsApp verification login (Stage 12).
+ *
+ * Handlers translate service failures into HTTP responses and never echo a
+ * submitted code, a phone number or a session token back to the client.
+ */
+
+function bearerToken(req: Request): string | undefined {
+  const header = req.headers.authorization;
+  if (header && header.startsWith('Bearer ')) return header.substring(7).trim();
+  return undefined;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /**
@@ -83,8 +106,12 @@ function answerUnavailable(res: Response, err: unknown): boolean {
  */
 export async function requestCodeHandler(req: Request, res: Response): Promise<void> {
   try {
+<<<<<<< HEAD
     const body = bodyOf(req) as any;
     const phone = typeof body.phone === 'string' ? body.phone : '';
+=======
+    const phone = typeof bodyOf(req).phone === 'string' ? (bodyOf(req).phone as string) : '';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const result = await requestCode(phone, req);
 
     if (!result.ok) {
@@ -126,6 +153,7 @@ export async function verifyCodeHandler(req: Request, res: Response): Promise<vo
       return;
     }
 
+<<<<<<< HEAD
     setUserSessionCookie(res, result.token);
     const isMobile = req.headers['x-client-platform'] === 'mobile';
 
@@ -133,6 +161,10 @@ export async function verifyCodeHandler(req: Request, res: Response): Promise<vo
       ok: true,
       authenticated: true,
       ...(isMobile ? { token: result.token } : {}),
+=======
+    res.status(200).json({
+      token: result.token,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       expires_at: result.expiresAt,
       user: result.user,
     });
@@ -153,6 +185,7 @@ export async function verifyCodeHandler(req: Request, res: Response): Promise<vo
  */
 export async function sessionHandler(req: Request, res: Response): Promise<void> {
   try {
+<<<<<<< HEAD
     const token = extractUserSessionToken(req);
     const resolved = token ? await resolveUserFromToken(token) : null;
     const viewer = resolved ? await viewerFromUser(resolved.user) : null;
@@ -168,12 +201,27 @@ export async function sessionHandler(req: Request, res: Response): Promise<void>
             is_whatsapp_linked: viewer.isWhatsAppLinked,
             is_demo: viewer.isDemo,
             display_name_updated_at: resolved?.user.display_name_updated_at ?? null,
+=======
+    const token = bearerToken(req);
+    const resolved = token ? await resolveUserFromToken(token) : null;
+    res.status(200).json({
+      authenticated: Boolean(resolved),
+      user: resolved
+        ? {
+            public_user_id: resolved.user.public_user_id,
+            display_name: resolved.user.display_name,
+            is_demo: resolved.user.is_demo,
+            display_name_updated_at: resolved.user.display_name_updated_at ?? null,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           }
         : null,
     });
   } catch (err) {
     logger.error('Session lookup failed', { error: String(err) });
+<<<<<<< HEAD
     if (answerUnavailable(res, err)) return;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(200).json({ authenticated: false, user: null });
   }
 }
@@ -183,12 +231,19 @@ export async function sessionHandler(req: Request, res: Response): Promise<void>
  */
 export async function signOutHandler(req: Request, res: Response): Promise<void> {
   try {
+<<<<<<< HEAD
     await signOut(extractUserSessionToken(req));
     clearUserSessionCookie(res);
     res.status(200).json({ ok: true });
   } catch (err) {
     logger.error('Sign-out failed', { error: String(err) });
     clearUserSessionCookie(res);
+=======
+    await signOut(bearerToken(req));
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    logger.error('Sign-out failed', { error: String(err) });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (answerUnavailable(res, err)) return;
     res.status(500).json({
       error: { code: 'INTERNAL_ERROR', message: 'Sign-out failed.' },
@@ -212,8 +267,12 @@ export async function updateProfileHandler(
       return;
     }
 
+<<<<<<< HEAD
     const body = bodyOf(req) as any;
     const raw = body.display_name;
+=======
+    const raw = bodyOf(req).display_name;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const displayName = raw === null ? null : typeof raw === 'string' ? raw : undefined;
 
     if (displayName === undefined) {
@@ -269,7 +328,10 @@ export async function setAvatarHandler(
       return;
     }
     logger.error('Profile photo upload failed', { error: String(err) });
+<<<<<<< HEAD
     if (answerUnavailable(res, err)) return;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(500).json({
       error: { code: 'INTERNAL_ERROR', message: 'The profile photo could not be saved.' },
     });
@@ -294,12 +356,16 @@ export async function removeAvatarHandler(
     res.status(200).json({ ok: true });
   } catch (err) {
     logger.error('Profile photo removal failed', { error: String(err) });
+<<<<<<< HEAD
     if (answerUnavailable(res, err)) return;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(500).json({
       error: { code: 'INTERNAL_ERROR', message: 'The profile photo could not be removed.' },
     });
   }
 }
+<<<<<<< HEAD
 
 /**
  * POST /api/auth/request-email-code
@@ -577,3 +643,5 @@ export async function restoreGoogleAvatarHandler(req: AuthenticatedUserRequest, 
     res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Failed to restore Google profile image.' } });
   }
 }
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

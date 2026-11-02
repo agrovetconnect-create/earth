@@ -311,30 +311,44 @@ export class GeoscienceIntelligenceService {
         throw new GeologicalAnalysisError('GEMINI_API_ERROR', 'No media was provided for analysis');
       }
       const baseMedia = params.media[0];
+<<<<<<< HEAD
       const extraSupportingImages = params.media
         .slice(1)
         .filter((m) => m.viewType !== 'video_frame')
         .map((m) => ({ buffer: m.buffer, mimeType: m.mimeType }));
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       result = await geminiService.analyzeGeoscienceMedia(
         baseMedia.buffer,
         baseMedia.mimeType,
         params.userDescription ?? undefined,
+<<<<<<< HEAD
         baseMedia.viewType === 'video_frame' ? 'video' : 'image',
         extraSupportingImages
+=======
+        baseMedia.viewType === 'video_frame' ? 'video' : 'image'
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       );
       extras = emptyExtras();
     }
 
+<<<<<<< HEAD
     const assembled = assembleIntelligence({
+=======
+    return assembleIntelligence({
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       result,
       extras,
       context,
       userDescription: params.userDescription,
     });
+<<<<<<< HEAD
     return {
       ...assembled,
       baseAnalysis: result,
     };
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /** Context for a live analysis using the published coordinates, if any. */

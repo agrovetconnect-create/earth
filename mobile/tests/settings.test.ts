@@ -45,6 +45,7 @@ test('user-facing errors do not expose raw server details', () => {
   assert.equal(userFacingError(error), 'Earth Talk is temporarily unavailable. Try again later.');
   assert.equal(userFacingError(new Error('private low-level stack text')), 'Something went wrong. Please try again.');
 });
+<<<<<<< HEAD
 
 test('shared language store supports English and French only, translates UI text, and updates current state', async () => {
   const {
@@ -103,3 +104,5 @@ test('shared language store supports English and French only, translates UI text
 });
 
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

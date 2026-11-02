@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from 'react';
+<<<<<<< HEAD
 import { History as HistoryIcon, Search, Trash2, X, ArrowLeft, Download } from 'lucide-react';
 import { OfflineMapControl } from './OfflineMapControl.js';
+=======
+import { History as HistoryIcon, Search, Trash2, X, ArrowLeft } from 'lucide-react';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import {  clearHistory,  formatHistoryTime,  groupHistoryByDay,  removeHistory,  useHistory,  type HistoryEntry,} from '../services/history.js';
 
 interface HistoryViewProps {
@@ -12,6 +16,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
   const entries = useHistory();
   const [query, setQuery] = useState('');
 
+<<<<<<< HEAD
   const handleExportCSV = () => {
     if (entries.length === 0) return;
     const headers = ['ID', 'Date', 'Time', 'Label', 'Subtitle', 'View'];
@@ -34,6 +39,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
     document.body.removeChild(link);
   };
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) return entries;
@@ -83,7 +90,10 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
               </div>
             </div>
           </div>
+<<<<<<< HEAD
           <OfflineMapControl />
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         </div>
       </header>
 
@@ -104,6 +114,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
               </p>
             </div>
             {entries.length > 0 && (
+<<<<<<< HEAD
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -123,6 +134,16 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
                   <span>Clear all history</span>
                 </button>
               </div>
+=======
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-[#e3e3e3] bg-white text-xs font-medium text-[#3c4043] hover:bg-[#f0f4f9] hover:text-[#1f1f1f] transition-colors shadow-2xs shrink-0"
+                onClick={() => clearHistory()}
+              >
+                <Trash2 className="w-3.5 h-3.5 text-[#5e5e5e]" />
+                <span>Clear all history</span>
+              </button>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             )}
           </div>
 
@@ -144,12 +165,22 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ onOpen, onBackToApp })
           )}
 
           {entries.length === 0 ? (
+<<<<<<< HEAD
             <div className="py-16 text-center text-xs text-[#5e5e5e]">
               No history yet
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-16 text-center text-xs text-[#5e5e5e]">
               No results found
+=======
+            <div className="py-16 text-center text-[#5e5e5e] text-sm bg-[#f8fafd] rounded-xl border border-dashed border-[#c7c7c7]">
+              <p className="font-medium text-[#1f1f1f] mb-1">No history yet.</p>
+              <p className="text-xs">Places you open appear here, grouped by day, newest first.</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-16 text-center text-[#5e5e5e] text-sm bg-[#f8fafd] rounded-xl border border-dashed border-[#c7c7c7]">
+              No history item matches “{query.trim()}”.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </div>
           ) : (
             <div className="space-y-6">

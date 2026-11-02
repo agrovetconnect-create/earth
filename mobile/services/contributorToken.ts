@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { fetchContributorToken } from './api.ts';
 
 const TOKEN_KEY = 'earth-talk-community-contributor-token';
@@ -49,11 +50,27 @@ export async function getContributorToken(): Promise<string> {
   if (!inFlight) {
     inFlight = fetchContributorToken().then(async ({ contributor_token }) => {
       await setSecureItem(TOKEN_KEY, contributor_token);
+=======
+import * as SecureStore from 'expo-secure-store';
+import { fetchContributorToken } from './api';
+
+const TOKEN_KEY = 'earth-talk-community-contributor-token';
+let inFlight: Promise<string> | undefined;
+
+/** Obtain the API's pseudonymous token and persist it only in native secure storage. */
+export async function getContributorToken(): Promise<string> {
+  const existing = await SecureStore.getItemAsync(TOKEN_KEY);
+  if (existing) return existing;
+  if (!inFlight) {
+    inFlight = fetchContributorToken().then(async ({ contributor_token }) => {
+      await SecureStore.setItemAsync(TOKEN_KEY, contributor_token);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       return contributor_token;
     }).finally(() => { inFlight = undefined; });
   }
   return inFlight;
 }
+<<<<<<< HEAD
 
 export async function setStoredContributorToken(token: string): Promise<void> {
   await setSecureItem(TOKEN_KEY, token);
@@ -66,3 +83,5 @@ export async function getStoredContributorToken(): Promise<string | null> {
 export async function clearStoredContributorToken(): Promise<void> {
   await deleteSecureItem(TOKEN_KEY);
 }
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

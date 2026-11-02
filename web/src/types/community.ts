@@ -534,7 +534,10 @@ export interface PublicSiteFeature {
     site_id: string;
     site_code: string;
     title: string;
+<<<<<<< HEAD
     description?: string | null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     grouping_basis: SiteGroupingBasis;
     district: string | null;
     location_precision: 'district' | 'approximate' | 'exact';

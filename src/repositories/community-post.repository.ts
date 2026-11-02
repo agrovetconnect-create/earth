@@ -101,9 +101,13 @@ export class CommunityPostRepository {
    */
   private requireDatabase(operation: string): void {
     if (!this.ready && env.IS_PRODUCTION) {
+<<<<<<< HEAD
       throw new ServiceUnavailableError(
         `post ${operation}`,
         undefined,
+=======
+      throw new Error(
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         `Post ${operation} requires a configured database. ` +
           'Set SUPABASE_URL and SUPABASE_SECRET_KEY and run migration 016_community_posts.sql.'
       );
@@ -186,6 +190,7 @@ export class CommunityPostRepository {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
+<<<<<<< HEAD
   async listObservationsBySourceHash(sourceUserHash: string): Promise<ObservationRow[]> {
     if (!sourceUserHash) return [];
 
@@ -207,6 +212,8 @@ export class CommunityPostRepository {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   async updatePostFields(
     passportId: string,
     patch: { post_title?: string | null; user_report?: string | null }
@@ -222,7 +229,12 @@ export class CommunityPostRepository {
         if (error) throw new Error(error.message);
         return;
       } catch (err) {
+<<<<<<< HEAD
         throw this.databaseFailure('post field update', err);
+=======
+        logger.warn('Could not save post edits in the database', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -245,7 +257,12 @@ export class CommunityPostRepository {
         if (error) throw new Error(error.message);
         return;
       } catch (err) {
+<<<<<<< HEAD
         throw this.databaseFailure('post publication status update', err);
+=======
+        logger.warn('Could not save the privacy change in the database', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -258,12 +275,18 @@ export class CommunityPostRepository {
   }
 
   /** Attaches the signed-in account as owner, once, for a post that has none. */
+<<<<<<< HEAD
   async linkOwner(passportId: string, userId: string): Promise<boolean> {
     if (!userId) return false;
+=======
+  async linkOwner(passportId: string, userId: string): Promise<void> {
+    if (!userId) return;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     this.requireDatabase('ownership');
 
     if (this.database) {
       try {
+<<<<<<< HEAD
         const { data, error } = await (supabase.from('observations') as any)
           .update({ owner_user_id: userId })
           .ilike('passport_id', passportId.trim())
@@ -273,15 +296,30 @@ export class CommunityPostRepository {
         return Array.isArray(data) && data.length > 0;
       } catch (err) {
         throw this.databaseFailure('post owner link', err);
+=======
+        const { error } = await (supabase.from('observations') as any)
+          .update({ owner_user_id: userId })
+          .ilike('passport_id', passportId.trim())
+          .is('owner_user_id', null);
+        if (error) throw new Error(error.message);
+        return;
+      } catch (err) {
+        logger.warn('Could not link the owner to the post', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
     const row = await this.findObservation(passportId);
+<<<<<<< HEAD
     if (row && !row.owner_user_id) {
       row.owner_user_id = userId;
       return true;
     }
     return false;
+=======
+    if (row && !row.owner_user_id) row.owner_user_id = userId;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   // ==========================================================================
@@ -301,7 +339,10 @@ export class CommunityPostRepository {
           .maybeSingle();
         if (error) throw new Error(error.message);
         if (data) return data as ObservationLocationRow;
+<<<<<<< HEAD
         return null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('post location read', err);
       }
@@ -312,6 +353,7 @@ export class CommunityPostRepository {
 
   async setLocationPrecision(
     observationId: string,
+<<<<<<< HEAD
     precision: PublicLocationPrecision,
     isPublic?: boolean
   ): Promise<void> {
@@ -326,15 +368,31 @@ export class CommunityPostRepository {
       try {
         const { error } = await (supabase.from('observation_locations') as any)
           .update(patch)
+=======
+    precision: PublicLocationPrecision
+  ): Promise<void> {
+    this.requireDatabase('location privacy changes');
+
+    if (this.database) {
+      try {
+        const { error } = await (supabase.from('observation_locations') as any)
+          .update({ public_location_precision: precision })
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           .eq('observation_id', observationId);
         if (error) throw new Error(error.message);
         return;
       } catch (err) {
+<<<<<<< HEAD
         throw this.databaseFailure('location precision update', err);
+=======
+        logger.warn('Could not save the location precision change', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
     const location = memory.locations.get(observationId);
+<<<<<<< HEAD
     if (location) {
       location.public_location_precision = precision;
       if (typeof isPublic === 'boolean') {
@@ -362,6 +420,9 @@ export class CommunityPostRepository {
     if (location) {
       location.is_public = isPublic;
     }
+=======
+    if (location) location.public_location_precision = precision;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   registerLocationRecord(location: ObservationLocationRow): void {
@@ -392,6 +453,7 @@ export class CommunityPostRepository {
     return memory.media.get(observationId) ?? [];
   }
 
+<<<<<<< HEAD
   registerMediaRecord(mediaRow: ObservationMediaRow): void {
     const list = memory.media.get(mediaRow.observation_id) ?? [];
     const existingIdx = list.findIndex(
@@ -436,6 +498,8 @@ export class CommunityPostRepository {
     }
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   async insertMedia(input: InsertMediaInput): Promise<ObservationMediaRow> {
     this.requireDatabase('media uploads');
 
@@ -471,6 +535,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase.from('observation_media') as any)
           .insert(row)
@@ -481,6 +546,14 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('post media insert', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_media') as any)
+        .insert(row)
+        .select('*')
+        .single();
+      if (error) throw new Error(error.message);
+      return data as ObservationMediaRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const list = memory.media.get(input.observation_id) ?? [];
@@ -500,7 +573,10 @@ export class CommunityPostRepository {
           .maybeSingle();
         if (error) throw new Error(error.message);
         if (data) return data as ObservationMediaRow;
+<<<<<<< HEAD
         return null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('gallery item read', err);
       }
@@ -513,6 +589,7 @@ export class CommunityPostRepository {
     return null;
   }
 
+<<<<<<< HEAD
   async findMediaForObservation(
     observationId: string,
     mediaIdOrSourceId: string
@@ -551,6 +628,8 @@ export class CommunityPostRepository {
     return true;
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   // ==========================================================================
   // Attached documents, research and reports
   // ==========================================================================
@@ -614,6 +693,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase.from('observation_attachments') as any)
           .insert(row)
@@ -624,6 +704,14 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('attachment insert', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_attachments') as any)
+        .insert(row)
+        .select('*')
+        .single();
+      if (error) throw new Error(error.message);
+      return data as ObservationAttachmentRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const list = memory.attachments.get(input.observation_id) ?? [];
@@ -656,7 +744,10 @@ export class CommunityPostRepository {
           .single();
         if (error) throw new Error(error.message);
         if (data) return data as ObservationAttachmentRow;
+<<<<<<< HEAD
         return null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('attachment download permission update', err);
       }
@@ -686,7 +777,10 @@ export class CommunityPostRepository {
           .order('asked_at', { ascending: true });
         if (error) throw new Error(error.message);
         if (Array.isArray(data)) return data as QuestionRow[];
+<<<<<<< HEAD
         return [];
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('AI question list', err);
       }
@@ -721,6 +815,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase.from('observation_questions') as any)
           .insert(row)
@@ -731,6 +826,14 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('AI question insert', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_questions') as any)
+        .insert(row)
+        .select('*')
+        .single();
+      if (error) throw new Error(error.message);
+      return data as QuestionRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const list = memory.questions.get(input.observation_id) ?? [];
@@ -763,6 +866,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase.from('observation_questions') as any)
           .update(patch)
@@ -775,6 +879,16 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('AI question answer', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_questions') as any)
+        .update(patch)
+        .eq('id', input.questionId)
+        .eq('status', 'open')
+        .select('*')
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data as QuestionRow) ?? null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     for (const list of memory.questions.values()) {
@@ -806,7 +920,10 @@ export class CommunityPostRepository {
           .order('created_at', { ascending: true });
         if (error) throw new Error(error.message);
         if (Array.isArray(data)) return data as CommentRow[];
+<<<<<<< HEAD
         return [];
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('discussion read', err);
       }
@@ -830,7 +947,10 @@ export class CommunityPostRepository {
           .order('created_at', { ascending: true });
         if (error) throw new Error(error.message);
         if (Array.isArray(data)) return data as CommentRow[];
+<<<<<<< HEAD
         return [];
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } catch (err) {
         throw this.databaseFailure('contributor comment list', err);
       }
@@ -863,6 +983,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase.from('observation_comments') as any)
           .insert({
@@ -879,6 +1000,20 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('comment insert', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_comments') as any)
+        .insert({
+          passport_id: row.passport_id,
+          observation_id: input.observation_id || null,
+          parent_comment_id: input.parent_comment_id,
+          author_user_id: input.author_user_id,
+          body: input.body,
+        })
+        .select('*')
+        .single();
+      if (error) throw new Error(error.message);
+      return data as CommentRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const list = memory.comments.get(input.passport_id) ?? [];
@@ -983,6 +1118,7 @@ export class CommunityPostRepository {
     };
 
     if (this.database) {
+<<<<<<< HEAD
       try {
         const { data, error } = await (supabase as any).rpc('moderate_comment_transactional', {
           p_comment_id: commentId,
@@ -996,6 +1132,15 @@ export class CommunityPostRepository {
       } catch (err) {
         throw this.databaseFailure('comment moderation update', err);
       }
+=======
+      const { data, error } = await (supabase.from('observation_comments') as any)
+        .update(patch)
+        .eq('id', commentId)
+        .select('*')
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data as CommentRow) ?? null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     for (const list of memory.comments.values()) {
@@ -1021,7 +1166,12 @@ export class CommunityPostRepository {
         if (error) throw new Error(error.message);
         return;
       } catch (err) {
+<<<<<<< HEAD
         throw this.databaseFailure('privacy audit insert', err);
+=======
+        logger.error('Could not record the privacy audit entry', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 

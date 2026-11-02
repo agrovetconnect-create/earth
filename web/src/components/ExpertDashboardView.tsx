@@ -83,7 +83,11 @@ export const ExpertDashboardView: React.FC<ExpertDashboardViewProps> = ({
       setTotal(obsData.total);
       setAuditLogs(logsData);
     } catch (err) {
+<<<<<<< HEAD
       console.warn('Failed to load expert data:', err instanceof Error ? err.message : err);
+=======
+      console.error('Failed to load expert data', err);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     } finally {
       setIsLoading(false);
     }
@@ -395,8 +399,15 @@ export const ExpertDashboardView: React.FC<ExpertDashboardViewProps> = ({
               <p className="text-xs text-[#5e5e5e]">Loading observation queue...</p>
             </div>
           ) : observations.length === 0 ? (
+<<<<<<< HEAD
             <div className="p-12 text-center text-xs text-[#5e5e5e]">
               No results found
+=======
+            <div className="p-12 text-center space-y-2">
+              <CheckCircle2 className="w-10 h-10 text-[#2b7f3f]/60 mx-auto" />
+              <p className="text-sm font-medium text-[#3c4043]">No observations match the current filter criteria.</p>
+              <p className="text-xs text-[#8f8f8f]">All samples in this queue may have been reviewed.</p>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             </div>
           ) : (
             <div className="overflow-x-auto">

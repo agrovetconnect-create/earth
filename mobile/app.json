@@ -3,11 +3,16 @@
     "name": "Earth Talk",
     "slug": "earth-talk-mobile",
     "version": "1.0.0",
+<<<<<<< HEAD
     "orientation": "default",
+=======
+    "orientation": "portrait",
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     "icon": "./assets/images/icon.png",
     "scheme": "earthtalk",
     "userInterfaceStyle": "automatic",
     "ios": {
+<<<<<<< HEAD
       "supportsTablet": true,
       "bundleIdentifier": "org.earthtalk.mobile",
       "buildNumber": "1",
@@ -31,25 +36,49 @@
       "adaptiveIcon": {
         "backgroundColor": "#F5F7F4",
         "foregroundImage": "./assets/images/logo-no-subtitle.png"
+=======
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "org.earthtalk.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#F5F7F4",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "bundler": "metro",
       "output": "server",
+<<<<<<< HEAD
       "favicon": "./assets/images/icon.png"
+=======
+      "favicon": "./assets/images/favicon.png"
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
+<<<<<<< HEAD
           "image": "./assets/images/logo-no-subtitle.png",
           "imageWidth": 280,
           "resizeMode": "contain",
           "backgroundColor": "#F5F7F4",
           "dark": {
             "image": "./assets/images/logo-no-subtitle.png",
+=======
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 190,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F7F4",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             "backgroundColor": "#141B17"
           }
         }
@@ -65,7 +94,11 @@
       ]
     ],
     "experiments": {
+<<<<<<< HEAD
       "typedRoutes": false
+=======
+      "typedRoutes": true
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
   }
 }

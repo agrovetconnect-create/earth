@@ -788,6 +788,7 @@ function createMockObservation(overrides: Partial<ExpertObservationDetail> = {})
     'Fabricated reviewer identities and emails must not be reintroduced'
   );
 
+<<<<<<< HEAD
   // Public sign-in requires Google OAuth / 6-digit verification challenge,
   // and staff Control Center login requires both an email and a password.
   const controlLoginPath = new URL('../web/src/control/ControlLogin.tsx', import.meta.url);
@@ -801,6 +802,12 @@ function createMockObservation(overrides: Partial<ExpertObservationDetail> = {})
       /if \(!email\.trim\(\)\)/.test(controlLoginSource) &&
       /if \(!password\)/.test(controlLoginSource),
     'Sign-in forms must require verified challenge codes and both staff email and password'
+=======
+  // Both credential fields must be mandatory before a request is sent.
+  assert.ok(
+    /if \(!email\.trim\(\)\)/.test(modalSource) && /if \(!passcode\)/.test(modalSource),
+    'The sign-in form must require both an email and a password'
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   );
 
   // The API client must always send a password, never an optional one.

@@ -21,7 +21,10 @@ import { pathToFileURL } from 'node:url';
  * run explicitly, never as part of `npm test`.
  */
 const DATABASE_ISOLATION: Record<string, string> = {
+<<<<<<< HEAD
   HERMETIC_TEST: 'true',
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   SUPABASE_URL: 'https://mock-project-id.supabase.co',
   SUPABASE_SECRET_KEY: 'test_supabase_secret_key_placeholder',
 };

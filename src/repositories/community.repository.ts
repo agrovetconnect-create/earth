@@ -2,7 +2,10 @@ import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
+<<<<<<< HEAD
 import { ServiceUnavailableError } from '../utils/service-error.js';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { publicContributorHandle } from '../utils/contributor.js';
 import {
   buildDemoCommunityData,
@@ -125,6 +128,7 @@ export class CommunityRepository {
     return `${prefix}-${this.demoCounter}`;
   }
 
+<<<<<<< HEAD
   /**
    * Tracks whether PostgreSQL tables in the remote database have an `is_demo` column.
    * `community_investigations` and `community_questions` tables were created without `is_demo`
@@ -150,6 +154,11 @@ export class CommunityRepository {
       throw new ServiceUnavailableError(
         `community ${operation}`,
         undefined,
+=======
+  private requireDatabase(operation: string): void {
+    if (!this.ready && !this.demoActive) {
+      throw new Error(
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         `Community ${operation} requires a configured database. ` +
           'Set SUPABASE_URL and SUPABASE_SECRET_KEY and run migration 011_community_sites_gis.sql.'
       );
@@ -218,9 +227,13 @@ export class CommunityRepository {
       .select()
       .single();
 
+<<<<<<< HEAD
     if (error || !data) {
       throw new ServiceUnavailableError('community investigation create', error);
     }
+=======
+    if (error || !data) throw new Error(`Could not create investigation: ${error?.message ?? 'unknown error'}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return data as CommunityInvestigationRecord;
   }
 
@@ -239,8 +252,13 @@ export class CommunityRepository {
       .maybeSingle();
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to read investigation; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community investigation read', error);
+=======
+      logger.warn('Failed to read investigation', { error: error.message });
+      return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityInvestigationRecord) ?? null;
   }
@@ -258,8 +276,13 @@ export class CommunityRepository {
       .maybeSingle();
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to read investigation by id; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community investigation lookup', error);
+=======
+      logger.warn('Failed to read investigation by id', { error: error.message });
+      return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityInvestigationRecord) ?? null;
   }
@@ -290,10 +313,13 @@ export class CommunityRepository {
       .select('*', { count: 'exact' })
       .eq('is_public', true);
 
+<<<<<<< HEAD
     if (CommunityRepository.supportsIsDemoColumn['community_investigations'] === true) {
       query = query.eq('is_demo', false);
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (options.status) query = query.eq('status', options.status);
     if (options.siteId) query = query.eq('site_id', options.siteId);
     if (options.observationId) query = query.eq('observation_id', options.observationId);
@@ -305,6 +331,7 @@ export class CommunityRepository {
 
     const { data, count, error } = await query;
     if (error) {
+<<<<<<< HEAD
       if (this.isMissingIsDemoColumn(error)) {
         CommunityRepository.supportsIsDemoColumn['community_investigations'] = false;
         let retryQuery = (supabase.from('community_investigations') as any)
@@ -329,6 +356,12 @@ export class CommunityRepository {
     }
     const rows = ((data as CommunityInvestigationRecord[]) ?? []).filter((r) => !r.is_demo);
     return { rows, total: count ?? rows.length };
+=======
+      logger.warn('Failed to list investigations', { error: error.message });
+      return { rows: [], total: 0 };
+    }
+    return { rows: (data as CommunityInvestigationRecord[]) ?? [], total: count ?? 0 };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   async setInvestigationStatus(id: string, status: InvestigationStatus): Promise<CommunityInvestigationRecord | null> {
@@ -480,7 +513,11 @@ export class CommunityRepository {
       { onConflict: 'investigation_id,contributor_hash' }
     );
 
+<<<<<<< HEAD
     if (error) throw new ServiceUnavailableError('community vote write', error);
+=======
+    if (error) throw new Error(`Could not record vote: ${error.message}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     await this.recountInvestigation(input.investigationId);
     return { option: input.option, changed: true };
@@ -643,14 +680,22 @@ export class CommunityRepository {
         },
         { onConflict: 'investigation_id,item_id,contributor_hash' }
       );
+<<<<<<< HEAD
       if (error) throw new ServiceUnavailableError('community checklist write', error);
+=======
+      if (error) throw new Error(`Could not update checklist: ${error.message}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     } else {
       const { error } = await (supabase.from('community_investigation_checks') as any)
         .delete()
         .eq('investigation_id', investigationId)
         .eq('item_id', itemId)
         .eq('contributor_hash', contributorHash);
+<<<<<<< HEAD
       if (error) throw new ServiceUnavailableError('community checklist delete', error);
+=======
+      if (error) throw new Error(`Could not update checklist: ${error.message}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
 
     const { count, error: countError } = await (supabase.from('community_investigation_checks') as any)
@@ -720,7 +765,11 @@ export class CommunityRepository {
       .select()
       .single();
 
+<<<<<<< HEAD
     if (error || !data) throw new ServiceUnavailableError('community evidence create', error);
+=======
+    if (error || !data) throw new Error(`Could not record evidence: ${error?.message ?? 'unknown error'}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
     if (input.investigationId) await this.recountInvestigation(input.investigationId);
     return data as CommunityEvidenceRecord;
@@ -754,8 +803,13 @@ export class CommunityRepository {
 
     const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to list evidence; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community evidence list', error);
+=======
+      logger.warn('Failed to list evidence', { error: error.message });
+      return [];
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityEvidenceRecord[]) ?? [];
   }
@@ -839,7 +893,11 @@ export class CommunityRepository {
       .select()
       .single();
 
+<<<<<<< HEAD
     if (error || !data) throw new ServiceUnavailableError('community question create', error);
+=======
+    if (error || !data) throw new Error(`Could not post question: ${error?.message ?? 'unknown error'}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return data as CommunityQuestionRecord;
   }
 
@@ -858,8 +916,13 @@ export class CommunityRepository {
       .maybeSingle();
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to read question; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community question read', error);
+=======
+      logger.warn('Failed to read question', { error: error.message });
+      return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityQuestionRecord) ?? null;
   }
@@ -888,10 +951,13 @@ export class CommunityRepository {
       .select('*', { count: 'exact' })
       .eq('is_public', true);
 
+<<<<<<< HEAD
     if (CommunityRepository.supportsIsDemoColumn['community_questions'] === true) {
       query = query.eq('is_demo', false);
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (options.siteId) query = query.eq('site_id', options.siteId);
     if (options.investigationId) query = query.eq('investigation_id', options.investigationId);
     if (options.observationId) query = query.eq('observation_id', options.observationId);
@@ -901,6 +967,7 @@ export class CommunityRepository {
       .range(options.offset, options.offset + options.limit - 1);
 
     if (error) {
+<<<<<<< HEAD
       if (this.isMissingIsDemoColumn(error)) {
         CommunityRepository.supportsIsDemoColumn['community_questions'] = false;
         let retryQuery = (supabase.from('community_questions') as any)
@@ -924,6 +991,12 @@ export class CommunityRepository {
     }
     const rows = ((data as CommunityQuestionRecord[]) ?? []).filter((r) => !r.is_demo);
     return { rows, total: count ?? rows.length };
+=======
+      logger.warn('Failed to list questions', { error: error.message });
+      return { rows: [], total: 0 };
+    }
+    return { rows: (data as CommunityQuestionRecord[]) ?? [], total: count ?? 0 };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   async postAnswer(input: PostAnswerInput, contributorHash: string): Promise<CommunityAnswerRecord> {
@@ -940,6 +1013,11 @@ export class CommunityRepository {
         answer,
         evidence_id: input.evidenceId ?? null,
         media_ids: input.mediaIds ?? [],
+<<<<<<< HEAD
+=======
+        // Only the platform owner sets this, so a community answer is never
+        // badged as expert no matter how many votes it attracts.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         is_expert: input.isExpert === true,
         created_at: new Date().toISOString(),
       };
@@ -960,8 +1038,14 @@ export class CommunityRepository {
       .select()
       .single();
 
+<<<<<<< HEAD
     if (error || !data) throw new ServiceUnavailableError('community answer create', error);
 
+=======
+    if (error || !data) throw new Error(`Could not post answer: ${error?.message ?? 'unknown error'}`);
+
+    // Keep the cached answer counter honest.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     await this.recountQuestion(input.questionId);
     return data as CommunityAnswerRecord;
   }
@@ -982,8 +1066,13 @@ export class CommunityRepository {
       .limit(200);
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to list answers; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community answers list', error);
+=======
+      logger.warn('Failed to list answers', { error: error.message });
+      return [];
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityAnswerRecord[]) ?? [];
   }
@@ -1021,7 +1110,11 @@ export class CommunityRepository {
       .select()
       .single();
 
+<<<<<<< HEAD
     if (error || !data) throw new ServiceUnavailableError('community visit create', error);
+=======
+    if (error || !data) throw new Error(`Could not record visit: ${error?.message ?? 'unknown error'}`);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return data as CommunityVisitRecord;
   }
 
@@ -1042,8 +1135,13 @@ export class CommunityRepository {
       .limit(limit);
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to list visits; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community visits list', error);
+=======
+      logger.warn('Failed to list visits', { error: error.message });
+      return [];
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityVisitRecord[]) ?? [];
   }
@@ -1095,8 +1193,13 @@ export class CommunityRepository {
       .maybeSingle();
 
     if (error) {
+<<<<<<< HEAD
       logger.error('Failed to read reputation; refusing to mask database error', { error: error.message });
       throw new ServiceUnavailableError('community reputation read', error);
+=======
+      logger.warn('Failed to read reputation', { error: error.message });
+      return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return (data as CommunityReputationRecord) ?? null;
   }
@@ -1116,6 +1219,7 @@ export class CommunityRepository {
       return this.getReputation(contributorHash);
     }
 
+<<<<<<< HEAD
     const countRows = async (table: string, column: string, excludeDemo = false): Promise<number> => {
       let query = (supabase.from(table) as any)
         .select('*', { count: 'exact', head: true })
@@ -1134,6 +1238,13 @@ export class CommunityRepository {
             return retry.count ?? 0;
           }
         }
+=======
+    const countRows = async (table: string, column: string): Promise<number> => {
+      const { count, error } = await (supabase.from(table) as any)
+        .select('*', { count: 'exact', head: true })
+        .eq(column, contributorHash);
+      if (error) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         logger.warn('Failed counting reputation rows', { table, error: error.message });
         return 0;
       }
@@ -1141,21 +1252,36 @@ export class CommunityRepository {
     };
 
     const [observations, evidence, votes, questions, answers, visits] = await Promise.all([
+<<<<<<< HEAD
       countRows('observations', 'source_user_hash', true),
       countRows('community_evidence', 'contributor_hash'),
       countRows('community_votes', 'contributor_hash'),
       countRows('community_questions', 'contributor_hash', false),
+=======
+      countRows('observations', 'source_user_hash'),
+      countRows('community_evidence', 'contributor_hash'),
+      countRows('community_votes', 'contributor_hash'),
+      countRows('community_questions', 'contributor_hash'),
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       countRows('community_answers', 'contributor_hash'),
       countRows('community_visits', 'contributor_hash'),
     ]);
 
+<<<<<<< HEAD
     // Districts represented, derived from real non-demo observation locations.
+=======
+    // Districts represented, derived from real observation locations.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     let districtsRepresented = 0;
     try {
       const { data: obsRows, error: obsErr } = await (supabase.from('observations') as any)
         .select('id')
+<<<<<<< HEAD
         .eq('source_user_hash', contributorHash)
         .eq('is_demo', false);
+=======
+        .eq('source_user_hash', contributorHash);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       if (!obsErr && Array.isArray(obsRows) && obsRows.length > 0) {
         const ids = obsRows.map((r: { id: string }) => r.id);
         const { data: locRows } = await (supabase.from('observation_locations') as any)

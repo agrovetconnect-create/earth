@@ -1,8 +1,11 @@
 import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
+<<<<<<< HEAD
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
 import { ServiceUnavailableError } from '../utils/service-error.js';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { haversineKm } from './site.repository.js';
 import { resolvePublicCoordinates, RWANDA_DISTRICTS } from '../utils/public-location.js';
 import type { ValidatedFilters } from '../utils/public-filters.js';
@@ -84,9 +87,12 @@ export interface RawPublicObservationRecord {
    */
   public_latitude?: number | null;
   public_longitude?: number | null;
+<<<<<<< HEAD
   /** Generalized ~2 km coordinates exposed by view 032 when precision = 'approximate'. */
   approximate_latitude?: number | null;
   approximate_longitude?: number | null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /** Accepted only from the in-memory test store, never from the SQL view. */
   latitude?: number | null;
   longitude?: number | null;
@@ -181,8 +187,13 @@ export class PublicObservationRepository {
     longitude: number | null;
   } {
     return {
+<<<<<<< HEAD
       latitude: rec.public_latitude ?? rec.approximate_latitude ?? rec.latitude ?? null,
       longitude: rec.public_longitude ?? rec.approximate_longitude ?? rec.longitude ?? null,
+=======
+      latitude: rec.public_latitude ?? rec.latitude ?? null,
+      longitude: rec.public_longitude ?? rec.longitude ?? null,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     };
   }
 
@@ -628,12 +639,15 @@ geological_context: match.geological_context ?? null,
         },
         properties: {
           passport_id: rec.passport_id,
+<<<<<<< HEAD
           post_title: rec.post_title ?? (rec as any).title ?? null,
           title:
             rec.post_title ??
             (rec as any).title ??
             rec.possible_name ??
             (rec.primary_interpretation ? rec.primary_interpretation.split('.')[0].slice(0, 60) : null),
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           observation_category: rec.observation_category || 'unknown',
           observation_subcategory: rec.observation_subcategory || 'unknown',
           primary_interpretation: rec.primary_interpretation ?? null,
@@ -665,7 +679,11 @@ geological_context: match.geological_context ?? null,
    * Computes public statistics (Section 22). Calculated ONLY from public observations.
    */
   async getPublicStats(): Promise<PublicStats> {
+<<<<<<< HEAD
     const records = (await this.getAllEligiblePublicRecords()).filter((rec) => !rec.is_demo);
+=======
+    const records = await this.getAllEligiblePublicRecords();
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const total_observations = records.length;
 
     const districts = new Set<string>();
@@ -771,6 +789,7 @@ geological_context: match.geological_context ?? null,
   private async getAllEligiblePublicRecords(
     options: { includeDemo?: boolean } = {}
   ): Promise<RawPublicObservationRecord[]> {
+<<<<<<< HEAD
     let published: RawPublicObservationRecord[] = [];
     try {
       published = await this.loadPublishedRecords();
@@ -785,6 +804,9 @@ geological_context: match.geological_context ?? null,
       });
     }
 
+=======
+    const published = await this.loadPublishedRecords();
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!options.includeDemo) return published;
 
     // Demonstration records belong on the map, in the list, and in the
@@ -801,6 +823,7 @@ geological_context: match.geological_context ?? null,
 
   /**
    * Reads genuinely published observations: the live view when credentials are
+<<<<<<< HEAD
    * real, otherwise the in-memory store that the publish path fills in local dev.
    * When a real database is configured, a query failure surfaces as a 503
    * ServiceUnavailableError rather than falling back to process memory.
@@ -811,17 +834,41 @@ geological_context: match.geological_context ?? null,
     }
 
     try {
+=======
+   * real, otherwise the in-memory store that the publish path fills.
+   */
+  private async loadPublishedRecords(): Promise<RawPublicObservationRecord[]> {
+    // Skip the remote query entirely when credentials are placeholders, so a fresh
+    // clone cannot appear to serve data it does not have.
+    const isMock =
+      !env.SUPABASE_URL ||
+      env.SUPABASE_URL.includes('mock') ||
+      env.SUPABASE_URL.includes('placeholder') ||
+      env.SUPABASE_SECRET_KEY.includes('placeholder');
+
+    if (isMock) {
+      return Array.from(this.inMemoryPublicStore.values());
+    }
+
+    try {
+      // Attempt querying live Supabase database view if connected with an 800ms fail-fast timeout
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       const queryPromise = supabase
         .from('public_observations' as any)
         .select('*');
 
       const timeoutPromise = new Promise<{ data: null; error: Error }>((_, reject) => {
+<<<<<<< HEAD
         const timer = setTimeout(() => reject(new Error('Supabase query timeout')), 10_000);
+=======
+        const timer = setTimeout(() => reject(new Error('Supabase query timeout')), 800);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         if (typeof timer.unref === 'function') timer.unref();
       });
 
       const { data, error } = (await Promise.race([queryPromise, timeoutPromise])) as any;
 
+<<<<<<< HEAD
       if (error) {
         throw new Error(error.message || 'Failed to query public_observations view');
       }
@@ -836,6 +883,16 @@ geological_context: match.geological_context ?? null,
       });
       throw new ServiceUnavailableError('public observation read', err);
     }
+=======
+      if (!error && data && Array.isArray(data) && data.length > 0) {
+        return data as unknown as RawPublicObservationRecord[];
+      }
+    } catch {
+      // Fall through to configured store if live database query fails, times out, or view is empty
+    }
+
+    return Array.from(this.inMemoryPublicStore.values());
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**

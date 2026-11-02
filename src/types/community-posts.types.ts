@@ -39,10 +39,15 @@ export interface UserRow {
    * seven-day rename window on the server, not only in the browser.
    */
   display_name_updated_at?: string | null;
+<<<<<<< HEAD
   phone_hash?: string | null;
   email?: string | null;
   email_verified_at?: string | null;
   created_via: 'web' | 'whatsapp' | 'email' | 'mobile';
+=======
+  phone_hash: string;
+  created_via: 'web' | 'whatsapp';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   is_demo: boolean;
   created_at: string;
   updated_at: string;
@@ -52,13 +57,21 @@ export interface VerificationCodeRecord {
   id: string;
   phone_hash: string;
   code_hash: string;
+<<<<<<< HEAD
   purpose: 'whatsapp_login' | 'registration' | 'account_linking' | 'password_reset';
+=======
+  purpose: 'whatsapp_login';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   expires_at: string;
   attempts: number;
   max_attempts: number;
   consumed_at: string | null;
   requested_ip_hash: string | null;
+<<<<<<< HEAD
   delivery: 'whatsapp' | 'development_console' | 'failed' | 'email' | null;
+=======
+  delivery: 'whatsapp' | 'development_console' | 'failed' | null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   created_at: string;
   updated_at: string;
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import type {
   CommunityEvidenceType,
   CommunityInvestigation,
@@ -39,6 +40,9 @@ import type {
   UpdatePostPatch,
 } from '../types/api';
 import { getCurrentAppLanguage } from '../utils/language.ts';
+=======
+import type { GeoJsonCollection, ObservationDetail, ObservationSummary, Paginated, PublicCategory, ObservationFilters, PublicSite, SitesResponse, CommunityInvestigationsResponse, CommunityInvestigation, CommunityVoteResult, ContributorTokenResponse, PublicVisitsResponse, PublicVisit, PublicCommentResponse, PublicComment } from '../types/api';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 export class ApiError extends Error {
   readonly status?: number;
@@ -59,7 +63,11 @@ function isLoopbackHost(hostname: string): boolean {
   const host = hostname.toLowerCase().replace(/^\[|\]$/g, '');
   return host === 'localhost' || host.endsWith('.localhost') || host === '::1' || host === '::' || host === '0.0.0.0' || host === '10.0.2.2' || host.startsWith('127.');
 }
+<<<<<<< HEAD
 type RequestOptions = { signal?: AbortSignal; method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'; body?: unknown; headers?: Record<string, string> };
+=======
+type RequestOptions = { signal?: AbortSignal; method?: 'GET' | 'POST' | 'PATCH'; body?: unknown; headers?: Record<string, string> };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 async function request<T>(path: string, validate: (value: unknown) => value is T, options?: RequestOptions, nullOn404?: false): Promise<T>;
 async function request<T>(path: string, validate: (value: unknown) => value is T, options: RequestOptions | undefined, nullOn404: true): Promise<T | null>;
 async function request<T>(path: string, validate: (value: unknown) => value is T, options: RequestOptions = {}, nullOn404 = false): Promise<T | null> {
@@ -74,6 +82,7 @@ async function request<T>(path: string, validate: (value: unknown) => value is T
   if (options.signal?.aborted) controller.abort();
   else options.signal?.addEventListener('abort', onAbort, { once: true });
   try {
+<<<<<<< HEAD
     const headers = {
       Accept: 'application/json',
       'Accept-Language': getCurrentAppLanguage(),
@@ -81,6 +90,9 @@ async function request<T>(path: string, validate: (value: unknown) => value is T
       ...(options.body === undefined ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     };
+=======
+    const headers = { Accept: 'application/json', ...(options.body === undefined ? {} : { 'Content-Type': 'application/json' }), ...options.headers };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const response = await fetch(`${base}${path}`, { method: options.method ?? 'GET', headers, ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }), signal: controller.signal });
     if (response.status === 404 && nullOn404) return null;
     const body: unknown = await response.json().catch(() => null);
@@ -113,6 +125,7 @@ function isObservationDetail(value: unknown): value is ObservationDetail {
 }
 function isStringArray(value: unknown): value is string[] { return Array.isArray(value) && value.every(isString); }
 function isSite(value: unknown): value is PublicSite { return isRecord(value) && isString(value.site_id) && isString(value.site_code) && isString(value.title) && (value.district === null || isString(value.district)) && (value.description === null || isString(value.description)) && (value.is_demo === undefined || typeof value.is_demo === 'boolean'); }
+<<<<<<< HEAD
 function isDistrict(value: unknown): value is PublicDistrict { return isRecord(value) && isString(value.name) && typeof value.observation_count === 'number'; }
 function isStats(value: unknown): value is PublicStats {
   return (
@@ -129,20 +142,29 @@ function isCategory(value: unknown): value is PublicCategory { return isRecord(v
 function isSites(value: unknown): value is SitesResponse { return isRecord(value) && Array.isArray(value.rows) && typeof value.total === 'number' && value.rows.every(isSite); }
 function isGeoJson(value: unknown): value is GeoJsonCollection { return isRecord(value) && value.type === 'FeatureCollection' && Array.isArray(value.features) && value.features.every((f) => isRecord(f) && f.type === 'Feature' && (f.geometry === null || isRecord(f.geometry)) && (f.properties === undefined || isRecord(f.properties))); }
 
+=======
+function isCategory(value: unknown): value is PublicCategory { return isRecord(value) && isString(value.category) && isString(value.label) && typeof value.observation_count === 'number' && Number.isFinite(value.observation_count); }
+function isSites(value: unknown): value is SitesResponse { return isRecord(value) && Array.isArray(value.rows) && typeof value.total === 'number' && value.rows.every(isSite); }
+function isGeoJson(value: unknown): value is GeoJsonCollection { return isRecord(value) && value.type === 'FeatureCollection' && Array.isArray(value.features) && value.features.every((f) => isRecord(f) && f.type === 'Feature' && (f.geometry === null || isRecord(f.geometry)) && (f.properties === undefined || isRecord(f.properties))); }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function fetchObservations(page = 1, limit = 20, signal?: AbortSignal, filters: ObservationFilters = {}) {
   const query = new URLSearchParams({ page: String(page), limit: String(limit) });
   if (filters.search?.trim()) query.set('search', filters.search.trim().slice(0, 100));
   if (filters.category) query.set('category', filters.category);
+<<<<<<< HEAD
   if (filters.classification) query.set('classification', filters.classification);
   if (filters.evidence_state) query.set('evidence_state', filters.evidence_state);
   if (filters.confidence) query.set('confidence', filters.confidence);
   if (filters.verification) query.set('verification', filters.verification);
   if (filters.district) query.set('district', filters.district);
   if (filters.bbox) query.set('bbox', filters.bbox);
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return request(`/api/public/observations?${query}`, isObservationList, { signal });
 }
 export function fetchObservation(id: string, signal?: AbortSignal) { return request(`/api/public/observations/${encodeURIComponent(id)}`, isObservationDetail, { signal }, true); }
 export function fetchCategories(signal?: AbortSignal) { return request('/api/public/categories', (value): value is PublicCategory[] => Array.isArray(value) && value.every(isCategory), { signal }); }
+<<<<<<< HEAD
 export function fetchDistricts(signal?: AbortSignal) { return request('/api/public/districts', (value): value is PublicDistrict[] => Array.isArray(value) && value.every(isDistrict), { signal }); }
 export function fetchPublicStats(signal?: AbortSignal) { return request('/api/public/stats', isStats, { signal }); }
 export function fetchUnlocatedObservations(page = 1, limit = 20, signal?: AbortSignal, filters: ObservationFilters = {}) {
@@ -217,16 +239,22 @@ export function fetchSimilarObservations(passportId: string, signal?: AbortSigna
     isRecord(value) && typeof value.available === 'boolean' && typeof value.count === 'number' && Array.isArray(value.items) && isString(value.note);
   return request(`/api/public/observations/${encodeURIComponent(passportId)}/similar`, valid, { signal });
 }
+=======
+export function fetchSites(signal?: AbortSignal) { return request('/api/community/sites?limit=50', isSites, { signal }); }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function fetchObservationMapData(signal?: AbortSignal, filters: ObservationFilters = {}) {
   const query = new URLSearchParams();
   if (filters.search?.trim()) query.set('search', filters.search.trim().slice(0, 100));
   if (filters.category) query.set('category', filters.category);
+<<<<<<< HEAD
   if (filters.classification) query.set('classification', filters.classification);
   if (filters.evidence_state) query.set('evidence_state', filters.evidence_state);
   if (filters.confidence) query.set('confidence', filters.confidence);
   if (filters.verification) query.set('verification', filters.verification);
   if (filters.district) query.set('district', filters.district);
   if (filters.bbox) query.set('bbox', filters.bbox);
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const suffix = query.size ? `?${query.toString()}` : '';
   return request(`/api/public/observations.geojson${suffix}`, isGeoJson, { signal });
 }
@@ -238,6 +266,7 @@ function isInvestigations(value: unknown): value is CommunityInvestigationsRespo
 function isVoteResult(value: unknown): value is CommunityVoteResult { return isRecord(value) && isString(value.option) && typeof value.changed === 'boolean' && isString(value.message); }
 function isTokenResponse(value: unknown): value is ContributorTokenResponse { return isRecord(value) && isString(value.contributor_token) && value.contributor_token.length >= 16 && isString(value.handle_preview) && isString(value.note); }
 function isVisits(value: unknown): value is PublicVisitsResponse { return isRecord(value) && Array.isArray(value.rows) && value.rows.every((row) => isRecord(row) && isString(row.id) && isString(row.site_id) && isString(row.contributor_handle) && isString(row.visited_on) && (row.notes === null || isString(row.notes)) && (row.media_id === null || isString(row.media_id)) && isString(row.created_at)); }
+<<<<<<< HEAD
 function isVisit(value: unknown): value is PublicVisit { return isRecord(value) && isString(value.id) && isString(value.site_id) && isString(value.contributor_handle) && isString(value.visited_on) && (value.notes === null || isString(value.notes)) && (value.media_id === null || isString(value.media_id)) && isString(rowMediaOrNull(value.media_id) ?? '') && isString(value.created_at); }
 function rowMediaOrNull(v: unknown): string | null { return v === null ? '' : isString(v) ? v : null; }
 export interface CmsGuideSection { id: string; title: string; number?: string; content: string; }
@@ -246,12 +275,17 @@ function isCmsGuide(value: unknown): value is CmsGuide { return isRecord(value) 
 export function fetchCmsGuide(page: 'about' | 'how-it-works' | 'terms' | 'privacy', signal?: AbortSignal) { return request(`/api/control/cms/${page}`, isCmsGuide, { signal }); }
 
 function isComment(value: unknown): boolean { return isRecord(value) && isString(value.comment_id) && (value.parent_comment_id === null || isString(value.parent_comment_id)) && isRecord(value.author) && isString(value.author.public_user_id) && (value.author.display_name === null || isString(value.author.display_name)) && isString(value.body) && isString(value.created_at) && isString(value.moderation_status) && typeof value.reply_count === 'number' && Array.isArray(value.replies) && value.replies.every(isComment); }
+=======
+function isVisit(value: unknown): value is PublicVisit { return isRecord(value) && isString(value.id) && isString(value.site_id) && isString(value.contributor_handle) && isString(value.visited_on) && (value.notes === null || isString(value.notes)) && (value.media_id === null || isString(value.media_id)) && isString(value.created_at); }
+function isComment(value: unknown): boolean { return isRecord(value) && isString(value.comment_id) && (value.parent_comment_id === null || isString(value.parent_comment_id)) && isRecord(value.author) && isString(value.author.public_user_id) && isString(value.author.display_name) && isString(value.body) && isString(value.created_at) && isString(value.moderation_status) && typeof value.reply_count === 'number' && Array.isArray(value.replies) && value.replies.every(isComment); }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 function isCommentResponse(value: unknown): value is PublicCommentResponse { return isRecord(value) && Array.isArray(value.data) && value.data.every(isComment) && typeof value.total === 'number'; }
 
 export interface AccountUser {
   public_user_id: string;
   display_name: string | null;
   is_demo: boolean;
+<<<<<<< HEAD
   email?: string | null;
   is_whatsapp_linked?: boolean;
   display_name_updated_at: string | null;
@@ -260,6 +294,9 @@ export interface AccountUser {
   google_display_name?: string | null;
   google_avatar_url?: string | null;
   is_google_authenticated?: boolean;
+=======
+  display_name_updated_at: string | null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 export interface AccountObservation {
   passport_id: string; title: string; is_public: boolean; observation_category: string; created_at: string;
@@ -277,6 +314,7 @@ function isAuthCodeRequested(value: unknown): value is AuthCodeRequested {
 function isAuthSession(value: unknown): value is AuthSession {
   return isRecord(value) && typeof value.authenticated === 'boolean' && (value.user === null || isAccountUser(value.user));
 }
+<<<<<<< HEAD
 function isVerifiedSessionRaw(value: unknown): value is { token: string; expires_at?: string; expiresAt?: string; user: AccountUser } {
   return (
     isRecord(value) &&
@@ -373,6 +411,16 @@ export function restoreGoogleAvatar(token: string, signal?: AbortSignal) {
       isRecord(value) && value.ok === true,
     { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: {}, signal }
   );
+=======
+function isVerifiedSession(value: unknown): value is { token: string; expires_at: string; user: AccountUser } {
+  return isRecord(value) && isString(value.token) && value.token.startsWith('rt_session_') && isString(value.expires_at) && isAccountUser(value.user);
+}
+export function requestAuthCode(phone: string, signal?: AbortSignal) {
+  return request('/api/auth/request-code', isAuthCodeRequested, { method: 'POST', body: { phone }, signal });
+}
+export function verifyAuthCode(phone: string, code: string, signal?: AbortSignal) {
+  return request('/api/auth/verify-code', isVerifiedSession, { method: 'POST', body: { phone, code }, signal });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 export function fetchAuthSession(token: string, signal?: AbortSignal) {
   return request('/api/auth/session', isAuthSession, { headers: { Authorization: `Bearer ${token}` }, signal });
@@ -383,6 +431,7 @@ export function signOutAuthSession(token: string, signal?: AbortSignal) {
 export function updateAccountProfile(token: string, displayName: string | null, signal?: AbortSignal) {
   return request('/api/auth/profile', (value): value is { user: AccountUser } => isRecord(value) && isAccountUser(value.user), { method: 'PATCH', headers: { Authorization: `Bearer ${token}` }, body: { display_name: displayName }, signal });
 }
+<<<<<<< HEAD
 export function linkWhatsAppAccount(token: string, phone: string, signal?: AbortSignal) {
   return request('/api/auth/link-whatsapp', (value): value is { ok: true; message: string } => isRecord(value) && value.ok === true, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: { phone }, signal });
 }
@@ -552,12 +601,19 @@ export function updatePostAttachmentDownload(
   );
 }
 
+=======
+export function fetchMyObservations(token: string, signal?: AbortSignal) {
+  const valid = (value: unknown): value is { data: AccountObservation[] } => isRecord(value) && Array.isArray(value.data) && value.data.every((item) => isRecord(item) && isString(item.passport_id) && isString(item.title) && typeof item.is_public === 'boolean' && isString(item.observation_category) && isString(item.created_at) && ['district', 'approximate', 'exact', 'private'].includes(String(item.location_precision)) && ['comment_count', 'media_count', 'open_question_count'].every((key) => typeof item[key] === 'number' && Number.isFinite(item[key])) && (item.latitude === undefined || item.latitude === null || typeof item.latitude === 'number' && Number.isFinite(item.latitude)) && (item.longitude === undefined || item.longitude === null || typeof item.longitude === 'number' && Number.isFinite(item.longitude)));
+  return request('/api/me/observations', valid, { headers: { Authorization: `Bearer ${token}` }, signal });
+}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function createObservationComment(passportId: string, body: string, token: string, parentCommentId?: string, signal?: AbortSignal) {
   const clean = body.trim();
   if (!clean || !token.trim()) throw new ApiError('Sign in and enter a comment before submitting.', undefined, undefined, 'configuration');
   const isCreatedComment = (value: unknown): value is { comment: PublicComment; message: string } => isRecord(value) && isComment(value.comment) && isString(value.message);
   return request(`/api/posts/${encodeURIComponent(passportId)}/comments`, isCreatedComment, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: { body: clean, ...(parentCommentId ? { parent_comment_id: parentCommentId } : {}) }, signal });
 }
+<<<<<<< HEAD
 
 // ---------------------------------------------------------------------------
 // Stage 8 Full Community Discovery Writes & Reads
@@ -768,6 +824,9 @@ export function fileCommunityAbuseReport(
   });
 }
 
+=======
+export function fetchInvestigations(signal?: AbortSignal) { return request('/api/community/investigations?status=open&limit=50&offset=0', isInvestigations, { signal }); }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 export function fetchSiteVisits(siteId: string, signal?: AbortSignal) { return request(`/api/community/sites/${encodeURIComponent(siteId)}/visits`, isVisits, { signal }); }
 export function fetchObservationComments(passportId: string, signal?: AbortSignal) { return request(`/api/posts/${encodeURIComponent(passportId)}/comments`, isCommentResponse, { signal }); }
 export function fetchContributorToken(signal?: AbortSignal) { return request('/api/community/contributor-token', isTokenResponse, { method: 'POST', body: {}, signal }); }
@@ -775,6 +834,7 @@ export function castInvestigationVote(publicId: string, option: string, token: s
   if (!option.trim() || !token.trim()) throw new ApiError('A vote option and secure contributor token are required.', undefined, undefined, 'configuration');
   return request(`/api/community/investigations/${encodeURIComponent(publicId)}/vote`, isVoteResult, { method: 'POST', body: { option }, headers: { 'X-Contributor-Token': token }, signal });
 }
+<<<<<<< HEAD
 export function recordSiteVisit(siteId: string, visitedOn: string, token: string, signal?: AbortSignal, notes?: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(visitedOn) || !token.trim()) throw new ApiError('A visit date and secure contributor token are required.', undefined, undefined, 'configuration');
   return request(`/api/community/sites/${encodeURIComponent(siteId)}/visits`, isVisit, {
@@ -939,4 +999,9 @@ export function sendMobileChatMessage(
     },
     signal,
   });
+=======
+export function recordSiteVisit(siteId: string, visitedOn: string, token: string, signal?: AbortSignal) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(visitedOn) || !token.trim()) throw new ApiError('A visit date and secure contributor token are required.', undefined, undefined, 'configuration');
+  return request(`/api/community/sites/${encodeURIComponent(siteId)}/visits`, isVisit, { method: 'POST', body: { visited_on: visitedOn }, headers: { 'X-Contributor-Token': token }, signal });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }

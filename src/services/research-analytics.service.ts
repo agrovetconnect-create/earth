@@ -395,6 +395,7 @@ export class ResearchAnalyticsService {
       // consent gate is applied first, downgrading an exact coordinate to its
       // district before generalizing, so the resolver never sees a precise
       // value it would faithfully hand back.
+<<<<<<< HEAD
       const precision = detail.location.precision;
       const effectivePrecision: 'district' | 'approximate' | 'exact' =
         (precision !== 'exact' || detail.location.is_public) && precision !== 'private'
@@ -402,6 +403,11 @@ export class ResearchAnalyticsService {
           : 'district';
       const coords = resolvePublicCoordinates({
         precision: effectivePrecision,
+=======
+      const consented = detail.location.precision !== 'exact' || detail.location.is_public;
+      const coords = resolvePublicCoordinates({
+        precision: consented ? detail.location.precision : 'district',
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         district: detail.location.district,
         latitude: detail.location.latitude,
         longitude: detail.location.longitude,
@@ -435,7 +441,11 @@ export class ResearchAnalyticsService {
           expert_classification: detail.latest_verification?.expert_classification || null,
           district: detail.location.district,
           sector: detail.location.sector,
+<<<<<<< HEAD
           precision: effectivePrecision,
+=======
+          precision: detail.location.precision,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           data_quality_score: quality.overall_score,
           created_at: detail.created_at,
         },

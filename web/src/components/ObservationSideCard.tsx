@@ -21,11 +21,16 @@ import {
   MessagesSquare,
   Navigation,
   Paperclip,
+<<<<<<< HEAD
   Pencil,
   PlayCircle,
   ShieldCheck,
   Trash2,
   Upload,
+=======
+  PlayCircle,
+  ShieldCheck,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   User,
   X,
 } from 'lucide-react';
@@ -39,6 +44,7 @@ import type {
 } from '../types/communityPosts.js';
 import { categoryLabel } from '../types/community.js';
 import { CATEGORY_COLORS } from './MapView.js';
+<<<<<<< HEAD
 import {
   addPostMedia,
   answerQuestion,
@@ -48,6 +54,9 @@ import {
   updateAttachmentDownload,
   updatePost,
 } from '../services/postsApi.js';
+=======
+import { answerQuestion, createComment, fetchComments, updateAttachmentDownload, updatePost } from '../services/postsApi.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { UpdatePostPatch } from '../services/postsApi.js';
 import { PdfPreview } from './PdfPreview.js';
 import { ReportDialog } from './ReportDialog.js';
@@ -339,6 +348,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
   const [confirmCount, setConfirmCount] = useState<number>(2);
   const [locationSuccess, setLocationSuccess] = useState<string | null>(null);
 
+<<<<<<< HEAD
   // Post-pin owner editing & supporting media state
   const [isEditingOwnerDetails, setIsEditingOwnerDetails] = useState(false);
   const [ownerTitleDraft, setOwnerTitleDraft] = useState('');
@@ -350,6 +360,8 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
   const [supportingCaptionDraft, setSupportingCaptionDraft] = useState('');
   const supportingMediaInputRef = useRef<HTMLInputElement | null>(null);
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   useEffect(() => {
     if (!post) return;
     let stored: string | null = null;
@@ -364,6 +376,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
     setProposedLat('');
     setProposedLng('');
     setLocationSuccess(null);
+<<<<<<< HEAD
     setIsEditingOwnerDetails(false);
     setOwnerTitleDraft(post.title ?? '');
     setOwnerReportDraft(post.user_report ?? '');
@@ -372,6 +385,8 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
     setOwnerLngDraft(post.location.longitude !== null ? String(post.location.longitude) : '');
     setOwnerAddressDraft(post.location.address ?? '');
     setSupportingCaptionDraft('');
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }, [post?.passport_id]);
 
   const handleProposeLocation = (e: React.FormEvent) => {
@@ -540,14 +555,21 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
     }
   };
 
+<<<<<<< HEAD
   const applyUpdate = async (patch: UpdatePostPatch, feedback?: string) => {
+=======
+  const applyUpdate = async (patch: UpdatePostPatch) => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (!post || busy) return;
     setBusy(true);
     setNotice(null);
     try {
       const updated = await updatePost(post.passport_id, patch);
       onPostChanged(updated);
+<<<<<<< HEAD
       if (feedback) setNotice(feedback);
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     } catch (err: unknown) {
       setNotice(err instanceof Error ? err.message : 'Could not apply that change.');
     } finally {
@@ -555,6 +577,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
     }
   };
 
+<<<<<<< HEAD
   const handleSaveOwnerEdits = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!post || busy) return;
@@ -654,6 +677,8 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
     }
   };
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const setAttachmentDownload = async (
     attachment: PublicObservationAttachment,
     allow: boolean
@@ -721,7 +746,11 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
       loc.latitude !== null && loc.longitude !== null
         ? `lat ${loc.latitude.toFixed(4)}, lng ${loc.longitude.toFixed(4)}`
         : 'lat & lng withheld';
+<<<<<<< HEAD
     const contributor = post.owner?.display_name ?? 'Earth Talk Contributor';
+=======
+    const contributor = post.owner?.display_name ?? 'An Earth Talk contributor';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     const base = `earth-talk-${post.passport_id}-${media.sort_order + 1}`;
     const line1 = `${place} - ${coords}`;
     const line2 = `Earth Talk GeoAI - Contributed by ${contributor}`;
@@ -1121,7 +1150,11 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                 </ul>
               </div>
             )}
+<<<<<<< HEAD
             {post.owner ? (
+=======
+            {post.owner && (
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               <div className="mt-4 flex items-center gap-2.5 border-t border-[#e9eaec] pt-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0b57d0] text-[11px] font-semibold text-white">
                   {initialsOf(post.owner.display_name, post.owner.public_user_id)}
@@ -1133,6 +1166,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                   <p className="text-[10px] text-[#8f8f8f]">Contributor</p>
                 </div>
               </div>
+<<<<<<< HEAD
             ) : (
               <div className="mt-4 flex items-center gap-2.5 border-t border-[#e9eaec] pt-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8f0fe] text-[11px] font-semibold text-[#0b57d0]">
@@ -1145,6 +1179,8 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                   <p className="text-[10px] text-[#8f8f8f]">Contributor · Earth Talk</p>
                 </div>
               </div>
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             )}
           </section>
 
@@ -1365,6 +1401,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
 
           {/* Owner controls */}
           {post.viewer_is_owner && (
+<<<<<<< HEAD
             <section className="rounded-xl border border-[#e3e3e3] p-4 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-[13px] font-medium text-[#1f1f1f] flex items-center gap-1.5">
@@ -1399,6 +1436,14 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                   </button>
                 )}
 
+=======
+            <section className="rounded-xl border border-[#e3e3e3] p-4">
+              <h3 className="text-[13px] font-medium text-[#1f1f1f] flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-[#0b57d0]" aria-hidden="true" />
+                Your post
+              </h3>
+              <div className="mt-3 space-y-3">
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 <button
                   type="button"
                   className="g-btn g-btn-tonal w-full text-[12px] disabled:opacity-50"
@@ -1407,28 +1452,43 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                     if (!post.is_public && post.attachments.length > 0) {
                       setPublishPending(true);
                     } else {
+<<<<<<< HEAD
                       applyUpdate(
                         { is_public: !post.is_public },
                         post.is_public
                           ? 'Observation set to private and removed from public map and feed.'
                           : 'Observation published.'
                       );
+=======
+                      applyUpdate({ is_public: !post.is_public });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                     }
                   }}
                 >
                   {post.is_public ? (
                     <>
                       <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
+<<<<<<< HEAD
                       <span>Make Entire Observation Private</span>
+=======
+                      <span>Post is public — tap to make private</span>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                     </>
                   ) : (
                     <>
                       <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+<<<<<<< HEAD
                       <span>Publish Observation</span>
                     </>
                   )}
                 </button>
 
+=======
+                      <span>Post is private — tap to publish</span>
+                    </>
+                  )}
+                </button>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 {publishPending && (
                   <div className="rounded-lg border border-[#e3e3e3] bg-[#f8fafd] p-3 space-y-2">
                     <p className="text-[12px] font-medium text-[#1f1f1f]">
@@ -1463,7 +1523,10 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                     </button>
                   </div>
                 )}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 <div>
                   <label className="block text-[11px] font-medium text-[#3c4043] mb-1">
                     Map location precision
@@ -1472,10 +1535,14 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                     value={post.location.precision}
                     disabled={busy}
                     onChange={(e) =>
+<<<<<<< HEAD
                       applyUpdate(
                         { location_precision: e.target.value as LocationPrivacyLevel },
                         'Map location precision updated.'
                       )
+=======
+                      applyUpdate({ location_precision: e.target.value as LocationPrivacyLevel })
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                     }
                     className="w-full h-9 rounded-lg border border-[#c7c7c7] px-2.5 text-[13px] bg-white focus:outline-none focus:border-[#0b57d0] disabled:opacity-50"
                   >
@@ -1486,6 +1553,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                     ))}
                   </select>
                 </div>
+<<<<<<< HEAD
 
                 {/* Edit Title, Field Notes & Coordinates */}
                 <div className="pt-1 border-t border-[#e3e3e3]">
@@ -1654,6 +1722,11 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
               </div>
               <p className="text-[11px] text-[#8f8f8f]">
                 Changes to visibility, map precision, coordinates, or media take effect immediately.
+=======
+              </div>
+              <p className="mt-3 text-[11px] text-[#8f8f8f]">
+                Changing these options updates the record immediately.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               </p>
             </section>
           )}

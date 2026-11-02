@@ -3,7 +3,10 @@ import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
 import { isDatabaseConfigured } from '../utils/admin-auth.js';
+<<<<<<< HEAD
 import { ServiceUnavailableError } from '../utils/service-error.js';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type {
   AbuseReportReason,
   AbuseReportStatus,
@@ -71,9 +74,13 @@ export class AbuseReportRepository {
 
   private requireDatabase(operation: string): void {
     if (!this.database && env.IS_PRODUCTION) {
+<<<<<<< HEAD
       throw new ServiceUnavailableError(
         `abuse report ${operation}`,
         undefined,
+=======
+      throw new Error(
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         `Filing a report requires a configured database (${operation}). ` +
           'Set SUPABASE_URL and SUPABASE_SECRET_KEY and run migration 020_community_abuse_reports.sql.'
       );
@@ -113,10 +120,15 @@ export class AbuseReportRepository {
           created_at: createdAt,
         };
       } catch (err) {
+<<<<<<< HEAD
         logger.error('Could not store the abuse report in the database; refusing to fall back to process memory', {
           error: String(err),
         });
         throw new ServiceUnavailableError('abuse report create', err);
+=======
+        logger.warn('Could not store the abuse report in the database', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -164,12 +176,17 @@ export class AbuseReportRepository {
         if (Array.isArray(data) && data.length > 0) {
           return toFiled(data[0] as CommunityAbuseReport);
         }
+<<<<<<< HEAD
         return null;
       } catch (err) {
         logger.error('Could not check for duplicate abuse report; refusing to fall back to process memory', {
           error: String(err),
         });
         throw new ServiceUnavailableError('abuse report duplicate check', err);
+=======
+      } catch (err) {
+        logger.warn('Could not check for a duplicate abuse report', { error: String(err) });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -196,12 +213,17 @@ export class AbuseReportRepository {
         if (Array.isArray(data)) {
           return (data as CommunityAbuseReport[]).map(toFiled);
         }
+<<<<<<< HEAD
         return [];
       } catch (err) {
         logger.error('Could not read the abuse report queue; refusing to fall back to process memory', {
           error: String(err),
         });
         throw new ServiceUnavailableError('abuse report list', err);
+=======
+      } catch (err) {
+        logger.warn('Could not read the abuse report queue', { error: String(err) });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -226,12 +248,17 @@ export class AbuseReportRepository {
         const { data, error } = await query.order('created_at', { ascending: false });
         if (error) throw new Error(error.message);
         if (Array.isArray(data)) return data as CommunityAbuseReport[];
+<<<<<<< HEAD
         return [];
       } catch (err) {
         logger.error('Could not read the abuse report moderation queue; refusing to fall back to process memory', {
           error: String(err),
         });
         throw new ServiceUnavailableError('abuse report moderation queue', err);
+=======
+      } catch (err) {
+        logger.warn('Could not read the abuse report queue', { error: String(err) });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 
@@ -253,6 +280,7 @@ export class AbuseReportRepository {
 
     if (this.database) {
       try {
+<<<<<<< HEAD
         const { data, error } = await (supabase as any).rpc('resolve_abuse_report_transactional', {
           p_public_id: publicId,
           p_status: resolution.status,
@@ -268,6 +296,23 @@ export class AbuseReportRepository {
           error: String(err),
         });
         throw new ServiceUnavailableError('abuse report resolution', err);
+=======
+        const { data, error } = await (supabase.from('community_abuse_reports') as any)
+          .update({
+            status: resolution.status,
+            resolution_note: resolution.resolutionNote,
+            resolved_by: resolution.status === 'open' ? null : resolution.resolvedBy,
+            resolved_at: terminal ? resolvedAt : null,
+          })
+          .eq('public_id', publicId)
+          .select('*');
+        if (error) throw new Error(error.message);
+        if (Array.isArray(data) && data.length > 0) return data[0] as CommunityAbuseReport;
+        return null;
+      } catch (err) {
+        logger.warn('Could not record the moderation decision', { error: String(err) });
+        throw err;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     }
 

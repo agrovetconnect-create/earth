@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+<<<<<<< HEAD
 import { CornerDownRight, ExternalLink, Flag, Loader2, Mail, MessageCircle, MessageCircleQuestion, Send } from 'lucide-react';
+=======
+import { CornerDownRight, ExternalLink, Flag, Loader2, MessageCircle, MessageCircleQuestion, Send } from 'lucide-react';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { createComment, fetchMyQuestions } from '../services/postsApi.js';
 import type { CommunityUser, MyDiscussionThread, PublicComment } from '../types/communityPosts.js';
 import { ReportDialog } from './ReportDialog.js';
@@ -129,16 +133,26 @@ export const MyQuestionsPanel: React.FC<MyQuestionsPanelProps> = ({
       {!viewer ? (
         <div className="p-4 rounded-xl bg-white border border-[#e3e3e3] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
           <div className="flex items-center gap-2.5 text-[#3c4043]">
+<<<<<<< HEAD
             <Mail className="w-4 h-4 text-[#2b7f3f]" />
             <span>Sign in to view and reply to your questions.</span>
+=======
+            <MessageCircle className="w-4 h-4 text-[#2b7f3f]" />
+            <span>Sign in with WhatsApp to view and reply to your questions.</span>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </div>
           <button
             type="button"
             onClick={onRequestLogin}
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2b7f3f] hover:bg-[#257036] text-white text-xs font-medium transition-colors shadow-2xs shrink-0"
           >
+<<<<<<< HEAD
             <Mail className="w-3.5 h-3.5" />
             <span>Sign in to Earth Talk</span>
+=======
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>Sign in with WhatsApp</span>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </button>
         </div>
       ) : error ? (
@@ -150,11 +164,20 @@ export const MyQuestionsPanel: React.FC<MyQuestionsPanelProps> = ({
           <Loader2 className="w-4 h-4 animate-spin" /> Loading your questions…
         </div>
       ) : threads.length === 0 ? (
+<<<<<<< HEAD
         <div className="py-12 text-center max-w-sm mx-auto space-y-2">
           <div className="text-sm font-medium text-[#1f1f1f]">No questions found</div>
           <div className="text-xs text-[#5e5e5e] leading-relaxed">
             You haven&apos;t started any discussion threads yet.
           </div>
+=======
+        <div className="p-8 rounded-xl bg-white/40 border border-dashed border-[#c7c7c7] text-center">
+          <div className="text-base font-medium text-[#3c4043]">You have not asked anything yet</div>
+          <p className="text-sm text-[#8f8f8f] mt-2 max-w-xl mx-auto leading-relaxed">
+            Open an observation and start a discussion. Your question appears here, with every reply, so
+            you can pick the conversation back up.
+          </p>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         </div>
       ) : (
         threads.map((thread) => (

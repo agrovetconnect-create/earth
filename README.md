@@ -28,7 +28,10 @@ input separate from expert verification and scientific confirmation.
 | 10 | Video/3GP/HEIC media pipeline, evidence ladder map colours, attributable admin actions | Complete |
 | 11 | Geoscience Intelligence: context-aware layers, nearby context, research opportunities | Complete |
 | 12 | Community observation posts, WhatsApp verification login, discussion, moderation | Complete |
+<<<<<<< HEAD
 | 13 | Control Center RBAC, transactional audit RPCs, GeoAI intelligence wiring, mobile & security hardening | Complete |
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 ## Current functionality
 
@@ -102,7 +105,11 @@ input separate from expert verification and scientific confirmation.
   | `community_supported` | Agreement from several independent participants |
   | `community_investigated` | Real substantive evidence items |
   | `expert_reviewed` | A recorded human expert review |
+<<<<<<< HEAD
   | `scientifically_confirmed` | An expert review backed by structured, traceable, accredited laboratory evidence (`report_id`, `laboratory_name`, `evidence_reference`, `accreditation_verified`, `review_authorization`) |
+=======
+  | `scientifically_confirmed` | An expert review backed by laboratory analysis or a documented reference specimen |
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   | `unresolved` | A dispute, or conflicting evidence |
 
   Community activity alone can never reach `expert_reviewed` or `scientifically_confirmed`.
@@ -161,6 +168,7 @@ This is a hard constraint of the codebase, enforced by tests:
   empty read on `GET` and `503 COMMUNITY_UNAVAILABLE` on writes, never a fake success
   and never an empty `200` that would imply "no records exist".
 
+<<<<<<< HEAD
 ## Privacy & Security Architecture
 
 - Raw phone numbers are **never stored**; one-way salted HMAC-SHA256 hashes are used.
@@ -177,11 +185,29 @@ This is a hard constraint of the codebase, enforced by tests:
 ## Mobile application
 
 - The Expo + React Native client in [`mobile/`](mobile/README.md) connects to the shared Earth Talk API and context-aware GeoAI photo submission pipeline, with offline queue persistence and WhatsApp participation support. Production Android APKs must be built and uploaded as real signed packages (`>= 100 KB`); when no production APK is present on disk, `GET /api/app-distribution/download` honestly returns `503 APK_UNAVAILABLE`.
+=======
+## Privacy
+
+- Raw phone numbers are **never stored**; one-way salted HMAC-SHA256 hashes are used.
+- Community contributors appear only as derived handles such as `Field Explorer #A82F`.
+- Browser contributions use a random localStorage token containing no personal data.
+- `publication_status` defaults to `private`, `verification_status` to `unverified`,
+  and `is_public` to `false` for all location coordinates.
+
+## Mobile application
+
+- A separate Expo + React Native client is maintained in [`mobile/`](mobile/README.md). It reuses the public Earth Talk API and keeps WhatsApp as an alternative submission and participation channel. Direct native photo-to-Gemini submission is not exposed by the current backend; native splash/device/API release verification is still outstanding. See the mobile README and integration reports for setup and current limitations.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 ## Not yet implemented
 
 - End-to-end encrypted direct chat
+<<<<<<< HEAD
 - External cloud object storage for WhatsApp media replay (WhatsApp submissions currently retain metadata unless uploaded directly via web/mobile)
+=======
+- Media object storage (WhatsApp submissions currently keep their metadata and are
+  reported as such rather than replayed)
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 ## Development
 
@@ -190,6 +216,7 @@ npm install
 npm run dev
 ```
 
+<<<<<<< HEAD
 ## Running Tests & Verification
 
 ```bash
@@ -200,6 +227,18 @@ npm --prefix mobile test
 ```
 
 Runs the full 19-suite hermetic backend/web verification harness (Stages 2–13, photo submission, fake-data audit, offline cache, security regressions, webhook durability, durable queue config, and final security repair suite) plus the 52-test Expo mobile suite. Live Supabase integration tests reside in `tests/integration/` (`npm run test:integration`).
+=======
+## Running Tests
+
+```bash
+npm test
+```
+
+Runs the full suite: Stage 2 (12), Stage 3 (15), Stage 4 (11), Stage 5 (10),
+Stage 6 (33), Stage 8 Community Discovery (28), Stage 9 (36), Stage 10 (64),
+Stage 11 (27), Stage 12 (26) — 262 state-stage assertions, plus the 12-assertion
+fake-data audit.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 ## Production build
 
@@ -337,12 +376,28 @@ Follow these steps to configure your Supabase instance:
    - Search for `postgis` and enable it.
    - Per Supabase best practice, install the extension in the `extensions` schema.
 3. **Execute Database Migrations:**
+<<<<<<< HEAD
    - Apply all SQL migrations sequentially from `supabase/migrations/001_extensions.sql` through `supabase/migrations/035_security_hardening_and_transactional_ops.sql` (via Supabase CLI or SQL Editor).
 4. **Configure Environment Variables:**
    - Obtain your Project URL (`https://<project-ref>.supabase.co`) and `service_role` / `sb_secret_` server secret key from **Project Settings** → **API**.
    - Populate all required production secrets listed in `.env.example` and [`docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md`](docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md), including `INTERNAL_SERVICE_KEY`, `SUPER_ADMIN_PASSWORD_HASH`, `SUPER_ADMIN_SESSION_SECRET`, `USER_HASH_SECRET`, `ANONYMOUS_CONTRIBUTOR_SECRET`, and `AUTH_SESSION_SECRET`.
 5. **Verify Security:**
    - Confirm Row Level Security (RLS) is enabled across all tables and `anon`/`authenticated` roles cannot execute privileged `SECURITY DEFINER` RPCs (enforced by Migration `035`).
+=======
+   - In the Supabase SQL Editor, run the migration scripts sequentially from `supabase/migrations/`:
+     - `001_extensions.sql`
+     - `002_observations.sql`
+     - `003_media.sql`
+     - `004_locations.sql`
+     - `005_processing_events.sql`
+     - `006_indexes.sql`
+4. **Configure Environment Variables:**
+   - Obtain your Project URL (`https://<project-ref>.supabase.co`) and `service_role` secret key from **Project Settings** → **API**.
+   - Add them to `.env`.
+5. **Verify Security:**
+   - Ensure Row Level Security (RLS) is enabled on all tables (applied automatically in migrations).
+   - Only backend services using `SUPABASE_SECRET_KEY` write to the database.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 ---
 
@@ -370,6 +425,7 @@ cp .env.example .env
 | `AI_RATE_LIMIT_PER_USER` | Maximum image analyses per user per window | `10` |
 | `AI_RATE_LIMIT_WINDOW_SECONDS` | Rate limit rolling window in seconds | `3600` (1 hour) |
 | `SUPABASE_URL` | Supabase Project URL | `https://xxxx.supabase.co` |
+<<<<<<< HEAD
 | `SUPABASE_SECRET_KEY` | Supabase Server-side Service Role / Secret key | `sb_secret_...` |
 | `USER_HASH_SECRET` | Salt/Secret for HMAC-SHA256 user phone number hashing | 32-byte random hex |
 | `SUPER_ADMIN_EMAIL` | Bootstrap Super Admin owner email | `owner@earthtalk.org` |
@@ -379,5 +435,9 @@ cp .env.example .env
 | `AUTH_SESSION_SECRET` | Secret for WhatsApp-verified user sessions | 32-byte random hex |
 | `INTERNAL_SERVICE_KEY` | Dedicated constant-time key for `/internal/*` endpoints | 32-byte random hex |
 | `WHATSAPP_APP_SECRET` | Meta App Secret for `X-Hub-Signature-256` verification | Required in production |
+=======
+| `SUPABASE_SECRET_KEY` | Supabase Server-side Service Role secret key | `eyJhbG...` |
+| `USER_HASH_SECRET` | Salt/Secret for HMAC-SHA256 user phone number hashing | `replace_with_a_long_random_string` |
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 *Security notice: Never commit `.env` or expose access tokens or API keys in logs or client-facing code.*

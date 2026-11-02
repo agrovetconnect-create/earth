@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import crypto from 'node:crypto';
 
+<<<<<<< HEAD
 // Load environment variables from .env file (override system defaults, respecting test runner isolation,
 // while ensuring an empty KEY= line in .env never blanks out an already-injected runtime secret).
 const isHermeticTestRun = process.env.HERMETIC_TEST === 'true';
@@ -21,6 +22,10 @@ if (!isHermeticTestRun) {
     }
   }
 }
+=======
+// Load environment variables from .env file
+dotenv.config();
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 export interface EnvConfig {
   PORT: number;
@@ -95,12 +100,16 @@ export interface EnvConfig {
   AUTH_CODE_MAX_ATTEMPTS: number;
   AUTH_REQUEST_RATE_LIMIT_PER_MINUTE: number;
   AUTH_IP_RATE_LIMIT_PER_MINUTE: number;
+<<<<<<< HEAD
   REAUTHENTICATION_INACTIVITY_DAYS: number;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   COMMENT_RATE_LIMIT_PER_MINUTE: number;
   COMMENT_MAX_LENGTH: number;
   POST_MEDIA_MAX_STORED_BYTES: number;
   /** Labelled demonstration posts. Always off in production unless set there. */
   DEMO_POSTS_ENABLED: boolean;
+<<<<<<< HEAD
 
   // Email (Stage 13)
   EMAIL_API_KEY: string;
@@ -109,6 +118,8 @@ export interface EnvConfig {
 
   // Internal Service Security (Item 11)
   INTERNAL_SERVICE_KEY: string;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /**
@@ -122,7 +133,10 @@ const PLACEHOLDER_MARKERS = [
   'test_',
   'changeme',
   'replace_me',
+<<<<<<< HEAD
   'not_configured',
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   'required in production',
   '# required',
   'required',
@@ -169,12 +183,18 @@ const defaults: Record<string, string> = {
   AUTH_CODE_MAX_ATTEMPTS: '5',
   AUTH_REQUEST_RATE_LIMIT_PER_MINUTE: '5',
   AUTH_IP_RATE_LIMIT_PER_MINUTE: '20',
+<<<<<<< HEAD
   REAUTHENTICATION_INACTIVITY_DAYS: '30',
   COMMENT_RATE_LIMIT_PER_MINUTE: '10',
   COMMENT_MAX_LENGTH: '2000',
   POST_MEDIA_MAX_STORED_BYTES: '1500000',
   EMAIL_FROM: 'Earth Talk <noreply@earthtalk.local>',
   CONTROL_CENTER_URL: 'http://localhost:3000/control',
+=======
+  COMMENT_RATE_LIMIT_PER_MINUTE: '10',
+  COMMENT_MAX_LENGTH: '2000',
+  POST_MEDIA_MAX_STORED_BYTES: '1500000',
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 };
 
 /**
@@ -198,8 +218,11 @@ const requiredSecretsInProd = [
   'SUPER_ADMIN_SESSION_SECRET',
   'ANONYMOUS_CONTRIBUTOR_SECRET',
   'AUTH_SESSION_SECRET',
+<<<<<<< HEAD
   'EMAIL_API_KEY',
   'INTERNAL_SERVICE_KEY',
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 ];
 
 /**
@@ -222,6 +245,7 @@ const devSecretFallbacks: Record<string, string> = {
   SUPER_ADMIN_SESSION_SECRET: 'dev_admin_session_secret_not_configured',
   ANONYMOUS_CONTRIBUTOR_SECRET: 'dev_contributor_secret_not_configured',
   AUTH_SESSION_SECRET: 'dev_auth_session_secret_not_configured',
+<<<<<<< HEAD
   EMAIL_API_KEY: 'dev_email_api_key_not_configured',
   INTERNAL_SERVICE_KEY: 'dev_internal_service_key_not_configured',
 };
@@ -285,6 +309,10 @@ export function validateProductionCorsOrigins(raw: string): string[] {
   return origins;
 }
 
+=======
+};
+
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 function validateEnv(): EnvConfig {
   const isProd = process.env.NODE_ENV === 'production';
 
@@ -352,9 +380,22 @@ function validateEnv(): EnvConfig {
     );
   }
 
+<<<<<<< HEAD
   const rawCorsOrigins = getVar('CORS_ALLOWED_ORIGINS');
   if (isProd) {
     validateProductionCorsOrigins(rawCorsOrigins);
+=======
+  const corsOrigins = getVar('CORS_ALLOWED_ORIGINS')
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (isProd && corsOrigins.length === 0) {
+    throw new Error(
+      '[FATAL] CORS_ALLOWED_ORIGINS must list at least one origin in production. ' +
+        'Note the variable name: CORS_ALLOWED_ORIGINS, not CORS_ORIGINS.'
+    );
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   return {
@@ -418,7 +459,10 @@ function validateEnv(): EnvConfig {
     AUTH_CODE_MAX_ATTEMPTS: parseIntVar('AUTH_CODE_MAX_ATTEMPTS'),
     AUTH_REQUEST_RATE_LIMIT_PER_MINUTE: parseIntVar('AUTH_REQUEST_RATE_LIMIT_PER_MINUTE'),
     AUTH_IP_RATE_LIMIT_PER_MINUTE: parseIntVar('AUTH_IP_RATE_LIMIT_PER_MINUTE'),
+<<<<<<< HEAD
     REAUTHENTICATION_INACTIVITY_DAYS: parseIntVar('REAUTHENTICATION_INACTIVITY_DAYS'),
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     COMMENT_RATE_LIMIT_PER_MINUTE: parseIntVar('COMMENT_RATE_LIMIT_PER_MINUTE'),
     COMMENT_MAX_LENGTH: parseIntVar('COMMENT_MAX_LENGTH'),
     POST_MEDIA_MAX_STORED_BYTES: parseIntVar('POST_MEDIA_MAX_STORED_BYTES'),
@@ -433,6 +477,7 @@ function validateEnv(): EnvConfig {
       }
       return !isProd;
     })(),
+<<<<<<< HEAD
 
     // Email
     EMAIL_API_KEY: getSecret('EMAIL_API_KEY'),
@@ -441,10 +486,13 @@ function validateEnv(): EnvConfig {
 
     // Internal Service Key
     INTERNAL_SERVICE_KEY: getSecret('INTERNAL_SERVICE_KEY'),
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   };
 }
 
 /**
+<<<<<<< HEAD
  * Constant-time verification for internal service credentials.
  */
 export function verifyInternalServiceKey(providedKey: unknown): boolean {
@@ -462,6 +510,8 @@ export function verifyInternalServiceKey(providedKey: unknown): boolean {
 }
 
 /**
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  * Derives a scrypt password hash in the format consumed by `verifyPassword`.
  * Exposed so the CLI helper and tests share exactly one implementation.
  *

@@ -7,18 +7,27 @@ import type {
   MyPostSummary,
   PublicComment,
 } from '../types/communityPosts.js';
+<<<<<<< HEAD
 import { ensureContributorToken } from './communityApi.js';
 import { getCommunityAuthHeaders, getCommunitySession } from './communityAuth.js';
+=======
+import { getCommunityAuthHeaders } from './communityAuth.js';
+import { getContributorToken } from './communityApi.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { requestJson } from './http.js';
 
 const AUTH_HEADERS = getCommunityAuthHeaders;
 const ACCEPT = { Accept: 'application/json' };
 
 function combine(headers?: HeadersInit): Record<string, string> {
+<<<<<<< HEAD
   return {
     ...AUTH_HEADERS(),
     ...(headers as Record<string, string> | undefined),
   };
+=======
+  return { ...AUTH_HEADERS(), ...(headers as Record<string, string> | undefined) };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** Fallback when the server sends no readable error text. */
@@ -76,10 +85,23 @@ export async function createComment(
 export async function reportContent(
   input: FileAbuseReportInput
 ): Promise<{ report: FiledAbuseReport; message: string }> {
+<<<<<<< HEAD
   await ensureContributorToken();
   return requestJson<{ report: FiledAbuseReport; message: string }>('/api/community/reports', {
     method: 'POST',
     headers: combine(ACCEPT),
+=======
+  // The pseudonymous browser contributor token travels with the report so the
+  // server can suppress the same person filing the same report twice. It carries
+  // no personal data and is stored only as a one-way hash.
+  const contributorToken = getContributorToken();
+  return requestJson<{ report: FiledAbuseReport; message: string }>('/api/community/reports', {
+    method: 'POST',
+    headers: {
+      ...combine(ACCEPT),
+      ...(contributorToken ? { 'X-Contributor-Token': contributorToken } : {}),
+    },
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     json: input,
     errorMessage: requestFailed,
   });
@@ -102,10 +124,13 @@ export interface UpdatePostPatch {
   user_report?: string | null;
   is_public?: boolean;
   location_precision?: string;
+<<<<<<< HEAD
   latitude?: number | null;
   longitude?: number | null;
   district?: string | null;
   location_text?: string | null;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** PATCH /api/posts/:passportId */
@@ -119,6 +144,7 @@ export async function updatePost(
   );
 }
 
+<<<<<<< HEAD
 /** POST /api/posts/:passportId/media */
 export async function addPostMedia(
   passportId: string,
@@ -155,6 +181,8 @@ export async function removePostMedia(
   );
 }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 /** PATCH /api/posts/:passportId/attachments/:attachmentId (download on/off). */
 export async function updateAttachmentDownload(
   passportId: string,
@@ -174,6 +202,7 @@ export async function updateAttachmentDownload(
 
 /** GET /api/me/observations */
 export async function fetchMyPosts(): Promise<MyPostSummary[]> {
+<<<<<<< HEAD
   try {
     const data = await requestJson<{ data: MyPostSummary[] }>('/api/me/observations', {
       headers: combine(ACCEPT),
@@ -183,6 +212,13 @@ export async function fetchMyPosts(): Promise<MyPostSummary[]> {
   } catch {
     return [];
   }
+=======
+  const data = await requestJson<{ data: MyPostSummary[] }>('/api/me/observations', {
+    headers: combine(ACCEPT),
+    errorMessage: requestFailed,
+  });
+  return data.data;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** GET /api/me/questions */
@@ -192,6 +228,7 @@ export async function fetchMyQuestions(): Promise<MyDiscussionThread[]> {
     errorMessage: requestFailed,
   });
   return data.data;
+<<<<<<< HEAD
 }
 
 // ---------------------------------------------------------------------------
@@ -405,4 +442,6 @@ export async function confirmWebObservationPin(input: {
     },
     errorMessage: requestFailed,
   });
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }

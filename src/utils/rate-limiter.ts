@@ -1,7 +1,10 @@
 import { env } from '../config/env.js';
+<<<<<<< HEAD
 import { supabase } from '../config/supabase.js';
 import { isDatabaseConfigured } from './admin-auth.js';
 import { logger } from './logger.js';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 interface RateLimitRecord {
   timestamps: number[];
@@ -108,6 +111,7 @@ export function pruneRateLimitWindows(windowMs = 60_000): void {
   }
 }
 
+<<<<<<< HEAD
 const rpcStatus = new Map<string, boolean>();
 
 function isMissingRpcError(error: any): boolean {
@@ -230,3 +234,5 @@ export function stopRateLimitCleanupTimer(): void {
 }
 
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed

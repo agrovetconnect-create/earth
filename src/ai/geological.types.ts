@@ -112,8 +112,11 @@ export type GeologicalErrorCategory =
   | 'GEMINI_API_ERROR'
   | 'GEMINI_INVALID_RESPONSE'
   | 'GEMINI_PROHIBITED_CLAIM'
+<<<<<<< HEAD
   | 'NON_GEOSCIENCE_SUBMISSION'
   | 'INSUFFICIENT_IMAGE_QUALITY'
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   | 'INTERNAL_ERROR';
 
 export class GeologicalAnalysisError extends Error {

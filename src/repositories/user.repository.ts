@@ -22,6 +22,7 @@ import type {
  * in-memory fallback that forgets every account on restart.
  */
 
+<<<<<<< HEAD
 export type CreateVia = 'web' | 'whatsapp' | 'email' | 'mobile';
 
 export interface EmailVerificationCodeMemoryRecord {
@@ -35,24 +36,37 @@ export interface EmailVerificationCodeMemoryRecord {
   consumed_at: string | null;
   created_at: string;
 }
+=======
+export type CreateVia = 'web' | 'whatsapp';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 interface MemoryStores {
   users: Map<string, UserRow>;
   usersByPhoneHash: Map<string, string>;
+<<<<<<< HEAD
   usersByEmail: Map<string, string>;
   identities: Map<string, string>;
   codes: Map<string, VerificationCodeRecord[]>;
   emailCodes: Map<string, EmailVerificationCodeMemoryRecord[]>;
+=======
+  identities: Map<string, string>;
+  codes: Map<string, VerificationCodeRecord[]>;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   sessions: Map<string, AuthSessionRow>;
 }
 
 const memory: MemoryStores = {
   users: new Map(),
   usersByPhoneHash: new Map(),
+<<<<<<< HEAD
   usersByEmail: new Map(),
   identities: new Map(),
   codes: new Map(),
   emailCodes: new Map(),
+=======
+  identities: new Map(),
+  codes: new Map(),
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   sessions: new Map(),
 };
 
@@ -68,11 +82,17 @@ export class UserRepository {
 
   private requireDatabase(operation: string): void {
     if (!this.ready && env.IS_PRODUCTION) {
+<<<<<<< HEAD
       throw new ServiceUnavailableError(
         operation,
         undefined,
         `Account ${operation} requires a configured database. ` +
           'Set SUPABASE_URL and SUPABASE_SECRET_KEY and run Supabase migrations.'
+=======
+      throw new Error(
+        `Account ${operation} requires a configured database. ` +
+          'Set SUPABASE_URL and SUPABASE_SECRET_KEY and run migration 016_community_posts.sql.'
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       );
     }
   }
@@ -240,12 +260,16 @@ export class UserRepository {
    */
   registerUser(user: UserRow): void {
     memory.users.set(user.id, user);
+<<<<<<< HEAD
     if (user.phone_hash) {
       memory.usersByPhoneHash.set(user.phone_hash, user.id);
     }
     if (user.email) {
       memory.usersByEmail.set(user.email.trim().toLowerCase(), user.id);
     }
+=======
+    memory.usersByPhoneHash.set(user.phone_hash, user.id);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   // ==========================================================================
@@ -299,6 +323,7 @@ export class UserRepository {
     return userId ? memory.users.get(userId) ?? null : null;
   }
 
+<<<<<<< HEAD
   async isWhatsAppLinked(userId: string): Promise<boolean> {
     if (!userId) return false;
     if (this.ready) {
@@ -319,6 +344,8 @@ export class UserRepository {
     return false;
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   // ==========================================================================
   // Verification codes
   // ==========================================================================
@@ -512,6 +539,7 @@ export class UserRepository {
     if (session) session.last_used_at = lastUsedAt;
   }
 
+<<<<<<< HEAD
   async findUserByEmail(email: string): Promise<UserRow | null> {
     if (!email) return null;
     const cleanEmail = email.trim().toLowerCase();
@@ -807,6 +835,8 @@ export class UserRepository {
     }
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /** Test helper: the number of accounts held in the development memory store. */
   get memoryAccountCount(): number {
     return memory.users.size;

@@ -2,9 +2,14 @@ import type { Response } from 'express';
 import { researchAnalyticsService, ResearchAnalyticsService } from '../services/research-analytics.service.js';
 import { expertRepository } from '../repositories/expert.repository.js';
 import { dataQualityService } from '../services/data-quality.service.js';
+<<<<<<< HEAD
 import { checkDistributedRateLimit } from '../utils/rate-limiter.js';
 import { hashRequestIp } from '../utils/user-auth.js';
 import type { AuthenticatedStaffRequest } from '../utils/admin-auth.js';
+=======
+import { checkRateLimit } from '../utils/rate-limiter.js';
+import type { AuthenticatedAdminRequest } from '../utils/admin-auth.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { env } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
@@ -14,7 +19,11 @@ export class ResearchController {
   /**
    * GET /api/research/summary
    */
+<<<<<<< HEAD
   getSummary = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getSummary = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       this.service.recordRequest();
       const summary = await this.service.getResearchSummary();
@@ -29,7 +38,11 @@ export class ResearchController {
   /**
    * GET /api/research/dataset-version
    */
+<<<<<<< HEAD
   getDatasetVersion = async (_req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getDatasetVersion = async (_req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     res.status(200).json({
       dataset_version: env.RESEARCH_DATASET_VERSION || 'RT-RW-RESEARCH-2026-001',
       schema_version: '1.0.0',
@@ -41,11 +54,20 @@ export class ResearchController {
   /**
    * GET /api/research/observations.csv
    */
+<<<<<<< HEAD
   exportCsv = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
     try {
       const rateLimitKey = `export_csv:${hashRequestIp(req)}`;
 
       if (!(await checkDistributedRateLimit(rateLimitKey, env.RESEARCH_EXPORT_RATE_LIMIT_PER_MINUTE))) {
+=======
+  exportCsv = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+    try {
+      const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+      const rateLimitKey = `export_csv_${clientIp}`;
+
+      if (!checkRateLimit(rateLimitKey, env.RESEARCH_EXPORT_RATE_LIMIT_PER_MINUTE)) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         res.status(429).json({
           error: 'Rate limit exceeded for research dataset exports. Please try again later.',
           code: 'EXPORT_RATE_LIMIT_EXCEEDED',
@@ -54,7 +76,11 @@ export class ResearchController {
       }
 
       this.service.recordRequest();
+<<<<<<< HEAD
       const actorId = req.staff ? req.staff.email : 'super_admin';
+=======
+      const actorId = req.admin ? req.admin.email : 'super_admin';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       const csv = await this.service.exportObservationsCsv(actorId);
 
       res.setHeader('Content-Type', 'text/csv');
@@ -73,11 +99,20 @@ export class ResearchController {
   /**
    * GET /api/research/observations.geojson
    */
+<<<<<<< HEAD
   exportGeoJson = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
     try {
       const rateLimitKey = `export_geojson:${hashRequestIp(req)}`;
 
       if (!(await checkDistributedRateLimit(rateLimitKey, env.RESEARCH_EXPORT_RATE_LIMIT_PER_MINUTE))) {
+=======
+  exportGeoJson = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+    try {
+      const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+      const rateLimitKey = `export_geojson_${clientIp}`;
+
+      if (!checkRateLimit(rateLimitKey, env.RESEARCH_EXPORT_RATE_LIMIT_PER_MINUTE)) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         res.status(429).json({
           error: 'Rate limit exceeded for research dataset exports. Please try again later.',
           code: 'EXPORT_RATE_LIMIT_EXCEEDED',
@@ -86,7 +121,11 @@ export class ResearchController {
       }
 
       this.service.recordRequest();
+<<<<<<< HEAD
       const actorId = req.staff ? req.staff.email : 'super_admin';
+=======
+      const actorId = req.admin ? req.admin.email : 'super_admin';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       const geojson = await this.service.exportObservationsGeoJson(actorId);
 
       res.setHeader('Content-Type', 'application/geo+json');
@@ -105,7 +144,11 @@ export class ResearchController {
   /**
    * GET /api/research/quality/:passportId
    */
+<<<<<<< HEAD
   getQuality = async (req: AuthenticatedStaffRequest, res: Response): Promise<void> => {
+=======
+  getQuality = async (req: AuthenticatedAdminRequest, res: Response): Promise<void> => {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { passportId } = req.params;
       const detail = await expertRepository.getObservationForExpert(passportId);

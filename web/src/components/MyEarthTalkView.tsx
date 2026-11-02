@@ -10,18 +10,22 @@ import {
   Sparkles,
   Telescope,
   Trash2,
+<<<<<<< HEAD
   AlertCircle,
   Smartphone,
   CheckCircle2,
   Mail,
   RotateCcw,
   Upload,
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 } from 'lucide-react';
 import type { CommunityUser, MyPostSummary } from '../types/communityPosts.js';
 import { fetchMyPosts } from '../services/postsApi.js';
 import {
   clearAvatar,
   setAvatar,
+<<<<<<< HEAD
   restoreGoogleAvatar,
   updateProfile,
   userAvatarSrc,
@@ -34,6 +38,17 @@ import {
   getLocalAccount,
   nextDisplayNameEditAtFor,
   nextDisplayNameEditAt,
+=======
+  updateProfile,
+  userAvatarSrc,
+} from '../services/communityAuth.js';
+import {
+  canEditDisplayName,
+  canEditDisplayNameFor,
+  getLocalAccount,
+  nextDisplayNameEditAt,
+  nextDisplayNameEditAtFor,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   updateLocalAccountDisplayName,
 } from '../services/localAccount.js';
 import { categoryLabel } from '../types/community.js';
@@ -45,6 +60,7 @@ interface MyEarthTalkViewProps {
   viewer: CommunityUser | null;
   onRequestLogin: () => void;
   onOpenPost: (passportId: string) => void;
+<<<<<<< HEAD
   onOpenWebUpload?: () => void;
 }
 
@@ -164,12 +180,26 @@ const WhatsAppLinker: React.FC = () => {
 
 /**
  * MY EARTH TALK - the contributor's own dashboard.
+=======
+}
+
+/**
+ * MY EARTH TALK - the contributor's own dashboard (Stage 12).
+ *
+ * Shows exactly the caller's own posts, public and private, and their
+ * participation record together, so everything a contributor owns is on one
+ * screen. The reader's photo/name controls live here rather than in the page
+ * header: the identity block itself is the editor.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
  */
 export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
   viewer,
   onRequestLogin,
   onOpenPost,
+<<<<<<< HEAD
   onOpenWebUpload,
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }) => {
   const [posts, setPosts] = useState<MyPostSummary[]>([]);
   const [loading, setLoading] = useState(false);
@@ -181,6 +211,11 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
   const [avatarFailed, setAvatarFailed] = useState(false);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+<<<<<<< HEAD
+=======
+  // Guards against an earlier request landing after a newer one (for example
+  // after switching accounts), which would show another reader's posts.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const loadSeqRef = useRef(0);
 
   const load = useCallback(async () => {
@@ -214,6 +249,14 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
     }
   }, [viewer, load]);
 
+<<<<<<< HEAD
+=======
+  // A local (auto-created) account renames through the browser store and is
+  // bound by the seven-day interval; a WhatsApp-verified account renames on the
+  // server, which reports the same timestamp in the session. The identity block
+  // reads the same rule either way, and the server enforces it regardless of
+  // what the browser believes.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const local = getLocalAccount();
   const isLocal = Boolean(local && viewer && local.public_user_id === viewer.public_user_id);
   const nameEditable = isLocal
@@ -230,11 +273,19 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
           <Telescope className="w-8 h-8 text-[#0b57d0] mx-auto" aria-hidden="true" />
           <h2 className="mt-3 text-[16px] font-medium text-[#1f1f1f]">My Earth Talk</h2>
           <p className="mt-2 text-[13px] text-[#5e5e5e] leading-relaxed">
+<<<<<<< HEAD
             Your observations, your questions, your comments - under one sign-in.
             Sign in with Google or Gmail to sync and edit your personal field records.
           </p>
           <button type="button" className="g-btn g-btn-filled mt-4" onClick={onRequestLogin}>
             Sign in to Earth Talk
+=======
+            Your observations, your questions, your comments - under one sign-in. Verify your
+            WhatsApp number once and everything you contribute is in one place.
+          </p>
+          <button type="button" className="g-btn g-btn-filled mt-4" onClick={onRequestLogin}>
+            Sign in with WhatsApp
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </button>
         </div>
       </div>
@@ -309,6 +360,7 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
     }
   };
 
+<<<<<<< HEAD
   const onAvatarRestoreGoogle = async () => {
     setNotice(null);
     setAvatarBusy(true);
@@ -324,6 +376,8 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
     }
   };
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   const avatarSrc = !isLocal && viewer ? userAvatarSrc(viewer.public_user_id, avatarVersion) : null;
   const showAvatarImage = Boolean(avatarSrc) && !avatarFailed;
 
@@ -379,6 +433,7 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
                   >
                     <Camera className="w-3 h-3" />
                   </button>
+<<<<<<< HEAD
                   <button
                     type="button"
                     className="flex h-6 w-6 items-center justify-center rounded-full text-[#5e5e5e] hover:bg-[#f0f4f9] disabled:opacity-40"
@@ -389,6 +444,8 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
                   >
                     <RotateCcw className="w-3 h-3" />
                   </button>
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                   {showAvatarImage && (
                     <button
                       type="button"
@@ -490,6 +547,7 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
                 </button>
               </div>
             )}
+<<<<<<< HEAD
             <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="text-[11px] text-[#5e5e5e] font-mono">{viewer.public_user_id}</span>
               {viewer.email && (
@@ -499,10 +557,21 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
                 </span>
               )}
             </div>
+=======
+            <p className="text-[11px] text-[#5e5e5e] font-mono mt-0.5">{viewer.public_user_id}</p>
+            {isLocal && (
+              <p className="text-[11px] text-[#5e5e5e] mt-0.5">
+                {nameEditable
+                  ? 'This name was created for you. Rename it once to make it your own.'
+                  : `You can rename again in ${daysUntilRename} day${daysUntilRename === 1 ? '' : 's'}.`}
+              </p>
+            )}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </div>
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* WhatsApp Linking */}
       <section className="g-card mt-4 p-5">
         <h3 className="text-[13px] font-medium text-[#1f1f1f] mb-2 flex items-center gap-2">
@@ -522,6 +591,8 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
         )}
       </section>
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       {/* Stats */}
       <section className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
@@ -542,6 +613,7 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
 
       {/* Your posts */}
       <section className="mt-4">
+<<<<<<< HEAD
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <h3 className="text-[13px] font-medium text-[#1f1f1f]">Your observations</h3>
           {onOpenWebUpload && (
@@ -571,6 +643,15 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
                 <span>Upload Photo &amp; Supporting Media on Web</span>
               </button>
             )}
+=======
+        <h3 className="text-[13px] font-medium text-[#1f1f1f] mb-2">Your observations</h3>
+        {loading && posts.length === 0 ? (
+          <div className="py-16 text-center text-[#5e5e5e] text-sm">Loading your posts…</div>
+        ) : posts.length === 0 ? (
+          <div className="py-16 text-center text-[#5e5e5e] text-sm bg-white rounded-xl border border-dashed border-[#c7c7c7]">
+            <p className="font-medium text-[#1f1f1f] mb-1">Nothing here yet.</p>
+            <p className="text-xs">When you send an observation to Earth Talk, it appears here.</p>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -643,7 +724,11 @@ export const MyEarthTalkView: React.FC<MyEarthTalkViewProps> = ({
         )}
       </section>
 
+<<<<<<< HEAD
       {/* Contribution record */}
+=======
+      {/* Contribution record - moved here from the old "My contributions" page */}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       <section className="mt-6">
         <h3 className="text-[13px] font-medium text-[#1f1f1f] mb-2">Your contribution record</h3>
         <ReputationPanel displayName={viewer.display_name} />

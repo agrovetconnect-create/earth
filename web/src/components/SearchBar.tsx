@@ -11,11 +11,14 @@ interface SearchBarProps {
    * search box itself without adding anything beside it.
    */
   trailing?: React.ReactNode;
+<<<<<<< HEAD
   loading?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
   onSubmit?: (query: string) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 /** Google-style rounded search field: pill outline, elevation, focus ring. */
@@ -24,11 +27,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   placeholder = 'Search by Passport ID, rock name, or district...',
   trailing,
+<<<<<<< HEAD
   loading,
   onFocus,
   onBlur,
   onSubmit,
   onKeyDown,
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }) => {
   const [localQuery, setLocalQuery] = useState(value);
 
@@ -47,6 +53,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     onSearch('');
   };
 
+<<<<<<< HEAD
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
@@ -59,6 +66,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return (
     <div className="g-search">
       <Search className="w-[18px] h-[18px] text-[#5e5e5e] shrink-0" aria-hidden="true" />
@@ -66,6 +75,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         type="text"
         value={localQuery}
         onChange={handleChange}
+<<<<<<< HEAD
         onFocus={onFocus}
         onBlur={onBlur}
         onKeyDown={handleKeyDown}
@@ -75,6 +85,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       {loading ? (
         <div className="w-4 h-4 rounded-full border-2 border-[#1a73e8] border-t-transparent animate-spin shrink-0 mx-1.5" aria-label="Loading search results" />
       ) : localQuery ? (
+=======
+        placeholder={placeholder}
+        aria-label="Search observations"
+      />
+      {localQuery && (
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         <button
           type="button"
           onClick={handleClear}
@@ -83,7 +99,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         >
           <X className="w-4 h-4" />
         </button>
+<<<<<<< HEAD
       ) : null}
+=======
+      )}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       {trailing && (
         <span className="shrink-0 pl-2 ml-0.5 border-l border-[#dadce0] flex items-center">
           {trailing}

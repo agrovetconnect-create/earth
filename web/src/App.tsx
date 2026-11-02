@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+=======
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { SiteExplorerModal } from './components/SiteExplorerModal.js';
 import { AboutSection, HowItWorksSection } from './components/AboutSection.js';
 import { TermsPage } from './components/legal/TermsPage.js';
 import { PrivacyPage } from './components/legal/PrivacyPage.js';
 import { WhatsAppCtaModal } from './components/WhatsAppCtaModal.js';
+<<<<<<< HEAD
 import { WebFieldSubmissionModal } from './components/WebFieldSubmissionModal.js';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { GeneralLoginModal } from './components/GeneralLoginModal.js';
 import { ExpertDashboardView } from './components/ExpertDashboardView.js';
 import { AdminModerationDashboard } from './components/AdminModerationDashboard.js';
@@ -21,11 +28,15 @@ import { MyEarthTalkView } from './components/MyEarthTalkView.js';
 import { MyMapView } from './components/MyMapView.js';
 import { HistoryView } from './components/HistoryView.js';
 import { recordHistory, type HistoryEntry } from './services/history.js';
+<<<<<<< HEAD
 import { addRecentSearch } from './services/recentSearches.js';
 import { ViewInfoPanel } from './components/ViewInfoPanel.js';
 import { openWhatsApp, WHATSAPP_MY_EARTH_TALK_MESSAGE } from './services/whatsapp.js';
 import { appDistributionApi } from './services/appDistributionApi.js';
 import { ControlCenter } from './control/ControlCenter.js';
+=======
+import { openWhatsApp, WHATSAPP_MY_EARTH_TALK_MESSAGE } from './services/whatsapp.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 import { fetchSitesGeoJson } from './services/communityApi.js';
 import { fetchPost, fetchMyPosts } from './services/postsApi.js';
@@ -39,12 +50,16 @@ import {
   type CommunityPanel,
 } from './navigation.js';
 import type { PublicSiteGeoJson } from './types/community.js';
+<<<<<<< HEAD
 import {
   getStoredExpertUser,
   clearExpertSession,
   fetchExpertMe,
   logoutExpert,
 } from './services/expertApi.js';
+=======
+import { getStoredExpertUser, clearExpertSession } from './services/expertApi.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { ExpertUser } from './types/expert.js';
 import {
   fetchPublicGeoJson,
@@ -64,7 +79,10 @@ import {
   RefreshCw,
   Layers,
   MapPin,
+<<<<<<< HEAD
   MapPinned,
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   Menu,
   Search,
 } from 'lucide-react';
@@ -90,7 +108,10 @@ export const App: React.FC = () => {
       const path = window.location.pathname.toLowerCase();
       if (path === '/terms' || path.startsWith('/terms/')) return 'terms';
       if (path === '/privacy' || path.startsWith('/privacy/')) return 'privacy';
+<<<<<<< HEAD
       if (path === '/control' || path.startsWith('/control/') || path === '/control/login') return 'control';
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
     return 'explore';
   };
@@ -172,11 +193,16 @@ export const App: React.FC = () => {
   // the trip from the user to this place, all inside the platform.
   const [navTarget, setNavTarget] = useState<MapNavTarget | null>(null);
 
+<<<<<<< HEAD
   // WhatsApp & Web Field Observation Submission Dialogs
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const [isWebUploadOpen, setIsWebUploadOpen] = useState(false);
   const [pendingWebUploadAfterLogin, setPendingWebUploadAfterLogin] = useState(false);
   const [configuredWhatsAppNumber, setConfiguredWhatsAppNumber] = useState<string>('');
+=======
+  // WhatsApp CTA Dialog
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   // Loading & Error States
 const [loadingMap, setLoadingMap] = useState(false);
@@ -201,6 +227,7 @@ const [loadingMap, setLoadingMap] = useState(false);
   // scrolls inside the main column.
   const isFullHeightView = isMapView || view === 'my-map';
 
+<<<<<<< HEAD
   // Every destination the search box can reach, filtered to the same audience
   // the sidebar shows so search cannot offer a screen the reader cannot open.
   const searchPages = useMemo(
@@ -229,6 +256,8 @@ const [loadingMap, setLoadingMap] = useState(false);
     [isSignedIn, currentExpert]
   );
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 // Track the viewport so the column can be inline on a desktop and an overlay
   // on a phone, without a media query and a JS breakpoint disagreeing.
   useEffect(() => {
@@ -243,6 +272,7 @@ const [loadingMap, setLoadingMap] = useState(false);
   // expired token is dropped on load rather than trusted from local storage.
   useEffect(() => {
     refreshSession().catch(() => {
+<<<<<<< HEAD
       // A network hiccup leaves the session unhydrated for retry on next load.
     });
     fetchExpertMe()
@@ -260,14 +290,30 @@ const [loadingMap, setLoadingMap] = useState(false);
       .catch(() => {
         // Ignore non-fatal config fetch error
       });
+=======
+      // A network hiccup leaves the stored session in place for the next load.
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }, []);
 
 
 
+<<<<<<< HEAD
   // Load the reader's own located posts for the map's private overlay (both
   // signed-in WhatsApp sessions and pseudonymous contributor-token submissions).
   useEffect(() => {
     let cancelled = false;
+=======
+  // Load the reader's own located posts for the map's private overlay. Only
+  // posts that actually carry a coordinate can be placed, so the unlocated ones
+  // are left to the Geoscience sites list rather than pinned at a guess.
+  useEffect(() => {
+    let cancelled = false;
+    if (!viewer) {
+      setOwnerPosts([]);
+      return;
+    }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     fetchMyPosts()
       .then((posts) => {
         if (cancelled) return;
@@ -485,12 +531,17 @@ const [loadingMap, setLoadingMap] = useState(false);
 
   const handlePostChanged = (updatedPost: CommunityPostDetail) => {
     setSelectedPost(updatedPost);
+<<<<<<< HEAD
     const shouldShowOnPublicMap =
       updatedPost.is_public &&
+=======
+    if (
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       updatedPost.location.latitude !== null &&
       updatedPost.location.longitude !== null &&
       Number.isFinite(updatedPost.location.latitude) &&
       Number.isFinite(updatedPost.location.longitude) &&
+<<<<<<< HEAD
       updatedPost.location.precision !== 'private';
 
     setGeojson((prev) => {
@@ -545,6 +596,45 @@ const [loadingMap, setLoadingMap] = useState(false);
 
     // Refresh authoritative map GeoJSON (approximate coordinate fuzzing / district centroids)
     void loadMapData(filters);
+=======
+      updatedPost.location.precision !== 'private'
+    ) {
+      setGeojson((prev) => {
+        if (!prev) return prev;
+        const exists = prev.features.some(
+          (f) => f.properties.passport_id === updatedPost.passport_id
+        );
+        if (exists) return prev;
+        const newFeature: any = {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [updatedPost.location.longitude!, updatedPost.location.latitude!],
+          },
+          properties: {
+            passport_id: updatedPost.passport_id,
+            observation_category: updatedPost.observation_category,
+            observation_subcategory: updatedPost.observation_subcategory,
+            primary_classification: updatedPost.ai.primary_interpretation,
+            possible_name: updatedPost.title,
+            confidence: 'high',
+            confidence_score: 95,
+            evidence_state: 'community_investigated',
+            verification_status: 'unverified',
+            district: updatedPost.location.district,
+            location_precision: updatedPost.location.precision,
+            created_at: updatedPost.created_at,
+            post_title: updatedPost.title,
+            is_demo: updatedPost.is_demo,
+          },
+        };
+        return {
+          ...prev,
+          features: [newFeature, ...prev.features],
+        };
+      });
+    }
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   };
 
   /** Reopens a screen recorded in the sidebar's History list. */
@@ -601,6 +691,7 @@ const [loadingMap, setLoadingMap] = useState(false);
   };
 
   /**
+<<<<<<< HEAD
    * The sidebar's "Start on WhatsApp" action (only visible when enabled by Owner/Ops/Security).
    */
   const handleOpenWhatsApp = () => {
@@ -608,11 +699,21 @@ const [loadingMap, setLoadingMap] = useState(false);
       if (!openWhatsApp(WHATSAPP_MY_EARTH_TALK_MESSAGE, configuredWhatsAppNumber)) {
         setIsWhatsAppModalOpen(true);
       }
+=======
+   * The sidebar's "Start on WhatsApp" action. A signed-in contributor skips the
+   * guide card and lands in My Earth Talk on WhatsApp; a visitor is shown the
+   * card first, because there is no account to carry over yet.
+   */
+  const handleOpenWhatsApp = () => {
+    if (isSignedIn) {
+      if (!openWhatsApp(WHATSAPP_MY_EARTH_TALK_MESSAGE)) setIsWhatsAppModalOpen(true);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       return;
     }
     setIsWhatsAppModalOpen(true);
   };
 
+<<<<<<< HEAD
   const handleOpenWebUpload = () => {
     if (!viewer) {
       setPendingWebUploadAfterLogin(true);
@@ -622,6 +723,8 @@ const [loadingMap, setLoadingMap] = useState(false);
     setIsWebUploadOpen(true);
   };
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   // Community Discovery sign-in: exclusively via WhatsApp.
   const handleOpenWriteLogin = () => {
     setIsLoginOpen(true);
@@ -629,19 +732,29 @@ const [loadingMap, setLoadingMap] = useState(false);
 
   const handleSignOut = () => {
     clearExpertSession();
+<<<<<<< HEAD
     void logoutExpert();
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     setCurrentExpert(null);
     signOutLocalAccount();
     void signOutCommunity();
     setView('explore');
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const targetPath = 
       view === 'terms' ? '/terms' : 
       view === 'privacy' ? '/privacy' : 
       view === 'control' ? '/control' : '/';
+=======
+  // Keep browser URL bar synchronized for /terms, /privacy, and root
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const targetPath = view === 'terms' ? '/terms' : view === 'privacy' ? '/privacy' : '/';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (window.location.pathname !== targetPath) {
       window.history.pushState({ view }, '', targetPath);
     }
@@ -656,8 +769,11 @@ const [loadingMap, setLoadingMap] = useState(false);
         setView('terms');
       } else if (path === '/privacy' || path.startsWith('/privacy/')) {
         setView('privacy');
+<<<<<<< HEAD
       } else if (path === '/control' || path.startsWith('/control/') || path === '/control/login') {
         setView('control');
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       } else {
         setView('explore');
       }
@@ -695,6 +811,7 @@ const [loadingMap, setLoadingMap] = useState(false);
     recordHistory({ view: next, panel, label: entry.label, subtitle: entry.subtitle });
   };
 
+<<<<<<< HEAD
   // Global keyboard shortcuts: 'm' -> map/explore, 'h' -> history, 's' -> geoscience sites
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -734,6 +851,11 @@ const [loadingMap, setLoadingMap] = useState(false);
         isAuthenticated={Boolean(currentExpert) || isSignedIn}
         onOpenExpertPortal={handleOpenLogin}
       />
+=======
+  /** Contextual panel rendered inside the sidebar, beneath the navigation. */
+  const sidebarPanel = (
+    <>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       {/* Data status. Reported in the sidebar so nothing is stacked above the map. */}
       {apiError && (
         <div className="g-panel !border-t-0 !mt-0 !pt-3">
@@ -763,7 +885,10 @@ const [loadingMap, setLoadingMap] = useState(false);
       view={view}
       onNavigate={handleNavigate}
       onOpenWhatsApp={handleOpenWhatsApp}
+<<<<<<< HEAD
       onOpenWebUpload={handleOpenWebUpload}
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       onOpenLogin={handleOpenLogin}
       onSignOut={handleSignOut}
       currentExpert={currentExpert}
@@ -827,10 +952,13 @@ activePanel={view === 'community' ? communityPanel : null}
     );
   })();
 
+<<<<<<< HEAD
   if (view === 'control') {
     return <ControlCenter />;
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   return (
     <div className="flex h-dvh overflow-hidden bg-[#f8fafd] text-[#1f1f1f]">
 {/* The navigation column. On desktop it sits inline and the three lines in
@@ -865,6 +993,7 @@ activePanel={view === 'community' ? communityPanel : null}
         ))}
 
 <div className="flex-1 min-w-0 flex flex-col relative">
+<<<<<<< HEAD
         {isNarrow && isSidebarCollapsed && !isMapView && view !== 'sites' && !['terms', 'privacy', 'about', 'how-it-works', 'history'].includes(view) && (
           <header className="h-12 border-b border-[#e3e3e3] bg-white px-4 flex items-center gap-3 shrink-0 z-30">
             <button
@@ -890,6 +1019,10 @@ activePanel={view === 'community' ? communityPanel : null}
             </span>
           </header>
         )}
+=======
+        {/* There is no bar above the map and nothing floating over it. The
+            sidebar owns the navigation, the filters and every other control. */}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
         <main className={`flex-1 min-h-0 g-scroll ${isFullHeightView ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           {isMapView && (
@@ -913,6 +1046,7 @@ activePanel={view === 'community' ? communityPanel : null}
 
               {/* The one search box in the app, on the map canvas, with the
                   filter button inside its right edge. The sidebar has none. */}
+<<<<<<< HEAD
               <MapSearchOverlay
                 value={filters.search ?? ''}
                 onSearch={(text) => setFilters((prev) => ({ ...prev, search: text || undefined }))}
@@ -932,14 +1066,26 @@ activePanel={view === 'community' ? communityPanel : null}
                   handleNavigate(pageId as AppView, panel as CommunityPanel | undefined)
                 }
                 loading={loadingMap}
+=======
+<MapSearchOverlay
+                value={filters.search ?? ''}
+                onSearch={(text) => setFilters((prev) => ({ ...prev, search: text || undefined }))}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 trailing={
                   <MapFilterControl
                     filters={filters}
                     onChange={setFilters}
+<<<<<<< HEAD
                     onReset={handleResetFilters}
                     districts={districts}
                     categories={categories}
                   />
+=======
+onReset={handleResetFilters}
+         districts={districts}
+         categories={categories}
+       />
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                 }
               />
 
@@ -981,6 +1127,7 @@ activePanel={view === 'community' ? communityPanel : null}
           {view === 'sites' && (
             <div className="p-6 space-y-6">
 
+<<<<<<< HEAD
               {/* Section title, subtitle and the search field share one row. */}
               <section className="space-y-5">
                 <div className="flex w-full flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1039,10 +1186,61 @@ activePanel={view === 'community' ? communityPanel : null}
                     </div>
                   </div>
                 </div>
+=======
+              {/* Search plus the same filter menu Explore attaches to its
+                  search field, so the two surfaces narrow by one vocabulary. */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative flex-1 min-w-[220px]">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8f8f8f]"
+                    aria-hidden="true"
+                  />
+                  <input
+                    type="search"
+                    value={sitesFilters.search ?? ''}
+                    onChange={(e) =>
+                      setSitesFilters((prev) => ({ ...prev, search: e.target.value || undefined }))
+                    }
+                    placeholder="Search sites, districts or posts"
+                    className="g-input w-full pl-9 pr-12 h-10 text-sm"
+                    aria-label="Search geoscience sites and posts"
+                  />
+                  <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
+                    <MapFilterControl
+                      filters={sitesFilters}
+                      onChange={setSitesFilters}
+                      onReset={() => setSitesFilters({})}
+                      districts={sitesDistricts}
+                      categories={categories}
+                    />
+                  </div>
+                </div>
+              </div>
+
+
+              {/* Posts published without a public coordinate. The map cannot
+                  place them, so they are grouped and listed here, each opening
+                  its own card. A reader who knows the area can still find them. */}
+              <section className="space-y-3">
+                <div className="flex items-baseline justify-between gap-4">
+                  <h3 className="text-[14px] font-medium text-[#1f1f1f]">
+                    Posts without a published location
+                  </h3>
+                  <span className="text-[12px] text-[#5e5e5e] font-mono">
+                    {filteredUnlocatedPosts.length} listed
+                  </span>
+                </div>
+                <p className="text-[12px] text-[#5e5e5e] max-w-3xl leading-relaxed">
+                  These observations were published without a coordinate, so no pin can be drawn for them.
+                  They are listed rather than placed at a guessed point. Open one to read it, or add what
+                  you know about where it was found.
+                </p>
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
                 {loadingUnlocated ? (
                   <div className="py-10 text-center text-[#5e5e5e] text-sm">Loading published posts…</div>
                 ) : filteredUnlocatedPosts.length === 0 ? (
+<<<<<<< HEAD
                   <div className="mx-auto flex max-w-sm flex-col items-center rounded-2xl border border-dashed border-[#c7c7c7] bg-white px-6 py-9 text-center">
                     <div className="relative mb-5 flex h-24 w-24 items-center justify-center">
                       <span className="absolute inset-0 rounded-full bg-[#e8f0fe]" />
@@ -1062,6 +1260,13 @@ activePanel={view === 'community' ? communityPanel : null}
                   </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+=======
+                  <div className="py-10 text-center text-[#5e5e5e] text-sm bg-white rounded-xl border border-dashed border-[#c7c7c7]">
+                    No published post is missing a location.
+                  </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                       {filteredUnlocatedPosts.map((post) => (
                         <MapLocationCard
                           key={post.passport_id}
@@ -1076,7 +1281,10 @@ activePanel={view === 'community' ? communityPanel : null}
                           }}
                           imageUrl={post.passport_id === 'ET-DEMO-0007' ? '/media/pool/rock-08.jpg' : null}
                           accentColor="#0b57d0"
+<<<<<<< HEAD
                           size="comfortable"
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
                           className="w-full hover:-translate-y-1 hover:shadow-xl transition-all duration-200"
                           onClick={() => handleSelectObservation(post.passport_id)}
                         />
@@ -1104,7 +1312,10 @@ activePanel={view === 'community' ? communityPanel : null}
               viewer={viewer}
               onRequestLogin={handleOpenLogin}
               onOpenPost={handleOpenMyPost}
+<<<<<<< HEAD
               onOpenWebUpload={handleOpenWebUpload}
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
             />
           )}
 
@@ -1194,14 +1405,24 @@ activePanel={view === 'community' ? communityPanel : null}
 
           {view === 'how-it-works' && (
             <HowItWorksSection
+<<<<<<< HEAD
               onNavigateTab={(tab) => handleNavigate(tab)}
+=======
+              onOpenWhatsApp={() => setIsWhatsAppModalOpen(true)}
+              onNavigate={(v) => handleNavigate(v)}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               onBackToApp={() => handleNavigate('explore')}
             />
           )}
 
           {view === 'about' && (
             <AboutSection
+<<<<<<< HEAD
               onNavigateTab={(tab) => handleNavigate(tab)}
+=======
+              onOpenWhatsApp={() => setIsWhatsAppModalOpen(true)}
+              onNavigate={(v) => handleNavigate(v)}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
               onBackToApp={() => handleNavigate('explore')}
             />
           )}
@@ -1225,6 +1446,7 @@ activePanel={view === 'community' ? communityPanel : null}
       {/* Site Explorer, opened from a site row or a geological site marker on the map */}
       <SiteExplorerModal siteId={selectedSiteId} onClose={() => setSelectedSiteId(null)} />
 
+<<<<<<< HEAD
       {/* Dedicated WhatsApp Channel Modal (separate from Web Photo Upload) */}
       <WhatsAppCtaModal
         isOpen={isWhatsAppModalOpen}
@@ -1241,6 +1463,12 @@ activePanel={view === 'community' ? communityPanel : null}
           setView('explore');
           void handleSelectObservation(passportId);
         }}
+=======
+      {/* WhatsApp Guide Modal */}
+      <WhatsAppCtaModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => setIsWhatsAppModalOpen(false)}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       />
 
       {/* One sign-in surface for both audiences. What the backend returns
@@ -1248,6 +1476,7 @@ activePanel={view === 'community' ? communityPanel : null}
           administrator on Expert reviews. */}
       <GeneralLoginModal
         isOpen={isLoginOpen}
+<<<<<<< HEAD
         onClose={() => {
           setIsLoginOpen(false);
           setPendingWebUploadAfterLogin(false);
@@ -1261,6 +1490,18 @@ activePanel={view === 'community' ? communityPanel : null}
           }
           setView('mine');
         }}
+=======
+        onClose={() => setIsLoginOpen(false)}
+        onUserLogin={() => {
+          setIsLoginOpen(false);
+          setView('mine');
+        }}
+        onAdminLogin={(expert) => {
+          setIsLoginOpen(false);
+          setCurrentExpert(expert);
+          setView('reviews');
+        }}
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       />
     </div>
   );

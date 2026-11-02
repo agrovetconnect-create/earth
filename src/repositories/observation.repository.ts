@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 import { logger } from '../utils/logger.js';
@@ -8,6 +9,11 @@ import {
   ScientificEvidenceValidationError,
   type VerifiedScientificConfirmation,
 } from '../utils/scientific-evidence.js';
+=======
+import { supabase } from '../config/supabase.js';
+import { logger } from '../utils/logger.js';
+import { ServiceUnavailableError } from '../utils/service-error.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { EvidenceState } from '../types/community.types.js';
 import type {
   ObservationRow,
@@ -23,6 +29,7 @@ import type {
 } from '../types/database.types.js';
 
 export class ObservationRepository {
+<<<<<<< HEAD
   private inMemoryObservations = new Map<string, ObservationRow>();
   private inMemoryMedia = new Map<string, ObservationMediaRow>();
   private inMemoryLocations = new Map<string, ObservationLocationRow>();
@@ -57,6 +64,8 @@ export class ObservationRepository {
     return false;
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   /**
    * Finds an observation by its unique source WhatsApp message ID.
    * Used for idempotency and duplicate webhook protection.
@@ -66,6 +75,7 @@ export class ObservationRepository {
    * attempt a second observation for the same message.
    */
   async findBySourceMessageId(sourceMessageId: string): Promise<ObservationRow | null> {
+<<<<<<< HEAD
     if (!isDatabaseConfigured()) {
       for (const obs of this.inMemoryObservations.values()) {
         if (obs.source_message_id === sourceMessageId) {
@@ -75,6 +85,8 @@ export class ObservationRepository {
       return null;
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { data, error } = await supabase
         .from('observations')
@@ -96,6 +108,7 @@ export class ObservationRepository {
    * Finds an observation by its public-friendly Geoscience Passport ID (e.g. RT-RW-000001).
    */
   async findByPassportId(passportId: string): Promise<ObservationRow | null> {
+<<<<<<< HEAD
     const wanted = String(passportId ?? '').trim().toUpperCase();
     if (!wanted) return null;
 
@@ -108,22 +121,38 @@ export class ObservationRepository {
       return null;
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { data, error } = await supabase
         .from('observations')
         .select('*')
+<<<<<<< HEAD
         .ilike('passport_id', wanted)
         .maybeSingle();
 
       if (error) {
         throw new Error(error.message);
+=======
+        .eq('passport_id', passportId)
+        .maybeSingle();
+
+      if (error) {
+        logger.error('Database error in findByPassportId', { error: error.message });
+        return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
 
       return (data as unknown as ObservationRow) || null;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown database error';
+<<<<<<< HEAD
       logger.error('Database error in findByPassportId', { error: msg });
       throw new ServiceUnavailableError('observation lookup by passport ID', err);
+=======
+      logger.error('Exception in findByPassportId', { error: msg });
+      return null;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
   }
 
@@ -131,6 +160,7 @@ export class ObservationRepository {
    * Creates a new observation record.
    */
   async createObservation(insertData: ObservationInsert): Promise<ObservationRow> {
+<<<<<<< HEAD
     this.requireDatabase('creation');
 
     if (!isDatabaseConfigured()) {
@@ -211,12 +241,29 @@ export class ObservationRepository {
       logger.error('Failed to insert observation in Supabase', { error: msg });
       throw new ServiceUnavailableError('observation creation', err);
     }
+=======
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from('observations') as any)
+      .insert(insertData)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      logger.error('Failed to insert observation in Supabase', {
+        error: error?.message || 'No row returned',
+      });
+      throw new Error(`Database error creating observation: ${error?.message || 'Unknown'}`);
+    }
+
+    return data as ObservationRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
    * Updates an observation's processing status (processing -> completed / failed).
    */
   async updateObservationStatus(id: string, status: ObservationStatus): Promise<void> {
+<<<<<<< HEAD
     this.requireDatabase('status update');
 
     if (!isDatabaseConfigured()) {
@@ -241,6 +288,15 @@ export class ObservationRepository {
       const msg = err instanceof Error ? err.message : String(err);
       logger.error('Failed to update observation status', { id, status, error: msg });
       throw new ServiceUnavailableError('observation status update', err);
+=======
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.from('observations') as any)
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      logger.error('Failed to update observation status', { id, status, error: error.message });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
   }
 
@@ -248,6 +304,7 @@ export class ObservationRepository {
    * Saves image metadata associated with an observation.
    */
   async saveObservationMedia(mediaInsert: ObservationMediaInsert): Promise<ObservationMediaRow> {
+<<<<<<< HEAD
     this.requireDatabase('media storage');
 
     if (!isDatabaseConfigured()) {
@@ -307,10 +364,29 @@ export class ObservationRepository {
 
   /**
    * Saves or updates voluntary geographic or descriptive location associated with an observation.
+=======
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from('observation_media') as any)
+      .insert(mediaInsert)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      logger.error('Failed to insert observation media', { error: error?.message });
+      throw new Error(`Database error saving observation media: ${error?.message}`);
+    }
+
+    return data as ObservationMediaRow;
+  }
+
+  /**
+   * Saves voluntary geographic or descriptive location associated with an observation.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
    */
   async saveObservationLocation(
     locationInsert: ObservationLocationInsert
   ): Promise<ObservationLocationRow> {
+<<<<<<< HEAD
     this.requireDatabase('location storage');
 
     if (!isDatabaseConfigured()) {
@@ -355,6 +431,10 @@ export class ObservationRepository {
     }
 
     const insertPayload: ObservationLocationInsert = { ...locationInsert };
+=======
+    // If coordinates are present, build PostGIS point geometry representation
+    const insertPayload = { ...locationInsert };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (
       locationInsert.latitude !== null &&
       locationInsert.latitude !== undefined &&
@@ -363,6 +443,7 @@ export class ObservationRepository {
       !locationInsert.geom
     ) {
       insertPayload.geom = `SRID=4326;POINT(${locationInsert.longitude} ${locationInsert.latitude})`;
+<<<<<<< HEAD
     } else if (locationInsert.latitude === null || locationInsert.longitude === null) {
       insertPayload.geom = null;
     }
@@ -411,12 +492,29 @@ export class ObservationRepository {
       logger.error('Failed to persist observation location', { error: msg });
       throw new ServiceUnavailableError('observation location storage', err);
     }
+=======
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.from('observation_locations') as any)
+      .insert(insertPayload)
+      .select('*')
+      .single();
+
+    if (error || !data) {
+      logger.error('Failed to insert observation location', { error: error?.message });
+      throw new Error(`Database error saving observation location: ${error?.message}`);
+    }
+
+    return data as ObservationLocationRow;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
    * Records a processing pipeline event for auditability without storing sensitive payloads.
    */
   async recordProcessingEvent(eventInsert: ProcessingEventInsert): Promise<ProcessingEventRow | null> {
+<<<<<<< HEAD
     if (!isDatabaseConfigured()) {
       const id = `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       const row: ProcessingEventRow = {
@@ -432,6 +530,8 @@ export class ObservationRepository {
       return row;
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase.from('processing_events') as any)
@@ -462,6 +562,7 @@ export class ObservationRepository {
    * together, because a distance threshold is not a geological relationship and a
    * silently created cluster would present a guess as a fact.
    */
+<<<<<<< HEAD
   async setObservationSite(
     observationId: string,
     siteId: string | null,
@@ -508,6 +609,25 @@ export class ObservationRepository {
       });
       throw new ServiceUnavailableError('observation site assignment transactional update', error);
     }
+=======
+  async setObservationSite(observationId: string, siteId: string, actor: string): Promise<void> {
+    const { error } = await (supabase.from('observations') as any)
+      .update({ site_id: siteId, updated_at: new Date().toISOString() })
+      .eq('id', observationId);
+
+    if (error) {
+      throw new Error(`Database error attaching observation to site: ${error.message}`);
+    }
+
+    await this.writeAuditLog({
+      action: 'observation.site_assigned',
+      targetType: 'observation',
+      targetId: observationId,
+      reason: `Attached to geological site ${siteId}`,
+      details: { site_id: siteId },
+      actor,
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -519,6 +639,7 @@ export class ObservationRepository {
     reason: string,
     actor: string
   ): Promise<void> {
+<<<<<<< HEAD
     this.requireDatabase('publication status update');
 
     const now = new Date().toISOString();
@@ -555,6 +676,30 @@ export class ObservationRepository {
       }
       return;
     }
+=======
+    const now = new Date().toISOString();
+    const patch: Record<string, unknown> = {
+      publication_status: publicationStatus,
+      updated_at: now,
+    };
+
+    if (publicationStatus === 'public') patch.published_at = now;
+
+    const { error } = await (supabase.from('observations') as any).update(patch).eq('id', observationId);
+
+    if (error) {
+      throw new Error(`Database error setting publication status: ${error.message}`);
+    }
+
+    await this.writeAuditLog({
+      action: 'observation.publication_changed',
+      targetType: 'observation',
+      targetId: observationId,
+      reason,
+      details: { publication_status: publicationStatus },
+      actor,
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -568,6 +713,7 @@ export class ObservationRepository {
     observationId: string,
     state: EvidenceState,
     reason: string,
+<<<<<<< HEAD
     actor: string,
     scientificEvidence: VerifiedScientificConfirmation | null = null,
     actorRole = 'super_admin'
@@ -639,6 +785,33 @@ export class ObservationRepository {
       logger.error('Transactional evidence state update failed', { error: error.message, observationId });
       throw new ServiceUnavailableError('observation evidence state transactional update', error);
     }
+=======
+    actor: string
+  ): Promise<void> {
+    const now = new Date().toISOString();
+    const { error } = await (supabase.from('observations') as any)
+      .update({
+        evidence_state: state,
+        evidence_state_reason: reason,
+        evidence_state_changed_at: now,
+        evidence_state_changed_by: actor,
+        updated_at: now,
+      })
+      .eq('id', observationId);
+
+    if (error) {
+      throw new Error(`Database error setting evidence state: ${error.message}`);
+    }
+
+    await this.writeAuditLog({
+      action: 'observation.evidence_state_changed',
+      targetType: 'observation',
+      targetId: observationId,
+      reason,
+      details: { evidence_state: state },
+      actor,
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -649,6 +822,7 @@ export class ObservationRepository {
    * to serve private media.
    */
   async listObservationMedia(observationId: string): Promise<ObservationMediaRow[]> {
+<<<<<<< HEAD
     if (!isDatabaseConfigured()) {
       return Array.from(this.inMemoryMedia.values())
         .filter((m) => m.observation_id === observationId)
@@ -672,6 +846,19 @@ export class ObservationRepository {
       });
       throw new ServiceUnavailableError('observation media read', err);
     }
+=======
+    const { data, error } = await (supabase.from('observation_media') as any)
+      .select('*')
+      .eq('observation_id', observationId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      logger.warn('Failed to list observation media', { error: error.message });
+      return [];
+    }
+
+    return (data as ObservationMediaRow[]) ?? [];
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -683,6 +870,7 @@ export class ObservationRepository {
     reason: string,
     actor: string
   ): Promise<void> {
+<<<<<<< HEAD
     this.requireDatabase('media visibility update');
 
     if (!isDatabaseConfigured()) {
@@ -715,6 +903,24 @@ export class ObservationRepository {
       logger.error('Transactional media visibility update failed', { error: error.message, mediaId });
       throw new ServiceUnavailableError('media visibility transactional update', error);
     }
+=======
+    const { error } = await (supabase.from('observation_media') as any)
+      .update({ visibility })
+      .eq('id', mediaId);
+
+    if (error) {
+      throw new Error(`Database error setting media visibility: ${error.message}`);
+    }
+
+    await this.writeAuditLog({
+      action: 'media.visibility_changed',
+      targetType: 'media',
+      targetId: mediaId,
+      reason,
+      details: { visibility },
+      actor,
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
@@ -727,6 +933,7 @@ export class ObservationRepository {
     reason: string,
     actor: string
   ): Promise<void> {
+<<<<<<< HEAD
     this.requireDatabase('media moderation');
 
     if (!isDatabaseConfigured()) {
@@ -759,13 +966,41 @@ export class ObservationRepository {
       logger.error('Transactional media moderation update failed', { error: error.message, mediaId });
       throw new ServiceUnavailableError('media moderation transactional update', error);
     }
+=======
+    const { error } = await (supabase.from('observation_media') as any)
+      .update({
+        moderation_status: moderationStatus,
+        moderated_by: actor,
+        moderated_at: new Date().toISOString(),
+      })
+      .eq('id', mediaId);
+
+    if (error) {
+      throw new Error(`Database error moderating media: ${error.message}`);
+    }
+
+    await this.writeAuditLog({
+      action: 'media.moderated',
+      targetType: 'media',
+      targetId: mediaId,
+      reason,
+      details: { moderation_status: moderationStatus },
+      actor,
+    });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   /**
    * Writes one entry to the durable audit log.
    *
+<<<<<<< HEAD
    * Fails closed when the database is configured: if the audit record cannot be
    * persisted, the mutation must be rolled back or aborted.
+=======
+   * An audit write that fails is logged as a warning rather than thrown: the
+   * authoritative change has already been applied, and refusing to report success
+   * for a completed action would be its own kind of dishonesty.
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
    */
   private async writeAuditLog(entry: {
     action: string;
@@ -776,6 +1011,7 @@ export class ObservationRepository {
     actor: string;
     actorRole?: 'super_admin' | 'system' | 'contributor';
   }): Promise<void> {
+<<<<<<< HEAD
     if (!isDatabaseConfigured()) {
       this.inMemoryAuditLogs.unshift({
         id: `audit_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
@@ -791,6 +1027,8 @@ export class ObservationRepository {
       return;
     }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     try {
       const { error } = await (supabase.from('admin_audit_log') as any).insert({
         actor: entry.actor,
@@ -803,6 +1041,7 @@ export class ObservationRepository {
       });
 
       if (error) {
+<<<<<<< HEAD
         logger.error('Failed to write audit log entry', { action: entry.action, error: error.message });
         throw new ServiceUnavailableError('audit log persistence', error);
       }
@@ -811,6 +1050,13 @@ export class ObservationRepository {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       logger.error('Exception writing audit log entry', { action: entry.action, error: msg });
       throw new ServiceUnavailableError('audit log persistence', err);
+=======
+        logger.warn('Failed to write audit log entry', { action: entry.action, error: error.message });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      logger.warn('Exception writing audit log entry', { action: entry.action, error: msg });
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     }
   }
 
@@ -825,6 +1071,7 @@ export class ObservationRepository {
     targetType?: string;
     targetId?: string;
   }): Promise<{ rows: Record<string, unknown>[]; total: number }> {
+<<<<<<< HEAD
     if (!isDatabaseConfigured()) {
       const filtered = this.inMemoryAuditLogs.filter((row) => {
         if (options.action && row.action !== options.action) return false;
@@ -860,6 +1107,24 @@ export class ObservationRepository {
       });
       throw new ServiceUnavailableError('admin audit log read', err);
     }
+=======
+    let query = (supabase.from('admin_audit_log') as any).select('*', { count: 'exact' });
+
+    if (options.action) query = query.eq('action', options.action);
+    if (options.targetType) query = query.eq('target_type', options.targetType);
+    if (options.targetId) query = query.eq('target_id', options.targetId);
+
+    const { data, count, error } = await query
+      .order('occurred_at', { ascending: false })
+      .range(options.offset, options.offset + options.limit - 1);
+
+    if (error) {
+      logger.warn('Failed to read audit log', { error: error.message });
+      return { rows: [], total: 0 };
+    }
+
+    return { rows: (data as Record<string, unknown>[]) ?? [], total: count ?? 0 };
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 }
 

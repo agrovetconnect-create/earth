@@ -37,12 +37,19 @@ import {
   PostServiceError,
   communityPostService,
 } from '../src/services/community-post.service.js';
+<<<<<<< HEAD
 import { verifyCode, verifyEmailCode } from '../src/services/auth.service.js';
+=======
+import { verifyCode } from '../src/services/auth.service.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import type { ObservationRow, ObservationLocationRow } from '../src/types/database.types.js';
 import type { ViewerContext } from '../src/types/community-posts.types.js';
 import {
   hashCodeForPhone,
+<<<<<<< HEAD
   hashCodeForEmail,
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   hashRequestIp,
   phoneHashFromInput,
   resolveUserFromToken,
@@ -100,6 +107,7 @@ async function signIn(phone: string, code = '223344'): Promise<{ viewer: ViewerC
   assert.ok(resolved, 'the issued token resolves to an account');
   assert.equal(resolved.user.is_demo, false, 'a real sign-in is never a demo account');
   return {
+<<<<<<< HEAD
     viewer: await viewerFromUser(resolved.user),
     token: result.token,
   };
@@ -120,6 +128,9 @@ async function signInEmail(email: string, code = '112233'): Promise<{ viewer: Vi
   assert.ok(resolved);
   return {
     viewer: await viewerFromUser(resolved.user),
+=======
+    viewer: viewerFromUser(resolved.user),
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     token: result.token,
   };
 }
@@ -423,8 +434,13 @@ await test('the same-place route resolves for a demo and a missing passport', as
 section('WhatsApp sign-in and sessions');
 
 await test('a pre-shared code opens exactly one account and session', async () => {
+<<<<<<< HEAD
   const email = 'contributor@gmail.com';
   const { viewer, token } = await signInEmail(email);
+=======
+  const phone = '+250 72 111 0001';
+  const { viewer, token } = await signIn(phone);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   assert.match(viewer.publicUserId, /^ET-USER-/, 'an account is created with a public id');
   assert.equal(viewer.displayName, null, 'a new account has no chosen name yet');
   assert.ok(token.length > 20, 'token is long enough to be unforgeable');
@@ -773,7 +789,11 @@ await test('the routes and controllers wire the Stage 12 endpoints', () => {
     'moderation writes are routed as a PATCH'
   );
 
+<<<<<<< HEAD
   for (const path of ['request-email-code', 'verify-email-code', 'session', 'sign-out', 'profile']) {
+=======
+  for (const path of ['request-code', 'verify-code', 'session', 'sign-out', 'profile']) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     assert.ok(authRoutes.includes(path), `auth route ${path} exists`);
   }
 });

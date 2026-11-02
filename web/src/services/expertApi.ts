@@ -9,6 +9,7 @@ import type {
 } from '../types/expert.js';
 import { apiUrl, bearerHeaders, requestBlob, requestJson } from './http.js';
 
+<<<<<<< HEAD
 let currentExpertUser: ExpertUser | null = null;
 
 export function getStoredExpertToken(): string | null {
@@ -36,6 +37,59 @@ function getAuthHeaders(): Record<string, string> {
  */
 export async function loginExpert(email: string, passcode: string): Promise<{ token: string; expert: ExpertUser }> {
   const data = await requestJson<{ token?: string; expert: ExpertUser }>(
+=======
+const TOKEN_STORAGE_KEY = 'rt_expert_token';
+const USER_STORAGE_KEY = 'rt_expert_user';
+
+export function getStoredExpertToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    // Storage can be unavailable (private mode, blocked site data).
+    return null;
+  }
+}
+
+export function getStoredExpertUser(): ExpertUser | null {
+  try {
+    const raw = localStorage.getItem(USER_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setExpertSession(token: string, user: ExpertUser): void {
+  try {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  } catch {
+    // The session still works for this tab even if it cannot be persisted.
+  }
+}
+
+export function clearExpertSession(): void {
+  try {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(USER_STORAGE_KEY);
+  } catch {
+    // Nothing to clean up if storage is unavailable.
+  }
+}
+
+function getAuthHeaders(): Record<string, string> {
+  return bearerHeaders(getStoredExpertToken());
+}
+
+/**
+ * Exchanges Super Admin credentials for a session token.
+ *
+ * The password is a required parameter. It was previously optional, which
+ * allowed a caller to request a session with no credential at all.
+ */
+export async function loginExpert(email: string, passcode: string): Promise<{ token: string; expert: ExpertUser }> {
+  const data = await requestJson<{ token: string; expert: ExpertUser }>(
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     '/api/expert/auth/login',
     {
       method: 'POST',
@@ -44,6 +98,7 @@ export async function loginExpert(email: string, passcode: string): Promise<{ to
       errorMessage: 'Login failed',
     }
   );
+<<<<<<< HEAD
   setExpertSession('', data.expert);
   return { token: '', expert: data.expert };
 }
@@ -68,11 +123,32 @@ export async function fetchExpertMe(): Promise<ExpertUser | null> {
   } catch {
     return null;
   }
+=======
+  setExpertSession(data.token, data.expert);
+  return data;
+}
+
+export async function fetchExpertMe(): Promise<ExpertUser | null> {
+  const token = getStoredExpertToken();
+  if (!token) return null;
+
+  const res = await fetch(apiUrl('/api/expert/auth/me'), { headers: getAuthHeaders() });
+  if (!res.ok) {
+    clearExpertSession();
+    return null;
+  }
+  const data = await res.json();
+  return data.expert;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 export async function logoutExpert(): Promise<void> {
   try {
+<<<<<<< HEAD
     await requestJson('/api/expert/auth/logout', {
+=======
+    await fetch(apiUrl('/api/expert/auth/logout'), {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       method: 'POST',
       headers: getAuthHeaders(),
     });

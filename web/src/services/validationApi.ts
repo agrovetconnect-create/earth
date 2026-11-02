@@ -5,10 +5,18 @@ import type {
   EvaluationMetricResult,
   ValidationErrorRecord,
 } from '../types/validation.js';
+<<<<<<< HEAD
 import { bearerHeaders, requestBlob, requestJson } from './http.js';
 
 function getAuthHeaders(): Record<string, string> {
   return bearerHeaders(null);
+=======
+import { getStoredExpertToken } from './expertApi.js';
+import { bearerHeaders, requestBlob, requestJson } from './http.js';
+
+function getAuthHeaders(): Record<string, string> {
+  return bearerHeaders(getStoredExpertToken());
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 }
 
 function statusFallback(label: string): (res: Response) => string {

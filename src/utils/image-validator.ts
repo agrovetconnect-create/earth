@@ -52,12 +52,16 @@ const SUPPORTED_IMAGE_MIME_TYPES = new Set([
  * WhatsApp delivers MP4 and 3GP. Both are ISO-BMFF based and share the `ftyp`
  * box, so they are detected by brand rather than by extension.
  */
+<<<<<<< HEAD
 const SUPPORTED_VIDEO_MIME_TYPES = new Set([
   'video/mp4',
   'video/3gpp',
   'video/webm',
   'video/quicktime',
 ]);
+=======
+const SUPPORTED_VIDEO_MIME_TYPES = new Set(['video/mp4', 'video/3gpp']);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * Minimum plausible size for real media.
@@ -115,6 +119,7 @@ export function detectMediaFromBuffer(buffer: Buffer): { mimeType: string; kind:
     return { mimeType: 'image/webp', kind: 'image' };
   }
 
+<<<<<<< HEAD
   // WebM / Matroska EBML header: 1A 45 DF A3
   if (
     buffer[0] === 0x1a &&
@@ -126,6 +131,9 @@ export function detectMediaFromBuffer(buffer: Buffer): { mimeType: string; kind:
   }
 
   // ISO-BMFF container: ....ftyp<brand>. Serves both HEIC stills and MP4/3GP/MOV
+=======
+  // ISO-BMFF container: ....ftyp<brand>. Serves both HEIC stills and MP4/3GP
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   // video, so the brand decides which pipeline accepts the buffer.
   const ftyp = buffer.toString('ascii', 4, 8);
   if (ftyp === 'ftyp') {
@@ -133,9 +141,12 @@ export function detectMediaFromBuffer(buffer: Buffer): { mimeType: string; kind:
     if (['heic', 'heix', 'hevc', 'mif1', 'msf1'].includes(brand)) {
       return { mimeType: 'image/heic', kind: 'image' };
     }
+<<<<<<< HEAD
     if (brand === 'qt  ') {
       return { mimeType: 'video/quicktime', kind: 'video' };
     }
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     if (['isom', 'iso2', 'mp41', 'mp42', 'avc1', 'dash', 'mmp4', 'mp4v'].includes(brand)) {
       return { mimeType: 'video/mp4', kind: 'video' };
     }
@@ -253,7 +264,11 @@ function classifyDeclaredMime(declaredMimeType?: string): MediaKind | null {
 export function validateImage(buffer: Buffer, declaredMimeType?: string): ImageValidationResult {
   const result = validateMedia(buffer, declaredMimeType);
 
+<<<<<<< HEAD
   if (result.mediaKind === 'video') {
+=======
+  if (!result.isValid && result.mediaKind === 'video') {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
     return {
       isValid: false,
       detectedMimeType: result.detectedMimeType,

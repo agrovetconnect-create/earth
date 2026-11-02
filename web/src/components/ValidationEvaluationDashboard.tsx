@@ -80,7 +80,11 @@ export const ValidationEvaluationDashboard: React.FC = () => {
         const detail = await fetchValidationDatasetDetail(selectedDatasetId);
         setDatasetDetail(detail);
       } catch (err: unknown) {
+<<<<<<< HEAD
         console.warn('Failed to load dataset detail:', err instanceof Error ? err.message : err);
+=======
+        console.error('Failed to load dataset detail', err);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       }
     };
     loadDetail();

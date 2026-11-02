@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 import { env } from '../config/env.js';
 import { whatsappMediaService } from './whatsapp-media.service.js';
 import { geminiService } from './gemini.service.js';
 import { geoscienceIntelligenceService } from './geoscience-intelligence.service.js';
+=======
+import { whatsappMediaService } from './whatsapp-media.service.js';
+import { geminiService } from './gemini.service.js';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 import { whatsappService } from './whatsapp.service.js';
 import { observationService } from './observation.service.js';
 import { webhookClaimRepository } from '../repositories/webhook-claim.repository.js';
 import { isServiceUnavailableError } from '../utils/service-error.js';
 import { validateMedia } from '../utils/image-validator.js';
+<<<<<<< HEAD
 import { checkDistributedRateLimit, rateLimiter } from '../utils/rate-limiter.js';
 import { hashUserPhoneNumber } from '../utils/crypto.js';
 import { logger } from '../utils/logger.js';
@@ -24,6 +30,15 @@ export const USER_FACING_MESSAGES = {
     channel: 'whatsapp',
     inputKind: 'media',
   }),
+=======
+import { rateLimiter } from '../utils/rate-limiter.js';
+import { logger } from '../utils/logger.js';
+import { GeologicalAnalysisError, type GeoscienceAnalysisResult } from '../ai/geological.types.js';
+import type { ObservationRow } from '../types/database.types.js';
+
+export const USER_FACING_MESSAGES = {
+  NON_ROCK: `📸 I received your image.\n\nI couldn't confidently identify a natural geological specimen in this photo.\n\nPlease send a clear photo of the specimen by itself, preferably in good daylight.`,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
   INSUFFICIENT_IMAGE: `📸 I received your photo, but there isn't enough visual information for a useful interpretation.\n\nPlease try:\n• Better daylight\n• A closer photo\n• Less blur\n• The whole subject in view\n• Another angle\n\nThen send the photo again.`,
 
@@ -89,6 +104,7 @@ export function buildWhatsAppIntelligenceSuffix(result: GeoscienceAnalysisResult
  * Preserved for backwards compatibility with Stage 2 tests.
  */
 export function formatWhatsAppAnalysisResponse(result: GeoscienceAnalysisResult): string {
+<<<<<<< HEAD
   if (
     result.observation_category === 'insufficient_image' ||
     result.primary_classification === 'insufficient_image' ||
@@ -99,6 +115,14 @@ export function formatWhatsAppAnalysisResponse(result: GeoscienceAnalysisResult)
 
   if (isNonGeoscienceAnalysis(result)) {
     return USER_FACING_MESSAGES.NON_ROCK;
+=======
+  if (!result.is_rock || result.primary_classification === 'non_rock') {
+    return USER_FACING_MESSAGES.NON_ROCK;
+  }
+
+  if (result.primary_classification === 'insufficient_image' || result.confidence === 'insufficient') {
+    return USER_FACING_MESSAGES.INSUFFICIENT_IMAGE;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   const lines: string[] = ['🪨 EARTH TALK GEOSCIENCE ANALYSIS\n'];
@@ -106,6 +130,7 @@ export function formatWhatsAppAnalysisResponse(result: GeoscienceAnalysisResult)
   if (result.possible_name) {
     lines.push(`Possible identification: ${formatCapitalized(result.possible_name)}`);
   }
+<<<<<<< HEAD
   if (result.observation_category) {
     lines.push(`What was observed: ${formatObservedCategoryLabel(result.observation_category)}`);
   }
@@ -133,14 +158,28 @@ export function formatWhatsAppAnalysisResponse(result: GeoscienceAnalysisResult)
   if (visibleFeatures.length > 0) {
     lines.push('\n🔎 What I can see:');
     for (const feat of visibleFeatures) {
+=======
+  lines.push(`Category: ${formatCapitalized(result.primary_classification)}`);
+  lines.push(`Confidence: ${formatCapitalized(result.confidence)}`);
+
+  if (result.observed_features && result.observed_features.length > 0) {
+    lines.push('\n🔎 What I can see:');
+    for (const feat of result.observed_features) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       lines.push(`• ${feat}`);
     }
   }
 
+<<<<<<< HEAD
   const explanationText = result.reasoning || result.primary_interpretation;
   if (explanationText) {
     lines.push('\n💡 Why:');
     lines.push(explanationText);
+=======
+  if (result.reasoning) {
+    lines.push('\n💡 Why:');
+    lines.push(result.reasoning);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   if (result.alternative_possibilities && result.alternative_possibilities.length > 0) {
@@ -172,6 +211,7 @@ export function formatWhatsAppPassportResponse(
   passportId: string,
   locationText?: string | null
 ): string {
+<<<<<<< HEAD
   if (
     result.observation_category === 'insufficient_image' ||
     result.primary_classification === 'insufficient_image' ||
@@ -182,6 +222,14 @@ export function formatWhatsAppPassportResponse(
 
   if (isNonGeoscienceAnalysis(result)) {
     return `🪨 EARTH TALK\n\n🆔 Geoscience Passport: ${passportId}\n\n${USER_FACING_MESSAGES.NON_ROCK}\n\n🔒 Privacy:\nYour observation is currently private and is not publicly displayed.`;
+=======
+  if (!result.is_rock || result.primary_classification === 'non_rock') {
+    return `🪨 EARTH TALK\n\n🆔 Geoscience Passport: ${passportId}\n\n${USER_FACING_MESSAGES.NON_ROCK}\n\n🔒 Privacy:\nYour observation is currently private and is not publicly displayed.`;
+  }
+
+  if (result.primary_classification === 'insufficient_image' || result.confidence === 'insufficient') {
+    return `🪨 EARTH TALK\n\n🆔 Geoscience Passport: ${passportId}\n\n${USER_FACING_MESSAGES.INSUFFICIENT_IMAGE}\n\n🔒 Privacy:\nYour observation is currently private and is not publicly displayed.`;
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   const lines: string[] = [
@@ -193,6 +241,7 @@ export function formatWhatsAppPassportResponse(
   if (result.possible_name) {
     lines.push(`Possible identification: ${formatCapitalized(result.possible_name)}`);
   }
+<<<<<<< HEAD
   if (result.observation_category) {
     lines.push(`What was observed: ${formatObservedCategoryLabel(result.observation_category)}`);
   }
@@ -220,14 +269,28 @@ export function formatWhatsAppPassportResponse(
   if (visibleFeatures.length > 0) {
     lines.push('\n🔎 Observed:');
     for (const feat of visibleFeatures) {
+=======
+  lines.push(`Category: ${formatCapitalized(result.primary_classification)}`);
+  lines.push(`Confidence: ${formatCapitalized(result.confidence)}`);
+
+  if (result.observed_features && result.observed_features.length > 0) {
+    lines.push('\n🔎 Observed:');
+    for (const feat of result.observed_features) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       lines.push(`• ${feat}`);
     }
   }
 
+<<<<<<< HEAD
   const explanationText = result.reasoning || result.primary_interpretation;
   if (explanationText) {
     lines.push('\n💡 Reasoning:');
     lines.push(explanationText);
+=======
+  if (result.reasoning) {
+    lines.push('\n💡 Reasoning:');
+    lines.push(result.reasoning);
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   }
 
   lines.push('\n⚠️ Important:');
@@ -306,11 +369,14 @@ class PendingLocationStore {
     return found;
   }
 
+<<<<<<< HEAD
   peek(phone: string): PendingLocation | null {
     this.prune();
     return this.byPhone.get(phone) ?? null;
   }
 
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   private prune(): void {
     const now = Date.now();
     for (const [phone, location] of this.byPhone) {
@@ -370,8 +436,11 @@ export function classifyPipelineError(err: unknown): { state: 'retryable' | 'ter
       case 'GEMINI_PROHIBITED_CLAIM':
       case 'GEMINI_AUTH_ERROR':
       case 'GEMINI_INVALID_RESPONSE':
+<<<<<<< HEAD
       case 'NON_GEOSCIENCE_SUBMISSION':
       case 'INSUFFICIENT_IMAGE_QUALITY':
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         return { state: 'terminal', error: err.category };
       case 'IMAGE_DOWNLOAD_ERROR':
       case 'GEMINI_RATE_LIMIT_ERROR':
@@ -451,6 +520,7 @@ export class GeoscienceAnalysisService {
       return { state: 'retryable', error: 'claim_acquisition_unavailable' };
     }
 
+<<<<<<< HEAD
     // Step 3: Rate limit check per user (distributed bucket + in-memory guard).
     // Sender phone is hashed before querying rate_limit_buckets so raw PII is never stored.
     const senderHash = hashUserPhoneNumber(senderPhoneNumber);
@@ -460,6 +530,11 @@ export class GeoscienceAnalysisService {
       env.AI_RATE_LIMIT_WINDOW_SECONDS * 1000
     );
     if (!distributedAllowed || rateLimiter.isRateLimited(senderPhoneNumber)) {
+=======
+    // Step 3: Rate limit check per user. A rate-limited message is terminal: it
+    // is not a transient system failure and must not be reprocessed forever.
+    if (rateLimiter.isRateLimited(senderPhoneNumber)) {
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       logger.warn('Rate limit exceeded for user', { messageId });
       if (claimed) await webhookClaimRepository.markTerminal(messageId, 'rate_limited');
       await whatsappService.sendTextMessage(senderPhoneNumber, rateLimiter.getRateLimitMessage());
@@ -496,6 +571,7 @@ export class GeoscienceAnalysisService {
 
       const mediaType = validation.mediaKind === 'video' ? 'video' : 'image';
 
+<<<<<<< HEAD
       // Step 6: Advanced Gemini Multimodal Geoscience Intelligence Analysis
       const peekedLoc = pendingLocations.peek(senderPhoneNumber);
       let analysisResult: GeoscienceAnalysisResult;
@@ -583,6 +659,15 @@ export class GeoscienceAnalysisService {
         if (claimed) await webhookClaimRepository.markCompleted(messageId);
         return { state: 'completed' };
       }
+=======
+      // Step 6: Gemini Multimodal Analysis
+      const analysisResult = await geminiService.analyzeGeoscienceMedia(
+        media.buffer,
+        validation.detectedMimeType!,
+        caption,
+        mediaType
+      );
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
       // Step 7: A location the sender shared just before this media is attached
       // here, so the pin and the observation it belongs to land together.

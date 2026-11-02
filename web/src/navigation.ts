@@ -1,7 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   ChartBar,
+<<<<<<< HEAD
   Compass,
+=======
+  CircleQuestionMark,
+  Compass,
+  FileText,
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
   History,
   Info,
   Languages,
@@ -34,9 +40,13 @@ export type AppView =
   | 'how-it-works'
   | 'about'
   | 'terms'
+<<<<<<< HEAD
   | 'privacy'
   | 'control'
   | 'control-login';
+=======
+  | 'privacy';
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 export interface NavEntry {
   id: AppView;
@@ -144,6 +154,7 @@ export const NAV_GROUPS: NavGroup[] = [
         requiresAdmin: true,
       },
       {
+<<<<<<< HEAD
         id: 'reviews',
         label: 'Expert reviews',
         icon: ShieldCheck,
@@ -158,6 +169,8 @@ export const NAV_GROUPS: NavGroup[] = [
         requiresAdmin: true,
       },
       {
+=======
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
         id: 'moderation',
         label: 'Moderation',
         icon: ShieldAlert,
@@ -197,6 +210,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: 'Learn & support',
     entries: [
       {
+<<<<<<< HEAD
         id: 'about',
         label: 'About & Guide',
         icon: Info,
@@ -207,6 +221,30 @@ export const NAV_GROUPS: NavGroup[] = [
         label: 'Legal & Transparency',
         icon: ShieldCheck,
         subtitle: 'Terms of Service, scientific disclaimers and privacy commitments',
+=======
+        id: 'how-it-works',
+        label: 'How it works',
+        icon: CircleQuestionMark,
+        subtitle: 'From a WhatsApp photo to a Geoscience Passport',
+      },
+      {
+        id: 'about',
+        label: 'About Earth Talk',
+        icon: Info,
+        subtitle: 'Scope, data honesty and privacy commitments',
+      },
+      {
+        id: 'terms',
+        label: 'Terms of Service',
+        icon: FileText,
+        subtitle: 'Rules, scientific disclaimers and usage terms',
+      },
+      {
+        id: 'privacy',
+        label: 'Privacy Policy',
+        icon: ShieldCheck,
+        subtitle: 'Data protection, hashing and privacy commitments',
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
       },
     ],
   },
@@ -224,6 +262,7 @@ export const NAV_FOOTER_UTILS: NavExtraItem[] = [
 
 export const NAV_ENTRIES: NavEntry[] = NAV_GROUPS.flatMap((group) => group.entries);
 
+<<<<<<< HEAD
 const SUBVIEW_ENTRIES: Partial<Record<AppView, NavEntry>> = {
   'how-it-works': {
     id: 'how-it-works',
@@ -241,6 +280,10 @@ const SUBVIEW_ENTRIES: Partial<Record<AppView, NavEntry>> = {
 
 export const getNavEntry = (view: AppView): NavEntry =>
   NAV_ENTRIES.find((entry) => entry.id === view) ?? SUBVIEW_ENTRIES[view] ?? NAV_ENTRIES[0];
+=======
+export const getNavEntry = (view: AppView): NavEntry =>
+  NAV_ENTRIES.find((entry) => entry.id === view) ?? NAV_ENTRIES[0];
+>>>>>>> 59b7875b1e82e599dde26993d8f3b9e4c8192bed
 
 /**
  * A section of a view that is split across several sidebar entries. Each entry
