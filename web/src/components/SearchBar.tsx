@@ -1,0 +1,94 @@
+import React, { useState, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
+
+interface SearchBarProps {
+  value?: string;
+  onSearch: (query: string) => void;
+  placeholder?: string;
+  /**
+   * Control rendered inside the field at its right edge, behind a divider. The
+   * map uses this for the filter button, so filtering is reachable from the
+   * search box itself without adding anything beside it.
+   */
+  trailing?: React.ReactNode;
+  loading?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onSubmit?: (query: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+/** Google-style rounded search field: pill outline, elevation, focus ring. */
+export const SearchBar: React.FC<SearchBarProps> = ({
+  value = '',
+  onSearch,
+  placeholder = 'Search by Passport ID, rock name, or district...',
+  trailing,
+  loading,
+  onFocus,
+  onBlur,
+  onSubmit,
+  onKeyDown,
+}) => {
+  const [localQuery, setLocalQuery] = useState(value);
+
+  useEffect(() => {
+    setLocalQuery(value);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setLocalQuery(text);
+    onSearch(text);
+  };
+
+  const handleClear = () => {
+    setLocalQuery('');
+    onSearch('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    onKeyDown?.(e);
+    if (e.defaultPrevented) return;
+    if (e.key === 'Enter') {
+      const trimmed = localQuery.trim();
+      if (trimmed) {
+        onSearch(trimmed);
+        onSubmit?.(trimmed);
+      }
+    }
+  };
+
+  return (
+    <div className="g-search">
+      <Search className="w-[18px] h-[18px] text-[#5e5e5e] shrink-0" aria-hidden="true" />
+      <input
+        type="text"
+        value={localQuery}
+        onChange={handleChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        aria-label="Search observations"
+      />
+      {loading ? (
+        <div className="w-4 h-4 rounded-full border-2 border-[#1a73e8] border-t-transparent animate-spin shrink-0 mx-1.5" aria-label="Loading search results" />
+      ) : localQuery ? (
+        <button
+          type="button"
+          onClick={handleClear}
+          aria-label="Clear search"
+          className="g-icon-btn w-7 h-7 shrink-0"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      ) : null}
+      {trailing && (
+        <span className="shrink-0 pl-2 ml-0.5 border-l border-[#dadce0] flex items-center">
+          {trailing}
+        </span>
+      )}
+    </div>
+  );
+};

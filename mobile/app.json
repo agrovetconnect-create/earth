@@ -1,0 +1,71 @@
+{
+  "expo": {
+    "name": "Earth Talk",
+    "slug": "earth-talk-mobile",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
+    "scheme": "earthtalk",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.earthtalk.mobile",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Earth Talk uses your camera to photograph rocks, minerals, and landforms for GeoAI analysis.",
+        "NSPhotoLibraryUsageDescription": "Earth Talk accesses your photo library so you can attach field specimen photos and outcrop clips.",
+        "NSLocationWhenInUseUsageDescription": "Earth Talk uses your location to record field coordinates and map observations.",
+        "NSMicrophoneUsageDescription": "Earth Talk uses your microphone when you record spoken field notes in GeoAI Chat."
+      }
+    },
+    "android": {
+      "package": "org.earthtalk.mobile",
+      "versionCode": 1,
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#F5F7F4",
+        "foregroundImage": "./assets/images/logo-no-subtitle.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "server",
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo-no-subtitle.png",
+          "imageWidth": 280,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F7F4",
+          "dark": {
+            "image": "./assets/images/logo-no-subtitle.png",
+            "backgroundColor": "#141B17"
+          }
+        }
+      ],
+      "expo-maps",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "18.0"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

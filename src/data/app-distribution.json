@@ -1,0 +1,19 @@
+{
+  "mode": "apk",
+  "is_play_store_active": false,
+  "is_get_app_sidebar_visible": false,
+  "is_whatsapp_sidebar_visible": false,
+  "whatsapp_number": "",
+  "play_store_url": "https://play.google.com/store/apps/details?id=org.earthtalk.mobile",
+  "version_name": "v1.2.0",
+  "version_code": 12,
+  "package_name": "org.earthtalk.mobile",
+  "min_android": "Android 8.0 (API 26)+",
+  "apk_filename": "earthtalkInjected.apk",
+  "apk_size_bytes": 0,
+  "apk_sha256": "",
+  "release_notes": "Signed release",
+  "download_count": 21,
+  "updated_at": "2026-11-01T15:27:21.671Z",
+  "updated_by": "owner@earthtalk.rw"
+}

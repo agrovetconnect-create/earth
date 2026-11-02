@@ -1,0 +1,106 @@
+{
+  "terms": {
+    "page": "terms",
+    "title": "Terms of Service",
+    "subtitle": "These Terms of Service govern your access to and use of the Earth Talk platform, WhatsApp submission workflows, community discovery feeds, and GIS observation layers in Rwanda.",
+    "lastUpdated": "October 24, 2026",
+    "sections": [
+      {
+        "id": "section-1",
+        "number": "1",
+        "title": "Acceptance of Terms",
+        "content": "By accessing or using Earth Talk (accessible via web interfaces and the designated WhatsApp messaging channel), you agree to be bound by these Terms of Service (\"Terms\"). If you do not agree to these Terms, you must not access or use our services."
+      },
+      {
+        "id": "section-2",
+        "number": "2",
+        "title": "Description of the Earth Talk Platform",
+        "content": "Earth Talk is a WhatsApp-first GeoAI, GIS, and community geoscience platform tailored for Rwanda (\"Discover Earth. Together.\"). The service provides multimodal artificial intelligence analysis, digital Geoscience Passports, and interactive GIS mapping."
+      },
+      {
+        "id": "section-3",
+        "number": "3",
+        "title": "Scientific & Educational AI Disclaimers",
+        "content": "Observations analyzed by Earth Talk reflect preliminary AI-assisted visual interpretations based on photograph pixels and provided context. They do NOT constitute laboratory assay or official geological survey verification."
+      },
+      {
+        "id": "section-4",
+        "number": "4",
+        "title": "Contributor Identity & Account System",
+        "content": "Earth Talk avoids intrusive account registration by using lightweight, privacy-preserving identity models, including salted HMAC-SHA256 phone hashing for WhatsApp contributors and browser-stored profiles for Field Explorers."
+      }
+    ]
+  },
+  "privacy": {
+    "page": "privacy",
+    "title": "Privacy Policy",
+    "subtitle": "Earth Talk is committed to protecting your privacy while building a collaborative civic geoscience platform for Rwanda. This policy explains how we collect, handle, and secure your information.",
+    "lastUpdated": "October 24, 2026",
+    "sections": [
+      {
+        "id": "privacy-1",
+        "number": "1",
+        "title": "Information We Collect",
+        "content": "We collect information you voluntarily provide when submitting observations via WhatsApp or web upload, including photographs, voice notes, geological descriptions, and coordinate data."
+      },
+      {
+        "id": "privacy-2",
+        "number": "2",
+        "title": "Phone Number Hashing & Anonymity",
+        "content": "When you message our WhatsApp bot, your phone number is immediately converted on our secure backend into an irreversible salted cryptographic hash. Raw phone numbers are never stored in public or observation databases."
+      },
+      {
+        "id": "privacy-3",
+        "number": "3",
+        "title": "Geolocation Privacy & Fuzzing",
+        "content": "Exact field coordinates remain private to you until published. Public map pins apply geographic fuzzing (approximate displacement) to protect sensitive localities while preserving regional scientific utility."
+      }
+    ]
+  },
+  "about": {
+    "page": "about",
+    "title": "About Earth Talk",
+    "subtitle": "Discover Earth. Together. WhatsApp-first GeoAI, GIS, community investigation and research platform for Rwanda.",
+    "lastUpdated": "November 1, 2026",
+    "sections": [
+      {
+        "id": "about-1",
+        "number": "1",
+        "title": "Our Mission & Vision",
+        "content": "Earth Talk empowers Rwandan citizens, local researchers, and field explorers to document geological specimens, water resources, and terrain features using accessible mobile and WhatsApp technology."
+      },
+      {
+        "id": "about-2",
+        "number": "2",
+        "title": "Civic Geoscience & Community Science",
+        "content": "By combining state-of-the-art GeoAI models with community verification, Earth Talk builds open, structured geological datasets for education, environmental monitoring, and sustainable resource understanding."
+      }
+    ]
+  },
+  "how-it-works": {
+    "page": "how-it-works",
+    "title": "How Earth Talk Works in Rwanda",
+    "subtitle": "Step-by-step guide to capturing field observations, interacting with GeoAI analysis, and contributing to community investigations in Rwanda.",
+    "lastUpdated": "October 31, 2026",
+    "sections": [
+      {
+        "id": "hiw-1",
+        "number": "1",
+        "title": "Capture & Submit via WhatsApp or Web",
+        "content": "Take a clear photograph or record a voice note of a geological specimen, rock outcrop, mineral, or hydrogeological site. Send it directly to the Earth Talk WhatsApp line or upload via the web form."
+      },
+      {
+        "id": "hiw-2",
+        "number": "2",
+        "title": "Instant GeoAI Interpretation",
+        "content": "Our multimodal GeoAI analyzes the visual characteristics, generates a preliminary identification, calculates confidence ratings, and issues a digital Geoscience Passport."
+      },
+      {
+        "id": "hiw-3",
+        "number": "3",
+        "title": "GIS Mapping & Community Investigation",
+        "content": "Published observations appear on the interactive Rwanda GIS map and community investigation boards where experts and peers can discuss, verify, and build consensus."
+      }
+    ]
+  }
+}
