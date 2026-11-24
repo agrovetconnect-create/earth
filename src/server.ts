@@ -41,6 +41,8 @@ import {
 } from './services/auth.service.js';
 import { refreshDemoContentCache } from './services/system-settings.service.js';
 
+const IS_VERCEL_RUNTIME = process.env.VERCEL === '1';
+
 /**
  * Demonstration posts (Stage 12) are served by the post card straight from
  * `demo-posts.ts`, but the map, the observation list and the GeoJSON layer read
@@ -322,7 +324,7 @@ app.use(webhookRouter);
 type ViteDevServerInstance = Awaited<ReturnType<(typeof import('vite'))['createServer']>>;
 let resolvedVite: ViteDevServerInstance | null = null;
 
-if (!env.IS_PRODUCTION) {
+if (!env.IS_PRODUCTION && !IS_VERCEL_RUNTIME) {
   let viteFailed = false;
 
   const disableHmr = process.env.DISABLE_HMR === 'true';
@@ -430,6 +432,7 @@ app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
+if (!IS_VERCEL_RUNTIME) {
 // Start HTTP server on configured port
 let retryCount = 0;
 server.on('error', (error: NodeJS.ErrnoException) => {
@@ -535,6 +538,7 @@ const shutdown = (signal: string) => {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+}
 
 export default app;
 export { server };

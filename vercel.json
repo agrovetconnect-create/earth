@@ -5,6 +5,12 @@
   "outputDirectory": "dist/client",
   "rewrites": [
     { "source": "/api/public/observations.geojson", "destination": "/api/public-observations-geojson" },
+    { "source": "/api/:path*", "destination": "/api/index?path=/api/:path*" },
+    { "source": "/webhook", "destination": "/api/webhook?path=/webhook" },
+    { "source": "/webhook/:path*", "destination": "/api/webhook?path=/webhook/:path*" },
+    { "source": "/internal", "destination": "/api/internal?path=/internal" },
+    { "source": "/internal/:path*", "destination": "/api/internal?path=/internal/:path*" },
+    { "source": "/health", "destination": "/api/health?path=/health" },
     { "source": "/terms", "destination": "/index.html" },
     { "source": "/terms/:path*", "destination": "/index.html" },
     { "source": "/privacy", "destination": "/index.html" },

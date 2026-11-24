@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import multer from 'multer';
 import {
@@ -12,7 +13,10 @@ import { logger } from '../utils/logger.js';
 import { isServiceUnavailableError } from '../utils/service-error.js';
 
 // Setup multer storage for incoming APK uploads (up to 150MB)
-const uploadDir = path.resolve(process.cwd(), 'tmp');
+const uploadDir =
+  process.env.VERCEL === '1'
+    ? path.join(os.tmpdir(), 'earthtalk-uploads')
+    : path.resolve(process.cwd(), 'tmp');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
