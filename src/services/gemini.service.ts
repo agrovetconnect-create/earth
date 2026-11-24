@@ -88,10 +88,6 @@ function safeGeminiError(err: unknown, fallbackMessage: string): GeologicalAnaly
   return new GeologicalAnalysisError(category, message, err);
 }
 
-function terminalGeminiError(err: unknown, fallbackMessage: string): GeologicalAnalysisError {
-  return safeGeminiError(err, fallbackMessage);
-}
-
 export class GeminiService {
   private ai: GoogleGenAI;
 
@@ -170,25 +166,16 @@ export class GeminiService {
         lastError = err;
         const classification = classifyGeminiError(err);
 
-        if (classification === 'auth' || classification === 'rejected') {
-          logger.error(`Gemini analysis failed permanently with model ${model}; refusing further fallbacks`, {
-            classification,
-            error: err instanceof Error ? err.message : String(err),
-          });
-          throw terminalGeminiError(err, 'Gemini analysis failed');
-        }
-
         if (classification === 'retryable') {
           logger.warn(`Model ${model} is rate limited or unavailable. Backing off before the next model...`, {
             error: err instanceof Error ? err.message : String(err),
           });
           await geminiRetryDelay(retryAttempt++);
-          continue;
+        } else {
+          logger.warn(`Gemini geoscience analysis with ${model} failed (${classification}); trying the next available model...`, {
+            error: err instanceof Error ? err.message : 'Unknown error',
+          });
         }
-
-        logger.warn(`Gemini geoscience analysis with ${model} failed, trying fallback...`, {
-          error: err instanceof Error ? err.message : 'Unknown error',
-        });
       }
     }
 
@@ -277,25 +264,16 @@ export class GeminiService {
         lastError = err;
         const classification = classifyGeminiError(err);
 
-        if (classification === 'auth' || classification === 'rejected') {
-          logger.error(`Gemini intelligence analysis failed permanently with model ${model}; refusing further fallbacks`, {
-            classification,
-            error: err instanceof Error ? err.message : String(err),
-          });
-          throw terminalGeminiError(err, 'Gemini intelligence analysis failed');
-        }
-
         if (classification === 'retryable') {
           logger.warn(`Model ${model} is rate limited or unavailable. Backing off before the next model...`, {
             error: err instanceof Error ? err.message : String(err),
           });
           await geminiRetryDelay(retryAttempt++);
-          continue;
+        } else {
+          logger.warn(`Gemini context-aware analysis with ${model} failed (${classification}); trying the next available model...`, {
+            error: err instanceof Error ? err.message : 'Unknown error',
+          });
         }
-
-        logger.warn(`Gemini context-aware analysis with ${model} failed, trying fallback...`, {
-          error: err instanceof Error ? err.message : 'Unknown error',
-        });
       }
     }
 
@@ -580,18 +558,10 @@ export class GeminiService {
       } catch (err: unknown) {
         lastQaErr = err;
         const classification = classifyGeminiError(err);
-        if (classification === 'auth' || classification === 'rejected') {
-          logger.error(`Gemini Q&A failed permanently with model ${model}; refusing further fallbacks`, {
-            classification,
-            error: err instanceof Error ? err.message : String(err),
-          });
-          break;
-        }
         if (classification === 'retryable') {
           await geminiRetryDelay(retryAttempt++);
-          continue;
         }
-        logger.warn(`Gemini Q&A generation with ${model} failed; trying fallback if available`, {
+        logger.warn(`Gemini Q&A generation with ${model} failed (${classification}); trying the next available model...`, {
           error: err instanceof Error ? err.message : String(err),
         });
       }
@@ -672,18 +642,10 @@ export class GeminiService {
       } catch (err: unknown) {
         lastTranscribeErr = err;
         const classification = classifyGeminiError(err);
-        if (classification === 'auth' || classification === 'rejected') {
-          logger.error(`Gemini transcription failed permanently with model ${model}; refusing further fallbacks`, {
-            classification,
-            error: err instanceof Error ? err.message : String(err),
-          });
-          break;
-        }
         if (classification === 'retryable') {
           await geminiRetryDelay(retryAttempt++);
-          continue;
         }
-        logger.warn(`Gemini voice note transcription with ${model} failed; trying fallback`, {
+        logger.warn(`Gemini voice note transcription with ${model} failed (${classification}); trying the next available model...`, {
           error: err instanceof Error ? err.message : String(err),
         });
       }

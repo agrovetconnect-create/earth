@@ -6,6 +6,7 @@ import { normalizeDistrictName, resolvePublicCoordinates } from '../utils/public
 import { hashContributor, normalizeContributorToken } from '../utils/contributor.js';
 import { resolveUserAvatarUrl } from '../utils/user-auth.js';
 import { squashText } from '../utils/text.js';
+import { nowIso } from '../utils/time.js';
 import { communityPostRepository, type CommentReactionType } from '../repositories/community-post.repository.js';
 import { observationRepository } from '../repositories/observation.repository.js';
 import { demoContentEnabled } from './system-settings.service.js';
@@ -70,6 +71,8 @@ import { notificationService, notifyEventSafely } from './notification.service.j
 
 const AI_DISCLAIMER =
   'This is a preliminary AI-assisted identification and not a laboratory or expert determination.';
+
+export const COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000;
 
 export class PostServiceError extends Error {
   constructor(
@@ -1160,6 +1163,78 @@ export class CommunityPostService {
       },
       message: parentId ? 'Your reply was posted.' : 'Your comment was posted.',
     };
+  }
+
+  async updateComment(
+    passportId: string,
+    commentId: string,
+    viewer: ViewerContext,
+    body: string
+  ): Promise<PublicComment> {
+    const text = String(body ?? '').trim();
+    if (!text) fail(400, 'COMMENT_EMPTY', 'Write something before saving a comment.');
+    if (text.length > env.COMMENT_MAX_LENGTH) {
+      fail(
+        400,
+        'COMMENT_TOO_LONG',
+        `A comment is limited to ${env.COMMENT_MAX_LENGTH} characters.`
+      );
+    }
+
+    const stored = await communityPostRepository.findComment(passportId, commentId);
+    if (!stored || stored.moderation_status !== 'visible') {
+      fail(404, 'COMMENT_NOT_FOUND', 'That comment could not be found.');
+    }
+    if (stored.author_user_id !== viewer.userId) {
+      fail(403, 'FORBIDDEN', 'You can only edit your own comments.');
+    }
+    const createdAt = Date.parse(stored.created_at);
+    if (!Number.isFinite(createdAt) || Date.now() - createdAt > COMMENT_EDIT_WINDOW_MS) {
+      fail(403, 'EDIT_WINDOW_EXPIRED', 'Comments can be edited for 15 minutes after posting.');
+    }
+
+    const editedAt = nowIso();
+    const updated = await communityPostRepository.updateCommentBody(commentId, text, editedAt);
+    if (!updated) fail(404, 'COMMENT_NOT_FOUND', 'That comment could not be found.');
+
+    const author = (await identityFor(viewer.userId)) ?? {
+      public_user_id: viewer.publicUserId,
+      display_name: viewer.displayName ?? null,
+      avatar_url: null,
+      is_demo: false,
+    };
+    return {
+      comment_id: updated.id,
+      parent_comment_id: updated.parent_comment_id,
+      author,
+      body: updated.body,
+      image_url: updated.image_url ?? null,
+      likes_count: 0,
+      viewer_liked: false,
+      created_at: updated.created_at,
+      edited_at: updated.edited_at,
+      moderation_status: updated.moderation_status,
+      reply_count: 0,
+      replies: [],
+      is_demo: false,
+    };
+  }
+
+  async deleteComment(
+    passportId: string,
+    commentId: string,
+    viewer: ViewerContext
+  ): Promise<{ comment_id: string; message: string }> {
+    const stored = await communityPostRepository.findComment(passportId, commentId);
+    if (!stored || stored.moderation_status !== 'visible') {
+      fail(404, 'COMMENT_NOT_FOUND', 'That comment could not be found.');
+    }
+    if (stored.author_user_id !== viewer.userId) {
+      fail(403, 'FORBIDDEN', 'You can only delete your own comments.');
+    }
+    const removed = await communityPostRepository.removeCommentByAuthor(commentId, viewer.userId);
+    if (!removed) fail(404, 'COMMENT_NOT_FOUND', 'That comment could not be found.');
+    return { comment_id: commentId, message: 'Your comment was deleted.' };
   }
 
   async reactToComment(

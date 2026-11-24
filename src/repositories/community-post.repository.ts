@@ -966,6 +966,69 @@ export class CommunityPostRepository {
     return rows.find((row) => row.id === commentId) ?? null;
   }
 
+  async updateCommentBody(commentId: string, body: string, editedAt: string): Promise<CommentRow | null> {
+    this.requireDatabase('comment edit');
+    const patch = { body, edited_at: editedAt, updated_at: editedAt };
+    if (this.database) {
+      try {
+        const { data, error } = await (supabase.from('observation_comments') as any)
+          .update(patch)
+          .eq('id', commentId)
+          .eq('moderation_status', 'visible')
+          .select('*')
+          .maybeSingle();
+        if (error) throw new Error(error.message);
+        return (data as CommentRow) ?? null;
+      } catch (err) {
+        throw this.databaseFailure('comment update', err);
+      }
+    }
+    for (const list of memory.comments.values()) {
+      const match = list.find((entry) => entry.id === commentId);
+      if (match && match.moderation_status === 'visible') {
+        Object.assign(match, patch);
+        return match;
+      }
+    }
+    return null;
+  }
+
+  async removeCommentByAuthor(commentId: string, authorUserId: string): Promise<CommentRow | null> {
+    this.requireDatabase('comment delete');
+    const at = nowIso();
+    const patch = {
+      body: '[deleted]',
+      image_url: null,
+      moderation_status: 'removed' as const,
+      moderation_reason: 'Author deleted comment',
+      moderated_by: authorUserId,
+      moderated_at: at,
+      updated_at: at,
+    };
+    if (this.database) {
+      try {
+        const { data, error } = await (supabase.from('observation_comments') as any)
+          .update(patch)
+          .eq('id', commentId)
+          .eq('moderation_status', 'visible')
+          .select('*')
+          .maybeSingle();
+        if (error) throw new Error(error.message);
+        return (data as CommentRow) ?? null;
+      } catch (err) {
+        throw this.databaseFailure('comment delete', err);
+      }
+    }
+    for (const list of memory.comments.values()) {
+      const match = list.find((entry) => entry.id === commentId);
+      if (match && match.moderation_status === 'visible') {
+        Object.assign(match, patch);
+        return match;
+      }
+    }
+    return null;
+  }
+
   async listCommentReactions(
     passportId: string,
     viewerKey?: string | null
@@ -1203,8 +1266,9 @@ export class CommunityPostRepository {
 
     for (const list of memory.comments.values()) {
       const match = list.find((entry) => entry.id === commentId);
-      if (match) {
+      if (match && match.moderation_status === 'visible') {
         Object.assign(match, patch);
+        memory.commentImages.delete(commentId);
         return match;
       }
     }

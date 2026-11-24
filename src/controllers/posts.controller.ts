@@ -209,6 +209,52 @@ export async function createCommentHandler(
   }
 }
 
+export async function updateCommentHandler(
+  req: AuthenticatedUserRequest,
+  res: Response
+): Promise<void> {
+  try {
+    if (!req.viewer) {
+      res.status(401).json({
+        error: { code: 'AUTH_REQUIRED', message: 'Sign in to edit your comment.' },
+      });
+      return;
+    }
+    const body = bodyOf(req);
+    const comment = await communityPostService.updateComment(
+      String(req.params.passportId ?? ''),
+      String(req.params.commentId ?? ''),
+      req.viewer,
+      typeof body.body === 'string' ? body.body : ''
+    );
+    res.status(200).json({ comment, message: 'Your comment was updated.' });
+  } catch (err) {
+    sendError(res, err);
+  }
+}
+
+export async function deleteCommentHandler(
+  req: AuthenticatedUserRequest,
+  res: Response
+): Promise<void> {
+  try {
+    if (!req.viewer) {
+      res.status(401).json({
+        error: { code: 'AUTH_REQUIRED', message: 'Sign in to delete your comment.' },
+      });
+      return;
+    }
+    const result = await communityPostService.deleteComment(
+      String(req.params.passportId ?? ''),
+      String(req.params.commentId ?? ''),
+      req.viewer
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    sendError(res, err);
+  }
+}
+
 /**
  * POST /api/posts/:passportId/comments/:commentId/react
  * Body: { reaction_type: 'heart' }

@@ -25,6 +25,7 @@ import {
   markNotificationRead,
   type NotificationItem,
 } from '../services/notificationsApi.js';
+import { useTranslator } from '../i18n.js';
 
 export type { NotificationItem } from '../services/notificationsApi.js';
 
@@ -75,6 +76,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
   isNarrow,
   onOpenSidebar,
 }) => {
+  const t = useTranslator();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -280,7 +282,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               <div>
                 <h1 className="text-[22px] sm:text-[26px] font-semibold text-[#1f1f1f] tracking-tight flex items-center gap-2">
                   <Bell className="w-6 h-6 text-[#0b57d0]" aria-hidden="true" />
-                  Notifications
+                  {t('Notifications')}
                 </h1>
                 <p className="text-xs sm:text-[13px] text-[#5e5e5e] mt-0.5">
                   Replies, verification updates, and activity on your field records.

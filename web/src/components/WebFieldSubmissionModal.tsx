@@ -605,6 +605,7 @@ export const WebFieldSubmissionModal: React.FC<WebFieldSubmissionModalProps> = (
   const [currentChatId, setCurrentChatId] = useState<string>(() => `chat_${Date.now()}`);
   const [savedChats, setSavedChats] = useState<SavedChatSession[]>([]);
   const [chatMenuOpen, setChatMenuOpen] = useState(false);
+  const [chatPendingDelete, setChatPendingDelete] = useState<SavedChatSession | null>(null);
 
   const [messages, setMessages] = useState<ChatMessageItem[]>(() => [
     buildWelcomeMessage(currentUser?.display_name),
@@ -863,8 +864,7 @@ export const WebFieldSubmissionModal: React.FC<WebFieldSubmissionModalProps> = (
     setChatMenuOpen(false);
   };
 
-  const deleteSavedChat = (chatId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const deleteSavedChat = (chatId: string) => {
     const next = savedChats.filter((c) => c.id !== chatId);
     setSavedChats(next);
     persistSavedChats(currentUser?.public_user_id, next);
@@ -1803,8 +1803,12 @@ export const WebFieldSubmissionModal: React.FC<WebFieldSubmissionModalProps> = (
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={(e) => deleteSavedChat(chat.id, e)}
-                                  aria-label="Delete saved chat"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setChatMenuOpen(false);
+                                    setChatPendingDelete(chat);
+                                  }}
+                                  aria-label={t('Delete saved chat')}
                                   className="p-1 text-[#8f8f8f] hover:text-[#b3261e]"
                                 >
                                   <Trash2 className="h-3 w-3" />
@@ -2832,6 +2836,49 @@ export const WebFieldSubmissionModal: React.FC<WebFieldSubmissionModalProps> = (
         onClose={() => setShowLogin(false)}
         onUserLogin={() => setShowLogin(false)}
       />
+
+      {chatPendingDelete && (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-[#0b0f14]/65 p-4 backdrop-blur-xs"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) setChatPendingDelete(null);
+          }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-chat-title"
+            aria-describedby="delete-chat-description"
+            className="w-full max-w-sm rounded-2xl border border-[#dadce0] bg-white p-5 shadow-2xl"
+          >
+            <h2 id="delete-chat-title" className="text-[15px] font-semibold text-[#1f1f1f]">
+              {t('Delete saved chat?')}
+            </h2>
+            <p id="delete-chat-description" className="mt-2 text-[13px] text-[#5e5e5e]">
+              {t('This chat and its messages will be deleted from this device. This cannot be undone.')}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setChatPendingDelete(null)}
+                className="g-btn g-btn-tonal rounded-lg px-4 py-2 text-[13px] font-medium"
+              >
+                {t('Cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deleteSavedChat(chatPendingDelete.id);
+                  setChatPendingDelete(null);
+                }}
+                className="rounded-lg bg-[#b3261e] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#8e1d17]"
+              >
+                {t('Delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -899,6 +899,20 @@ export default function SubmitScreen() {
     }
   };
 
+  const confirmDeleteSavedChat = (chat: SavedChatSession) => {
+    Alert.alert('Delete saved chat?', 'This chat and its messages will be deleted from this phone. This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setShowChatMenu(false);
+          deleteSavedChat(chat.id);
+        },
+      },
+    ]);
+  };
+
   const openPassport = (passportId: string) => {
     setShowChatMenu(false);
     router.push({ pathname: '/passport/[id]', params: { id: passportId } });
@@ -2053,7 +2067,7 @@ export default function SubmitScreen() {
                             </Text>
                           </View>
                           <Pressable
-                            onPress={() => deleteSavedChat(chat.id)}
+                            onPress={() => confirmDeleteSavedChat(chat)}
                             accessibilityLabel="Delete saved chat"
                             style={styles.savedChatDelete}
                           >

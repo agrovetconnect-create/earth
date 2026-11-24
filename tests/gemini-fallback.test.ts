@@ -79,7 +79,7 @@ await test('classifyGeminiError separates terminal, retryable and unknown failur
   assert.equal(classifyGeminiError(new Error('socket hang up')), 'unknown');
 });
 
-await test('analysis refuses further models on 404, 402 and 403', async () => {
+await test('analysis tries every available model on 404, 402 and 403', async () => {
   for (const [status, category] of [
     [404, 'GEMINI_API_ERROR'],
     [402, 'GEMINI_API_ERROR'],
@@ -93,11 +93,11 @@ await test('analysis refuses further models on 404, 402 and 403', async () => {
       (err: unknown) =>
         err instanceof GeologicalAnalysisError && err.category === category
     );
-    assert.equal(calls.length, 1, `status ${status} must not trigger another model`);
+    assert.equal(calls.length, VALID_GEMINI_TEXT_MODELS.length, `status ${status} must try every model`);
   }
 });
 
-await test('context-aware analysis refuses further models on 404', async () => {
+await test('context-aware analysis tries every available model on 404', async () => {
   const service = new GeminiService();
   const models: string[] = [];
   (service as any).executeIntelligenceWithTimeout = async (_media: unknown, _description: unknown, _context: unknown, model: string) => {
@@ -112,16 +112,16 @@ await test('context-aware analysis refuses further models on 404', async () => {
       }),
     (err: unknown) => err instanceof GeologicalAnalysisError && err.category === 'GEMINI_API_ERROR'
   );
-  assert.equal(models.length, 1);
+  assert.equal(models.length, VALID_GEMINI_TEXT_MODELS.length);
 });
 
-await test('Q&A and transcription return cautious fallback without further models on terminal errors', async () => {
+await test('Q&A and transcription try every available model before cautious fallback', async () => {
   const qa = mockService(() => {
     throw apiError(404);
   });
   const qaAnswer = await qa.service.answerGeoscienceQuestion('What is this rock?');
   assert.match(qaAnswer, /temporarily unreachable/);
-  assert.equal(qa.calls.length, 1);
+  assert.equal(qa.calls.length, VALID_GEMINI_TEXT_MODELS.length);
 
   const voice = mockService(() => {
     throw apiError(403);
@@ -132,7 +132,7 @@ await test('Q&A and transcription return cautious fallback without further model
   );
   assert.equal(voiceAnswer.transcript, '');
   assert.match(voiceAnswer.reply, /Live audio transcription is temporarily unavailable/);
-  assert.equal(voice.calls.length, 1);
+  assert.equal(voice.calls.length, 3);
 });
 
 await test('429 retries across the fallback chain with tiny backoff', async () => {

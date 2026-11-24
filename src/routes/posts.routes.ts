@@ -4,6 +4,7 @@ import {
   addMediaHandler,
   answerQuestionHandler,
   createCommentHandler,
+  deleteCommentHandler,
   getPostHandler,
   listCommentsHandler,
   listMyPostsHandler,
@@ -13,6 +14,7 @@ import {
   serveAttachmentHandler,
   servePostMediaHandler,
   updateAttachmentDownloadHandler,
+  updateCommentHandler,
   updatePostHandler,
 } from '../controllers/posts.controller.js';
 import { attachViewer, requireUser } from '../utils/user-auth.js';
@@ -39,6 +41,8 @@ postsRouter.get('/api/posts/:passportId', attachViewer, getPostHandler);
 postsRouter.get('/api/posts/:passportId/same-place', attachViewer, samePlaceHandler);
 postsRouter.get('/api/posts/:passportId/comments', attachViewer, listCommentsHandler);
 postsRouter.post('/api/posts/:passportId/comments', requireUser, createCommentHandler);
+postsRouter.patch('/api/posts/:passportId/comments/:commentId', requireUser, updateCommentHandler);
+postsRouter.delete('/api/posts/:passportId/comments/:commentId', requireUser, deleteCommentHandler);
 postsRouter.post(
   '/api/posts/:passportId/comments/:commentId/react',
   attachViewer,

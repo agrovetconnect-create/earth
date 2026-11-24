@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ArrowRight, Map as MapIcon, Menu, Telescope } from 'lucide-react';
 import type { CommunityUser, MyPostSummary } from '../types/communityPosts.js';
 import { fetchMyPosts } from '../services/postsApi.js';
+import { useTranslator } from '../i18n.js';
 import { MapView, type OwnerMapPost } from './MapView.js';
 
 interface MyMapViewProps {
@@ -28,6 +29,7 @@ export const MyMapView: React.FC<MyMapViewProps> = ({
   isNarrow,
   onOpenSidebar,
 }) => {
+  const t = useTranslator();
   const [posts, setPosts] = useState<MyPostSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -68,7 +70,7 @@ export const MyMapView: React.FC<MyMapViewProps> = ({
         )}
         <div className="g-card p-8 text-center max-w-lg mx-auto my-auto">
           <MapIcon className="w-8 h-8 text-[#0b57d0] mx-auto" aria-hidden="true" />
-          <h2 className="mt-3 text-[16px] font-medium text-[#1f1f1f]">My Map</h2>
+          <h2 className="mt-3 text-[16px] font-medium text-[#1f1f1f]">{t('My Map')}</h2>
           <p className="mt-2 text-[13px] text-[#5e5e5e]">
             Sign in to see your own observations on the map, including the ones you
             have kept private.

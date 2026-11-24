@@ -13,6 +13,8 @@ import { requestJson } from './http.js';
 const AUTH_HEADERS = getCommunityAuthHeaders;
 const ACCEPT = { Accept: 'application/json' };
 const POST_PREFETCH_TTL_MS = 30_000;
+
+export const COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000;
 const postPrefetchCache = new Map<string, { promise: Promise<CommunityPostDetail | null>; at: number }>();
 
 function preloadMediaUrl(url?: string | null): void {
@@ -104,6 +106,36 @@ export async function createComment(
         ...(parentCommentId ? { parent_comment_id: parentCommentId } : {}),
         ...(image ? { image_base64: image.base64, image_mime_type: image.mimeType } : {}),
       },
+      errorMessage: requestFailed,
+    }
+  );
+}
+
+export async function updateComment(
+  passportId: string,
+  commentId: string,
+  body: string
+): Promise<{ comment: PublicComment; message: string }> {
+  return requestJson(
+    `/api/posts/${encodeURIComponent(passportId)}/comments/${encodeURIComponent(commentId)}`,
+    {
+      method: 'PATCH',
+      headers: combine(ACCEPT),
+      json: { body },
+      errorMessage: requestFailed,
+    }
+  );
+}
+
+export async function deleteComment(
+  passportId: string,
+  commentId: string
+): Promise<{ comment_id: string; message: string }> {
+  return requestJson(
+    `/api/posts/${encodeURIComponent(passportId)}/comments/${encodeURIComponent(commentId)}`,
+    {
+      method: 'DELETE',
+      headers: combine(ACCEPT),
       errorMessage: requestFailed,
     }
   );

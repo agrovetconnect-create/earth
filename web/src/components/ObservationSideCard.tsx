@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -50,14 +51,18 @@ import { CATEGORY_COLORS } from './MapView.js';
 import {
   addPostMedia,
   answerQuestion,
+  COMMENT_EDIT_WINDOW_MS,
   createComment,
+  deleteComment,
   fetchComments,
   reactToComment,
   removePostMedia,
   updateAttachmentDownload,
+  updateComment,
   updatePost,
 } from '../services/postsApi.js';
 import type { UpdatePostPatch } from '../services/postsApi.js';
+import { useTranslator } from '../i18n.js';
 import { PdfPreview } from './PdfPreview.js';
 import { ReportDialog } from './ReportDialog.js';
 import { downloadBlob } from '../lib/download.js';
@@ -422,6 +427,7 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
   focusDiscussion = false,
   onTargetCommentHandled,
 }) => {
+  const t = useTranslator();
   const [activeMediaId, setActiveMediaId] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [previewAttachment, setPreviewAttachment] = useState<PublicObservationAttachment | null>(null);
@@ -446,6 +452,9 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
   const [reactingCommentId, setReactingCommentId] = useState<string | null>(null);
   const [replyTarget, setReplyTarget] = useState<string | null>(null);
   const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [commentPendingDelete, setCommentPendingDelete] = useState<PublicComment | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -794,6 +803,55 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
       setCommentsRevision((n) => n + 1);
     } catch (err: unknown) {
       setNotice(err instanceof Error ? err.message : 'Could not post your reply.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEditComment = (comment: PublicComment) => {
+    if (!viewer) {
+      onRequestLogin();
+      return;
+    }
+    const createdAt = Date.parse(comment.created_at);
+    if (!Number.isFinite(createdAt) || Date.now() - createdAt > COMMENT_EDIT_WINDOW_MS) {
+      setNotice(t('Comments can be edited for 15 minutes after posting.'));
+      return;
+    }
+    setEditingCommentId(comment.comment_id);
+    setEditText(comment.body);
+    setNotice(null);
+  };
+
+  const saveCommentEdit = async (commentId: string) => {
+    if (!post || !editText.trim() || busy) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const result = await updateComment(post.passport_id, commentId, editText.trim());
+      setComments((prev) => applyCommentUpdate(prev, result.comment));
+      setEditingCommentId(null);
+      setEditText('');
+      setNotice(result.message);
+    } catch (err: unknown) {
+      setNotice(err instanceof Error ? err.message : t('Could not update your comment.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const confirmDeleteComment = async () => {
+    if (!post || !commentPendingDelete) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      const result = await deleteComment(post.passport_id, commentPendingDelete.comment_id);
+      setComments((prev) => removeCommentFromTree(prev, result.comment_id));
+      if (editingCommentId === result.comment_id) setEditingCommentId(null);
+      setNotice(result.message);
+      setCommentPendingDelete(null);
+    } catch (err: unknown) {
+      setNotice(err instanceof Error ? err.message : t('Could not delete your comment.'));
     } finally {
       setBusy(false);
     }
@@ -1646,6 +1704,16 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
                         label: target.author.display_name ?? target.author.public_user_id,
                       })
                     }
+                    onEdit={startEditComment}
+                    onDelete={setCommentPendingDelete}
+                    editingCommentId={editingCommentId}
+                    editText={editText}
+                    onEditTextChange={setEditText}
+                    onEditCancel={() => {
+                      setEditingCommentId(null);
+                      setEditText('');
+                    }}
+                    onEditSave={(id) => void saveCommentEdit(id)}
                   />
                 ))}
               </div>
@@ -2227,6 +2295,50 @@ export const ObservationSideCard: React.FC<ObservationSideCardProps> = ({
           targetLabel={reportTarget.label}
         />
       )}
+
+      {commentPendingDelete &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[130] flex items-center justify-center bg-[#0b0f14]/55 p-4 backdrop-blur-xs"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setCommentPendingDelete(null);
+            }}
+          >
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="delete-comment-title"
+              aria-describedby="delete-comment-description"
+              className="w-full max-w-sm rounded-2xl border border-[#dadce0] bg-white p-5 shadow-2xl"
+            >
+              <h2 id="delete-comment-title" className="text-[15px] font-semibold text-[#1f1f1f]">
+                {t('Delete comment?')}
+              </h2>
+              <p id="delete-comment-description" className="mt-2 text-[13px] text-[#5e5e5e]">
+                {t('This removes your comment from the discussion. Replies already posted will remain.')}
+              </p>
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCommentPendingDelete(null)}
+                  className="g-btn g-btn-tonal rounded-lg px-4 py-2 text-[13px] font-medium"
+                >
+                  {t('Cancel')}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void confirmDeleteComment()}
+                  className="rounded-lg bg-[#b3261e] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#8e1d17] disabled:opacity-50"
+                >
+                  {t('Delete')}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 };
@@ -2256,6 +2368,31 @@ function findCommentInTree(list: PublicComment[], targetId: string): PublicComme
   return null;
 }
 
+function applyCommentUpdate(
+  list: PublicComment[],
+  updated: PublicComment
+): PublicComment[] {
+  return list.map((item) =>
+    item.comment_id === updated.comment_id
+      ? {
+          ...item,
+          body: updated.body,
+          edited_at: updated.edited_at,
+          moderation_status: updated.moderation_status,
+        }
+      : { ...item, replies: applyCommentUpdate(item.replies, updated) }
+  );
+}
+
+function removeCommentFromTree(list: PublicComment[], targetId: string): PublicComment[] {
+  return list
+    .filter((item) => item.comment_id !== targetId)
+    .map((item) => {
+      const replies = removeCommentFromTree(item.replies, targetId);
+      return { ...item, replies, reply_count: replies.length };
+    });
+}
+
 interface CommentThreadProps {
   comment: PublicComment;
   opUserId?: string | null;
@@ -2272,6 +2409,13 @@ interface CommentThreadProps {
   onReact: (commentId: string) => void;
   onRequestLogin: () => void;
   onReport: (comment: PublicComment) => void;
+  onEdit: (comment: PublicComment) => void;
+  onDelete: (comment: PublicComment) => void;
+  editingCommentId: string | null;
+  editText: string;
+  onEditTextChange: (text: string) => void;
+  onEditCancel: () => void;
+  onEditSave: (commentId: string) => void;
   depth?: number;
 }
 
@@ -2298,8 +2442,16 @@ const CommentThread: React.FC<CommentThreadProps> = ({
   onReact,
   onRequestLogin,
   onReport,
+  onEdit,
+  onDelete,
+  editingCommentId,
+  editText,
+  onEditTextChange,
+  onEditCancel,
+  onEditSave,
   depth = 0,
 }) => {
+  const t = useTranslator();
   const [menuOpen, setMenuOpen] = useState(false);
   const [expandedReplies, setExpandedReplies] = useState(false);
   const hasTargetReply = Boolean(
@@ -2313,6 +2465,13 @@ const CommentThread: React.FC<CommentThreadProps> = ({
   const replying = replyTarget === comment.comment_id;
   const isHighlighted = highlightedCommentId === comment.comment_id;
   const isOp = Boolean(opUserId && comment.author.public_user_id === opUserId);
+  const isAuthor = Boolean(
+    viewer && !comment.is_demo && viewer.public_user_id === comment.author.public_user_id
+  );
+  const createdAt = Date.parse(comment.created_at);
+  const canEdit =
+    isAuthor && Number.isFinite(createdAt) && Date.now() - createdAt <= COMMENT_EDIT_WINDOW_MS;
+  const isEditing = editingCommentId === comment.comment_id;
   const authorName = comment.author.display_name ?? comment.author.public_user_id;
   const likesCount = comment.likes_count ?? 0;
 
@@ -2355,13 +2514,18 @@ const CommentThread: React.FC<CommentThreadProps> = ({
               <span className="text-[12px] text-[#667068]">
                 {formatRelativeTime(comment.created_at)}
               </span>
+              {comment.edited_at && (
+                <span className="text-[11px] italic text-[#8a9189]">· {t('edited')}</span>
+              )}
             </div>
 
             <div className="relative shrink-0">
               <button
                 type="button"
                 onClick={() => setMenuOpen((prev) => !prev)}
-                aria-label="Comment options"
+                aria-label={t('Comment options')}
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
                 className="flex h-7 w-7 items-center justify-center rounded-full text-[#5b655d] hover:bg-black/5"
               >
                 <MoreVertical className="h-4 w-4" aria-hidden="true" />
@@ -2373,9 +2537,41 @@ const CommentThread: React.FC<CommentThreadProps> = ({
                     aria-hidden="true"
                     onClick={() => setMenuOpen(false)}
                   />
-                  <div className="absolute right-0 top-full z-30 mt-1 w-40 rounded-xl border border-[#e1e5db] bg-white p-1 shadow-lg">
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full z-30 mt-1 w-44 rounded-xl border border-[#e1e5db] bg-white p-1 shadow-lg"
+                  >
+                    {canEdit && (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          onEdit(comment);
+                        }}
+                        className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-[#263029] hover:bg-[#f3f5f0]"
+                      >
+                        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>{t('Edit')}</span>
+                      </button>
+                    )}
+                    {isAuthor && (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          onDelete(comment);
+                        }}
+                        className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-[#b3261e] hover:bg-[#fdf2f2]"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        <span>{t('Delete')}</span>
+                      </button>
+                    )}
                     <button
                       type="button"
+                      role="menuitem"
                       onClick={() => {
                         setMenuOpen(false);
                         onReport(comment);
@@ -2383,7 +2579,9 @@ const CommentThread: React.FC<CommentThreadProps> = ({
                       className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-medium text-[#b3261e] hover:bg-[#fdf2f2]"
                     >
                       <Flag className="h-3.5 w-3.5" aria-hidden="true" />
-                      <span>{depth === 0 ? 'Report comment' : 'Report reply'}</span>
+                      <span>
+                        {depth === 0 ? t('Report comment') : t('Report reply')}
+                      </span>
                     </button>
                   </div>
                 </>
@@ -2391,9 +2589,38 @@ const CommentThread: React.FC<CommentThreadProps> = ({
             </div>
           </div>
 
-          <p className="mt-1 text-[13.5px] leading-relaxed text-[#1f2621] whitespace-pre-wrap break-words">
-            {comment.body}
-          </p>
+          {isEditing ? (
+            <div className="mt-2 rounded-xl border border-[#dce1d7] bg-white p-2.5">
+              <textarea
+                value={editText}
+                onChange={(event) => onEditTextChange(event.target.value)}
+                rows={3}
+                aria-label={t('Edit comment')}
+                className="w-full rounded-lg border border-[#d4d8cf] bg-[#fafbf8] p-2.5 text-[14px] sm:text-[13px] focus:border-[#2b7f3f] focus:outline-none"
+              />
+              <div className="mt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={onEditCancel}
+                  className="min-h-[36px] rounded-full px-3.5 py-1.5 text-[12px] font-medium text-[#5e5e5e] hover:bg-[#f1f3ee]"
+                >
+                  {t('Cancel')}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || !editText.trim()}
+                  onClick={() => onEditSave(comment.comment_id)}
+                  className="min-h-[36px] rounded-full bg-[#2b7f3f] px-4 py-1.5 text-[12px] font-medium text-white hover:bg-[#1f6b32] disabled:opacity-45"
+                >
+                  {t('Save')}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-1 text-[13.5px] leading-relaxed text-[#1f2621] whitespace-pre-wrap break-words">
+              {comment.body}
+            </p>
+          )}
 
           {comment.image_url && (
             <div className="mt-2">
@@ -2516,6 +2743,13 @@ const CommentThread: React.FC<CommentThreadProps> = ({
                   onReact={onReact}
                   onRequestLogin={onRequestLogin}
                   onReport={onReport}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  editingCommentId={editingCommentId}
+                  editText={editText}
+                  onEditTextChange={onEditTextChange}
+                  onEditCancel={onEditCancel}
+                  onEditSave={onEditSave}
                   depth={depth + 1}
                 />
               </div>
