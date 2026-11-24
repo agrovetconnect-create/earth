@@ -19,19 +19,10 @@ import {
   resolveUserAvatarUrl,
   revokeUserSession,
   verifyCodeForPhone,
-  hashCodeForEmail,
   verifyCodeForEmail,
   type Viewer,
 } from '../utils/user-auth.js';
 import { verificationChallengeRepository } from '../repositories/verification-challenge.repository.js';
-import {
-  sendEmail,
-  getOTPTemplate,
-  getEarthTalkVerificationEmailTemplate,
-  getWelcomeEmailTemplate,
-  isEmailConfigured,
-  resolveEmailAssetBaseUrl,
-} from './email.service.js';
 import { profileService } from './profile.service.js';
 import { userAvatarRepository } from '../repositories/user-avatar.repository.js';
 import { trustedDeviceRepository } from '../repositories/trusted-device.repository.js';
@@ -253,63 +244,6 @@ async function isDeviceChangedOrUntrusted(userId: string, req: Request): Promise
   const fingerprint = computeDeviceFingerprint(deviceToken, userAgent);
   const trusted = await trustedDeviceRepository.isDeviceTrusted(userId, fingerprint);
   return !trusted;
-}
-
-function resolveRequestBaseUrl(req: Request): string {
-  const configured = (env.APP_URL || '').trim();
-  if (configured) {
-    try {
-      return new URL(configured).origin;
-    } catch {
-      // Fall through to request-derived origin.
-    }
-  }
-
-  const host = String(req.headers?.host ?? '').trim();
-  if (host) {
-    const proto = String(req.headers?.['x-forwarded-proto'] ?? '').split(',')[0].trim() || 'http';
-    return `${proto}://${host}`;
-  }
-  return resolveEmailAssetBaseUrl();
-}
-
-async function deliverWelcomeEmail(
-  userId: string,
-  displayName?: string | null,
-  req?: Request
-): Promise<void> {
-  if (!isDatabaseConfigured()) return;
-
-  const user = await userRepository.findUserById(userId);
-  if (!user || (user as any).welcome_email_sent) return;
-
-  if (!isEmailConfigured()) {
-    logger.info('Welcome email skipped because email delivery is not configured', { userId });
-    return;
-  }
-
-  const recipientEmail = String(user.email ?? '').trim();
-  if (!recipientEmail) return;
-
-  const recipientName = displayName?.trim() || user.display_name || 'Contributor';
-  const html = getWelcomeEmailTemplate(recipientName, req ? resolveRequestBaseUrl(req) : undefined);
-  const sent = await sendEmail({
-    to: recipientEmail,
-    subject: 'Welcome to Earth Talk',
-    html,
-    text: `Welcome to Earth Talk, ${recipientName}. Your Google account is verified and your field workspace is ready.`,
-  });
-
-  if (!sent) {
-    logger.warn('Welcome email delivery failed', { userId });
-    return;
-  }
-
-  try {
-    await userRepository.markWelcomeEmailSent(userId);
-  } catch (err) {
-    logger.warn('Could not record welcome email delivery', { error: String(err) });
-  }
 }
 
 function codeMessage(delivery: 'whatsapp' | 'development_console', ttlSeconds: number): string {
@@ -556,40 +490,27 @@ export async function requestEmailCode(
 
   await userRepository.consumeOutstandingEmailCodes(cleanEmail);
 
-  const code = generateVerificationCode();
   const ttlSeconds = env.AUTH_EMAIL_CODE_TTL_SECONDS;
   const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
 
   const codeId = await userRepository.saveEmailVerificationCode({
     email: cleanEmail,
-    code_hash: hashCodeForEmail(code, cleanEmail),
+    code_hash: SUPABASE_AUTH_OTP_MARKER,
     purpose: validPurpose,
     expires_at: expiresAt,
     max_attempts: env.AUTH_CODE_MAX_ATTEMPTS,
   });
 
-  const html = getOTPTemplate(code, validPurpose, undefined, Math.round(ttlSeconds / 60));
-  const sent = await sendEmail({
-    to: cleanEmail,
-    subject: 'Your Earth Talk verification code',
-    html,
-    text: `Your Earth Talk verification code is: ${code}. It expires in ${Math.round(ttlSeconds / 60)} minutes.`,
-  });
-
-  if (!sent) {
+  if (!(await sendSupabaseVerificationOtp(cleanEmail))) {
     await userRepository.consumeEmailCode(codeId);
     return failure(503, 'DELIVERY_FAILED', 'Could not send the verification email. Please try again.');
   }
 
-  const delivery = isEmailConfigured() ? 'email' : 'development_console';
   return {
     ok: true,
-    delivery,
+    delivery: 'email',
     expires_in_seconds: ttlSeconds,
-    message:
-      delivery === 'development_console'
-        ? 'Earth Talk is running without email credentials. The verification code was written to the server console.'
-        : 'Verification code sent to your email.',
+    message: 'Verification code sent to your email.',
   };
 }
 
@@ -645,7 +566,22 @@ export async function verifyEmailCode(
     return failure(429, 'TOO_MANY_ATTEMPTS', 'Too many incorrect attempts. Request a new code.');
   }
 
-  if (!verifyCodeForEmail(code, cleanEmail, record.code_hash)) {
+  let codeValid = false;
+  if (record.code_hash === SUPABASE_AUTH_OTP_MARKER) {
+    const { error } = await supabaseAuth.auth.verifyOtp({
+      email: cleanEmail,
+      token: code,
+      type: 'email',
+    });
+    codeValid = !error;
+    if (error) {
+      logger.warn('Supabase email OTP verification rejected', { message: error.message, status: error.status });
+    }
+  } else {
+    codeValid = verifyCodeForEmail(code, cleanEmail, record.code_hash);
+  }
+
+  if (!codeValid) {
     const nextAttempts = currentAttempts + 1;
     await userRepository.updateEmailCode(cleanEmail, record.id, {
       attempts: nextAttempts,
@@ -682,10 +618,6 @@ export async function verifyEmailCode(
     if (isServiceUnavailableError(err)) throw err;
     logger.error('Account creation failed', { error: String(err) });
     return failure(503, 'PROFILE_UPDATE_FAILED', 'The account could not be opened right now. Please try again.');
-  }
-
-  if (!wasPreviouslyVerified) {
-    await deliverWelcomeEmail(user.id, user.display_name, req);
   }
 
   const session = await issueUserSession(user, {
@@ -838,9 +770,6 @@ export async function syncGoogleOAuthUser(
         markActivity: true,
       });
     }
-    if (firstVerified) {
-      await deliverWelcomeEmail(user.id, googleUser.displayName || user.display_name, req);
-    }
 
     const deviceToken = await registerTrustedDevice(user.id, existingDeviceCookie, userAgent);
     const session = await issueUserSession(user, {
@@ -879,16 +808,12 @@ export async function syncGoogleOAuthUser(
   const ttlSeconds = env.AUTH_EMAIL_CODE_TTL_SECONDS;
   const expiresAt = new Date(now + ttlSeconds * 1000).toISOString();
 
-  const code = generateVerificationCode();
-  const assetBaseUrl = resolveRequestBaseUrl(req);
-  const useSupabaseOtp = !isEmailConfigured() && isDatabaseConfigured();
-
   await verificationChallengeRepository.invalidateOutstandingChallenges(cleanEmail);
   const challenge = await verificationChallengeRepository.createChallenge({
     user_id: user.id,
     email: cleanEmail,
-    otp_hash: useSupabaseOtp ? SUPABASE_AUTH_OTP_MARKER : hashCodeForEmail(code, cleanEmail),
-    delivery_mode: useSupabaseOtp ? 'supabase_otp' : 'app_code',
+    otp_hash: SUPABASE_AUTH_OTP_MARKER,
+    delivery_mode: 'supabase_otp',
     purpose,
     attempts: 0,
     max_attempts: env.AUTH_CODE_MAX_ATTEMPTS || 5,
@@ -896,38 +821,14 @@ export async function syncGoogleOAuthUser(
     consumed: false,
   });
 
-  if (useSupabaseOtp) {
-    const deliver = async (): Promise<boolean> => sendSupabaseVerificationOtp(cleanEmail);
-    if (fastDevAuth()) {
-      void deliver().then((sent) => {
-        if (!sent) logger.error('Supabase verification email delivery failed in the background', { email: cleanEmail });
-      }).catch((err) => logger.error('Supabase verification email delivery failed', { error: String(err) }));
-    } else if (!(await deliver())) {
-      await verificationChallengeRepository.updateChallenge(challenge.id, { consumed: true });
-      return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
-    }
-  } else {
-    const html = getEarthTalkVerificationEmailTemplate(
-      code,
-      googleUser.displayName || user.display_name,
-      assetBaseUrl,
-      Math.round(ttlSeconds / 60)
-    );
-    const emailSent = await sendEmail({
-      to: cleanEmail,
-      subject: 'Your Earth Talk Verification Code',
-      html,
-      text: `Your Earth Talk verification code is: ${code}. It expires in ${Math.round(ttlSeconds / 60)} minutes.`,
-    });
-
-    if (!emailSent) {
-      await verificationChallengeRepository.updateChallenge(challenge.id, { consumed: true });
-      return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
-    }
-
-    if (!isEmailConfigured() && !env.IS_PRODUCTION) {
-      logger.info(`[development] Google conditional OTP code for ${cleanEmail}: ${code} (challengeId: ${challenge.id})`);
-    }
+  const deliver = async (): Promise<boolean> => sendSupabaseVerificationOtp(cleanEmail);
+  if (fastDevAuth()) {
+    void deliver().then((sent) => {
+      if (!sent) logger.error('Supabase verification email delivery failed in the background', { email: cleanEmail });
+    }).catch((err) => logger.error('Supabase verification email delivery failed', { error: String(err) }));
+  } else if (!(await deliver())) {
+    await verificationChallengeRepository.updateChallenge(challenge.id, { consumed: true });
+    return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
   }
 
   return {
@@ -939,11 +840,9 @@ export async function syncGoogleOAuthUser(
     purpose,
     expires_in_seconds: ttlSeconds,
     account_created: true,
-    message: !useSupabaseOtp && !isEmailConfigured()
-      ? 'Earth Talk is running without email credentials. The verification code was written to the server console.'
-      : purpose === 'security_step_up'
-        ? 'New device detected. Verification code sent to your Google account email.'
-        : 'Verification code sent to your Google account email.',
+    message: purpose === 'security_step_up'
+      ? 'New device detected. Verification code sent to your Google account email.'
+      : 'Verification code sent to your Google account email.',
   };
 }
 
@@ -1080,15 +979,6 @@ export async function verifyGoogleChallenge(
     }
   }
 
-  if (isFirstVerification) {
-    try {
-      await deliverWelcomeEmail(user.id, googleUserMeta?.displayName || user.display_name, req);
-    } catch (err) {
-      if (!isServiceUnavailableError(err)) throw err;
-      logger.error('Welcome email step failed; continuing sign-in', { error: String(err) });
-    }
-  }
-
   const userAgent = String(req.headers?.['user-agent'] ?? '');
   const existingDeviceCookie = extractTrustedDeviceToken(req) || undefined;
   const deviceToken = await registerTrustedDevice(user.id, existingDeviceCookie, userAgent);
@@ -1122,7 +1012,7 @@ export async function verifyGoogleChallenge(
  */
 export async function resendGoogleChallenge(
   challengeId: string,
-  req: Request
+  _req: Request
 ): Promise<any> {
   const cleanId = String(challengeId ?? '').trim();
   if (!cleanId) {
@@ -1157,27 +1047,12 @@ export async function resendGoogleChallenge(
   const ttlSeconds = env.AUTH_EMAIL_CODE_TTL_SECONDS;
   const expiresAt = new Date(now + ttlSeconds * 1000).toISOString();
 
-  const code = generateVerificationCode();
-  const useSupabaseOtp = !isEmailConfigured() && isDatabaseConfigured();
-  let displayName: string | null = null;
-  try {
-    const user = await userRepository.findUserById(existing.user_id)
-      ?? await userRepository.findOrCreateByEmail(existing.email, existing.user_id);
-    displayName = user.display_name;
-  } catch (err) {
-    if (!isServiceUnavailableError(err)) throw err;
-    logger.error('Resend could not read the account name; continuing without it', {
-      challengeId: existing.id,
-      error: String(err),
-    });
-  }
-
   await verificationChallengeRepository.invalidateOutstandingChallenges(existing.email);
   const newChallenge = await verificationChallengeRepository.createChallenge({
     user_id: existing.user_id,
     email: existing.email,
-    otp_hash: useSupabaseOtp ? SUPABASE_AUTH_OTP_MARKER : hashCodeForEmail(code, existing.email),
-    delivery_mode: useSupabaseOtp ? 'supabase_otp' : 'app_code',
+    otp_hash: SUPABASE_AUTH_OTP_MARKER,
+    delivery_mode: 'supabase_otp',
     purpose: existing.purpose,
     attempts: 0,
     max_attempts: env.AUTH_CODE_MAX_ATTEMPTS || 5,
@@ -1185,42 +1060,16 @@ export async function resendGoogleChallenge(
     consumed: false,
   });
 
-  if (useSupabaseOtp) {
-    if (!(await sendSupabaseVerificationOtp(existing.email))) {
-      await verificationChallengeRepository.updateChallenge(newChallenge.id, { consumed: true });
-      return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
-    }
-  } else {
-    const html = getEarthTalkVerificationEmailTemplate(
-      code,
-      displayName,
-      resolveRequestBaseUrl(req),
-      Math.round(ttlSeconds / 60)
-    );
-    const sent = await sendEmail({
-      to: existing.email,
-      subject: 'Your Earth Talk Verification Code',
-      html,
-      text: `Your Earth Talk verification code is: ${code}. It expires in ${Math.round(ttlSeconds / 60)} minutes.`,
-    });
-
-    if (!sent) {
-      await verificationChallengeRepository.updateChallenge(newChallenge.id, { consumed: true });
-      return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
-    }
-
-    if (!isEmailConfigured() && !env.IS_PRODUCTION) {
-      logger.info(`[development] Resent Google OTP code for ${existing.email}: ${code} (challengeId: ${newChallenge.id})`);
-    }
+  if (!(await sendSupabaseVerificationOtp(existing.email))) {
+    await verificationChallengeRepository.updateChallenge(newChallenge.id, { consumed: true });
+    return failure(503, 'DELIVERY_FAILED', 'Could not deliver the verification email to your Google account.');
   }
 
   return {
     ok: true,
     challenge_id: newChallenge.id,
     expires_in_seconds: ttlSeconds,
-    message: !useSupabaseOtp && !isEmailConfigured()
-      ? 'Earth Talk is running without email credentials. The verification code was written to the server console.'
-      : 'Verification code resent to your Google account email.',
+    message: 'Verification code resent to your Google account email.',
   };
 }
 

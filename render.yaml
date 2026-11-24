@@ -44,10 +44,6 @@ services:
         sync: false
       - key: CONTROL_CENTER_URL
         sync: false
-      - key: EMAIL_API_KEY
-        sync: false
-      - key: EMAIL_FROM
-        sync: false
       - key: USER_HASH_SECRET
         sync: false
       - key: AUTH_SESSION_SECRET

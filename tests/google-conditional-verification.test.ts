@@ -48,19 +48,24 @@ describe('Earth Talk — Google OAuth & Conditional Email Verification', () => {
     assert.ok(welcomeHtml.includes('Geology Researcher'));
   });
 
-  it('Verification mail uses Supabase OTP delivery with a branded development fallback', () => {
+  it('Verification mail uses Supabase OTP delivery only', () => {
     const authService = readFileSync('src/services/auth.service.ts', 'utf8');
+    const emailService = readFileSync('src/services/email.service.ts', 'utf8');
     assert.ok(authService.includes('signInWithOtp'));
     assert.ok(!authService.includes('resetPasswordForEmail'));
-    assert.ok(authService.includes("subject: 'Your Earth Talk Verification Code'"));
+    assert.ok(!authService.includes('EMAIL_API_KEY'));
+    assert.ok(!authService.includes('isEmailConfigured'));
+    assert.ok(!emailService.includes('Resend'));
+    assert.ok(!emailService.includes('EMAIL_API_KEY'));
   });
 
-  it('Configured email delivery uses the app code and sends the welcome template', () => {
+  it('Supabase Auth handles all verification email delivery and welcome messaging', () => {
     const authService = readFileSync('src/services/auth.service.ts', 'utf8');
-    assert.ok(authService.includes('!isEmailConfigured() && isDatabaseConfigured()'));
-    assert.ok(authService.includes('getWelcomeEmailTemplate('));
-    assert.ok(authService.includes('deliverWelcomeEmail('));
-    assert.ok(!authService.includes('markWelcomeDelivered('));
+    assert.ok(authService.includes("otp_hash: SUPABASE_AUTH_OTP_MARKER"));
+    assert.ok(authService.includes("delivery_mode: 'supabase_otp'"));
+    assert.ok(!authService.includes('delivery_mode: useSupabaseOtp'));
+    assert.ok(!authService.includes('deliverWelcomeEmail('));
+    assert.ok(!authService.includes('sendEmail('));
   });
 
   it('Case A: First-time user requires step-up email verification', async () => {
@@ -452,11 +457,10 @@ describe('Earth Talk — Google OAuth & Conditional Email Verification', () => {
     for (const block of [syncBlock, resendBlock]) {
       const createAt = block.indexOf('createChallenge(');
       const supabaseAt = block.indexOf('sendSupabaseVerificationOtp(');
-      const emailAt = block.indexOf('sendEmail(');
       assert.ok(createAt > 0, 'challenge is created');
       assert.ok(createAt < supabaseAt, 'challenge exists before Supabase OTP delivery');
-      assert.ok(createAt < emailAt, 'challenge exists before app-code email delivery');
-      assert.ok(block.includes("delivery_mode: useSupabaseOtp ? 'supabase_otp' : 'app_code'"));
+      assert.ok(block.includes("otp_hash: SUPABASE_AUTH_OTP_MARKER"));
+      assert.ok(block.includes("delivery_mode: 'supabase_otp'"));
     }
 
     const migration = readFileSync(
@@ -480,9 +484,9 @@ describe('Earth Talk — Google OAuth & Conditional Email Verification', () => {
 
     for (const block of [syncBlock, resendBlock]) {
       const createAt = block.indexOf('createChallenge(');
-      const sendAt = block.indexOf('sendEmail(');
+      const sendAt = block.indexOf('sendSupabaseVerificationOtp(');
       assert.ok(createAt > 0, 'challenge is created');
-      assert.ok(sendAt > 0, 'email is sent');
+      assert.ok(sendAt > 0, 'Supabase OTP email is requested');
       assert.ok(createAt < sendAt, 'challenge is stored before the code is emailed');
     }
 

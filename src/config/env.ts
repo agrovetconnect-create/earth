@@ -113,9 +113,7 @@ export interface EnvConfig {
   /** Labelled demonstration posts. Always off in production unless set there. */
   DEMO_POSTS_ENABLED: boolean;
 
-  // Email (Stage 13)
-  EMAIL_API_KEY: string;
-  EMAIL_FROM: string;
+  // Email URLs (delivery is handled by Supabase Auth)
   APP_URL: string;
   CONTROL_CENTER_URL: string;
 
@@ -186,7 +184,6 @@ const defaults: Record<string, string> = {
   COMMENT_RATE_LIMIT_PER_MINUTE: '10',
   COMMENT_MAX_LENGTH: '2000',
   POST_MEDIA_MAX_STORED_BYTES: '1500000',
-  EMAIL_FROM: 'Earth Talk <noreply@earthtalk.local>',
   APP_URL: 'http://localhost:3000',
   CONTROL_CENTER_URL: 'http://localhost:3000/control',
 };
@@ -212,7 +209,6 @@ const requiredSecretsInProd = [
   'SUPER_ADMIN_SESSION_SECRET',
   'ANONYMOUS_CONTRIBUTOR_SECRET',
   'AUTH_SESSION_SECRET',
-  'EMAIL_API_KEY',
   'INTERNAL_SERVICE_KEY',
 ];
 
@@ -236,7 +232,6 @@ const devSecretFallbacks: Record<string, string> = {
   SUPER_ADMIN_SESSION_SECRET: 'dev_admin_session_secret_not_configured',
   ANONYMOUS_CONTRIBUTOR_SECRET: 'dev_contributor_secret_not_configured',
   AUTH_SESSION_SECRET: 'dev_auth_session_secret_not_configured',
-  EMAIL_API_KEY: 'dev_email_api_key_not_configured',
   INTERNAL_SERVICE_KEY: 'dev_internal_service_key_not_configured',
 };
 
@@ -458,9 +453,7 @@ function validateEnv(): EnvConfig {
       return !isProd;
     })(),
 
-    // Email
-    EMAIL_API_KEY: getSecret('EMAIL_API_KEY'),
-    EMAIL_FROM: getVar('EMAIL_FROM'),
+    // Email URLs
     APP_URL: getVar('APP_URL'),
     CONTROL_CENTER_URL: getVar('CONTROL_CENTER_URL'),
 
