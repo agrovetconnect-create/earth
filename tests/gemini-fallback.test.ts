@@ -8,6 +8,7 @@ import {
   classifyGeminiError,
   geminiRetryDelay,
 } from '../src/services/gemini.service.js';
+import { AiTextFallbackService } from '../src/services/ai-text-fallback.service.js';
 
 let passed = 0;
 let failed = 0;
@@ -60,7 +61,7 @@ await test('invalid Gemini model IDs are absent from source and configuration', 
       assert.ok(!contents.includes(stale), `${rel} must not contain stale model ${stale}`);
     }
   }
-  assert.equal(env.GEMINI_MODEL, 'gemini-4-hydrogen');
+  assert.equal(env.GEMINI_MODEL, 'gemini-3.5-flash-lite');
   assert.ok((VALID_GEMINI_MODELS as readonly string[]).includes(env.GEMINI_MODEL));
   assert.ok((VALID_GEMINI_TEXT_MODELS as readonly string[]).includes(env.GEMINI_MODEL));
 });
@@ -132,7 +133,7 @@ await test('Q&A and transcription try every available model before cautious fall
   );
   assert.equal(voiceAnswer.transcript, '');
   assert.match(voiceAnswer.reply, /Live audio transcription is temporarily unavailable/);
-  assert.equal(voice.calls.length, 3);
+  assert.equal(voice.calls.length, 4);
 });
 
 await test('429 retries across the fallback chain with tiny backoff', async () => {
@@ -171,6 +172,59 @@ await test('transient unknown errors keep the existing full fallback chain', asy
   const answer = await service.answerGeoscienceQuestion('What is this mineral?');
   assert.match(answer, /temporarily unreachable/);
   assert.equal(calls.length, VALID_GEMINI_TEXT_MODELS.length);
+});
+
+await test('free AI text fallback switches provider without exposing the failure', async () => {
+  const originalFetch = globalThis.fetch;
+  const original = {
+    enabled: env.AI_TEXT_FALLBACK_ENABLED,
+    order: env.AI_TEXT_FALLBACK_PROVIDER_ORDER,
+    models: env.AI_TEXT_FALLBACK_MODELS_JSON,
+    groq: env.GROQ_API_KEY,
+    requesty: env.REQUESTY_API_KEY,
+  };
+  const calls: Array<{ url: string; authorization: string | null }> = [];
+
+  env.AI_TEXT_FALLBACK_ENABLED = true;
+  env.AI_TEXT_FALLBACK_PROVIDER_ORDER = 'groq,requesty';
+  env.AI_TEXT_FALLBACK_MODELS_JSON = JSON.stringify({ groq: ['groq-free'], requesty: ['requesty-free'] });
+  env.GROQ_API_KEY = 'test-groq-key';
+  env.REQUESTY_API_KEY = 'test-requesty-key';
+
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    const headers = (init?.headers ?? {}) as Record<string, string>;
+    calls.push({ url, authorization: headers.authorization ?? null });
+    if (url.includes('groq.com')) {
+      return new Response('', { status: 429 });
+    }
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content: 'Basalt here is a basaltic lava flow.' } }] }),
+      { status: 200, headers: { 'content-type': 'application/json' } }
+    );
+  }) as typeof fetch;
+
+  try {
+    const answer = await new AiTextFallbackService().answerQuestion('Explain basalt', {
+      ignoreHermetic: true,
+    });
+    assert.equal(answer, 'Basalt here is a basaltic lava flow.');
+    assert.deepEqual(
+      calls.map((call) => call.url),
+      [
+        'https://api.groq.com/openai/v1/chat/completions',
+        'https://router.requesty.ai/v1/chat/completions',
+      ]
+    );
+    assert.ok(calls.every((call) => call.authorization?.startsWith('Bearer ')));
+  } finally {
+    globalThis.fetch = originalFetch;
+    env.AI_TEXT_FALLBACK_ENABLED = original.enabled;
+    env.AI_TEXT_FALLBACK_PROVIDER_ORDER = original.order;
+    env.AI_TEXT_FALLBACK_MODELS_JSON = original.models;
+    env.GROQ_API_KEY = original.groq;
+    env.REQUESTY_API_KEY = original.requesty;
+  }
 });
 
 await test('geminiRetryDelay is exponential, jittered and capped at 200ms', async () => {

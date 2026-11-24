@@ -610,12 +610,13 @@ await test('gemini.service.ts uses only valid active Gemini models and removes s
     assert.ok(!geminiSrc.includes(stale), `stale model ${stale} must not appear in gemini.service.ts`);
   }
   const envSrc = read('src/config/env.ts');
+  assert.ok(envSrc.includes('gemini-3.5-flash-lite'));
   assert.ok(envSrc.includes('gemini-4-hydrogen'));
   assert.ok(envSrc.includes('gemini-3.1-flash-lite'));
   assert.ok(envSrc.includes('gemini-4-argon'));
   assert.ok(envSrc.includes('gemini-3.5-transcribe'));
-  assert.match(envSrc, /GEMINI_MODEL: 'gemini-4-hydrogen'/);
-  assert.match(read('.env.example'), /GEMINI_MODEL=gemini-4-hydrogen/);
+  assert.match(envSrc, /GEMINI_MODEL: 'gemini-3.5-flash-lite'/);
+  assert.match(read('.env.example'), /GEMINI_MODEL=gemini-3.5-flash-lite/);
 });
 
 await test('photoSubmissionService forwards supporting images in a single GeoAI call and rejects insufficient_image without creating a Passport', async () => {

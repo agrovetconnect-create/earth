@@ -5,6 +5,7 @@ import {
   detectOffTopicText,
 } from '../ai/domain-scope.js';
 import { logger } from '../utils/logger.js';
+import { aiTextFallbackService } from './ai-text-fallback.service.js';
 import { GEOLOGICAL_SYSTEM_INSTRUCTION, buildGeologicalUserPrompt } from '../ai/geological.prompt.js';
 import { geologicalResponseSchema, validateGeologicalResponse } from '../ai/geological.schema.js';
 import { GeologicalAnalysisError, type GeoscienceAnalysisResult } from '../ai/geological.types.js';
@@ -567,6 +568,19 @@ export class GeminiService {
       }
     }
 
+    const textFallbackAnswer = await aiTextFallbackService.answerQuestion(promptText);
+    if (textFallbackAnswer) {
+      const unsupportedMatch = textFallbackAnswer.match(/^\[UNSUPPORTED_TOPIC:\s*([^\]]+)\]/i);
+      if (unsupportedMatch) {
+        return buildUnsupportedInputWarning({
+          channel: 'mobile',
+          inputKind: 'text',
+          detectedSubject: unsupportedMatch[1]?.trim() || null,
+        });
+      }
+      return textFallbackAnswer;
+    }
+
     logger.warn('Gemini Q&A generation exhausted fallback chain; returning cautious fallback response', {
       error: lastQaErr instanceof Error ? lastQaErr.message : String(lastQaErr),
     });
@@ -605,6 +619,7 @@ export class GeminiService {
 
     const transcriptionModels = uniqueValidModels([
       'gemini-3.5-transcribe',
+      'gemini-3.5-flash-lite',
       'gemini-4-hydrogen',
       'gemini-3.1-flash-lite',
     ]);

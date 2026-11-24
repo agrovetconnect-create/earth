@@ -51,4 +51,4 @@ services:
       - key: APP_URL
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-4-hydrogen
+        value: gemini-3.5-flash-lite

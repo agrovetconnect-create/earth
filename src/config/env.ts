@@ -14,12 +14,14 @@ if (process.env.NODE_ENV === 'production' && !isHermeticTestRun && fs.existsSync
 }
 
 export const VALID_GEMINI_TEXT_MODELS = [
+  'gemini-3.5-flash-lite',
   'gemini-4-hydrogen',
   'gemini-3.1-flash-lite',
   'gemini-4-argon',
 ] as const;
 
 export const VALID_GEMINI_MODELS = [
+  'gemini-3.5-flash-lite',
   'gemini-4-hydrogen',
   'gemini-3.1-flash-lite',
   'gemini-4-argon',
@@ -56,6 +58,20 @@ export interface EnvConfig {
   MAX_IMAGE_SIZE_BYTES: number;
   AI_RATE_LIMIT_PER_USER: number;
   AI_RATE_LIMIT_WINDOW_SECONDS: number;
+  AI_TEXT_FALLBACK_ENABLED: boolean;
+  AI_TEXT_FALLBACK_TIMEOUT_MS: number;
+  AI_TEXT_FALLBACK_PROVIDER_ORDER: string;
+  AI_TEXT_FALLBACK_MODELS_JSON: string;
+  AI_ALLOW_TRIAL_PROVIDERS: boolean;
+  GROQ_API_KEY: string;
+  OPENROUTER_API_KEY: string;
+  CLOUDFLARE_ACCOUNT_ID: string;
+  CLOUDFLARE_API_TOKEN: string;
+  MISTRAL_API_KEY: string;
+  COHERE_API_KEY: string;
+  NVIDIA_API_KEY: string;
+  ZAI_API_KEY: string;
+  REQUESTY_API_KEY: string;
 
   // Data (Stage 3)
   SUPABASE_URL: string;
@@ -154,11 +170,16 @@ const defaults: Record<string, string> = {
   PORT: '3000',
   NODE_ENV: 'development',
   WHATSAPP_GRAPH_API_VERSION: 'v21.0',
-  GEMINI_MODEL: 'gemini-4-hydrogen',
+  GEMINI_MODEL: 'gemini-3.5-flash-lite',
   GEMINI_TIMEOUT_MS: '10000',
   MAX_IMAGE_SIZE_BYTES: '10000000',
   AI_RATE_LIMIT_PER_USER: '10',
   AI_RATE_LIMIT_WINDOW_SECONDS: '3600',
+  AI_TEXT_FALLBACK_ENABLED: 'true',
+  AI_TEXT_FALLBACK_TIMEOUT_MS: '10000',
+  AI_TEXT_FALLBACK_PROVIDER_ORDER: 'groq,openrouter,cloudflare,mistral,nvidia,zai,requesty,cohere',
+  AI_TEXT_FALLBACK_MODELS_JSON: '{}',
+  AI_ALLOW_TRIAL_PROVIDERS: 'false',
   PUBLIC_API_RATE_LIMIT_PER_MINUTE: '100',
   CORS_ALLOWED_ORIGINS: 'http://localhost:3000,http://localhost:5173,http://localhost:3001,http://localhost:8081,http://localhost:19006',
   ENABLE_SECURITY_HEADERS: 'true',
@@ -327,6 +348,12 @@ function validateEnv(): EnvConfig {
     return value;
   };
 
+  const getOptionalSecret = (key: string): string => {
+    const raw = process.env[key];
+    if (!raw || raw.trim() === '' || looksLikePlaceholder(raw)) return '';
+    return raw.trim();
+  };
+
   if (isProd) {
     const missing: string[] = [];
     for (const key of requiredSecretsInProd) {
@@ -394,6 +421,20 @@ function validateEnv(): EnvConfig {
     MAX_IMAGE_SIZE_BYTES: parseIntVar('MAX_IMAGE_SIZE_BYTES'),
     AI_RATE_LIMIT_PER_USER: parseIntVar('AI_RATE_LIMIT_PER_USER'),
     AI_RATE_LIMIT_WINDOW_SECONDS: parseIntVar('AI_RATE_LIMIT_WINDOW_SECONDS'),
+    AI_TEXT_FALLBACK_ENABLED: getVar('AI_TEXT_FALLBACK_ENABLED') === 'true',
+    AI_TEXT_FALLBACK_TIMEOUT_MS: parseIntVar('AI_TEXT_FALLBACK_TIMEOUT_MS'),
+    AI_TEXT_FALLBACK_PROVIDER_ORDER: getVar('AI_TEXT_FALLBACK_PROVIDER_ORDER'),
+    AI_TEXT_FALLBACK_MODELS_JSON: getVar('AI_TEXT_FALLBACK_MODELS_JSON'),
+    AI_ALLOW_TRIAL_PROVIDERS: getVar('AI_ALLOW_TRIAL_PROVIDERS') === 'true',
+    GROQ_API_KEY: getOptionalSecret('GROQ_API_KEY'),
+    OPENROUTER_API_KEY: getOptionalSecret('OPENROUTER_API_KEY'),
+    CLOUDFLARE_ACCOUNT_ID: getOptionalSecret('CLOUDFLARE_ACCOUNT_ID'),
+    CLOUDFLARE_API_TOKEN: getOptionalSecret('CLOUDFLARE_API_TOKEN'),
+    MISTRAL_API_KEY: getOptionalSecret('MISTRAL_API_KEY'),
+    COHERE_API_KEY: getOptionalSecret('COHERE_API_KEY'),
+    NVIDIA_API_KEY: getOptionalSecret('NVIDIA_API_KEY'),
+    ZAI_API_KEY: getOptionalSecret('ZAI_API_KEY'),
+    REQUESTY_API_KEY: getOptionalSecret('REQUESTY_API_KEY'),
 
     // Data
     SUPABASE_URL: getSecret('SUPABASE_URL'),
