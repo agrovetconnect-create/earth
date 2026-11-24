@@ -1,0 +1,20 @@
+{
+  "page": "about",
+  "title": "UNAUDITED MUTATION SHOULD ROLL BACK",
+  "subtitle": "Discover Earth. Together. WhatsApp-first GeoAI, GIS, community investigation and research platform for Rwanda.",
+  "lastUpdated": "October 30, 2026",
+  "sections": [
+    {
+      "id": "about-1",
+      "number": "1",
+      "title": "Our Mission & Vision",
+      "content": "Earth Talk empowers Rwandan citizens, local researchers, and field explorers to document geological specimens, water resources, and terrain features using accessible mobile and WhatsApp technology."
+    },
+    {
+      "id": "about-2",
+      "number": "2",
+      "title": "Civic Geoscience & Community Science",
+      "content": "By combining state-of-the-art GeoAI models with community verification, Earth Talk builds open, structured geological datasets for education, environmental monitoring, and sustainable resource understanding."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "page": "how-it-works",
+  "title": "How Earth Talk Works",
+  "subtitle": "Step-by-step guide to capturing field observations, interacting with GeoAI analysis, and contributing to community investigations in Rwanda.",
+  "lastUpdated": "October 24, 2026",
+  "sections": [
+    {
+      "id": "hiw-1",
+      "number": "1",
+      "title": "Capture & Submit via WhatsApp or Web",
+      "content": "Take a clear photograph or record a voice note of a geological specimen, rock outcrop, mineral, or hydrogeological site. Send it directly to the Earth Talk WhatsApp line or upload via the web form."
+    },
+    {
+      "id": "hiw-2",
+      "number": "2",
+      "title": "Instant GeoAI Interpretation",
+      "content": "Our multimodal GeoAI analyzes the visual characteristics, generates a preliminary identification, calculates confidence ratings, and issues a digital Geoscience Passport."
+    },
+    {
+      "id": "hiw-3",
+      "number": "3",
+      "title": "GIS Mapping & Community Investigation",
+      "content": "Published observations appear on the interactive Rwanda GIS map and community investigation boards where experts and peers can discuss, verify, and build consensus."
+    }
+  ]
+}
