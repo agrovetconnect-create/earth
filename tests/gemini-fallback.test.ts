@@ -9,6 +9,11 @@ import {
   geminiRetryDelay,
 } from '../src/services/gemini.service.js';
 import { AiTextFallbackService } from '../src/services/ai-text-fallback.service.js';
+import { findOfflineGeoscienceAnswer } from '../src/services/offline-geoscience-answer.service.js';
+import {
+  buildLocalGeoscienceReply,
+  classifyWorkflowIntent,
+} from '../src/services/chat-intent-rules.service.js';
 
 let passed = 0;
 let failed = 0;
@@ -172,6 +177,37 @@ await test('transient unknown errors keep the existing full fallback chain', asy
   const answer = await service.answerGeoscienceQuestion('What is this mineral?');
   assert.match(answer, /temporarily unreachable/);
   assert.equal(calls.length, VALID_GEMINI_TEXT_MODELS.length);
+});
+
+await test('chat rules respect user intent and keep the submission workflow first', () => {
+  const submit = classifyWorkflowIntent('I want to submit a rock sample', false);
+  assert.ok(submit);
+  assert.match(submit.reply, /clear daylight photo/i);
+  assert.match(submit.reply, /Geoscience Passport/i);
+
+  const mapIntent = classifyWorkflowIntent('How do I map my observation?', true);
+  assert.ok(mapIntent);
+  assert.match(mapIntent.reply, /geological map/i);
+  assert.match(mapIntent.reply, /Keep Private/i);
+
+  const geology = buildLocalGeoscienceReply('What is the difference between quartz and feldspar?', false);
+  assert.ok(geology);
+  assert.match(geology.reply, /Quartz has no cleavage/);
+  assert.match(geology.reply, /Geoscience Passport/i);
+});
+
+await test('offline field guide answers common geology questions after AI exhaustion', async () => {
+  const direct = findOfflineGeoscienceAnswer('How do I distinguish quartz from feldspar?');
+  assert.ok(direct);
+  assert.match(direct, /Quartz has no cleavage/);
+  assert.match(direct, /feldspar has two good cleavage directions/i);
+
+  const qa = mockService(() => {
+    throw apiError(404);
+  });
+  const answer = await qa.service.answerGeoscienceQuestion('How do I distinguish quartz from feldspar?');
+  assert.match(answer, /Quartz has no cleavage/);
+  assert.equal(qa.calls.length, VALID_GEMINI_TEXT_MODELS.length);
 });
 
 await test('free AI text fallback switches provider without exposing the failure', async () => {

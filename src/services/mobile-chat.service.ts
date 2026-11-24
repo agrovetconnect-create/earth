@@ -49,6 +49,10 @@ import {
 } from '../types/community.types.js';
 import type { Viewer } from '../utils/user-auth.js';
 import type { ObservationRow } from '../types/database.types.js';
+import {
+  buildLocalGeoscienceReply,
+  classifyWorkflowIntent,
+} from './chat-intent-rules.service.js';
 
 function sanitizePassportLookupRow(row: ObservationRow): Record<string, unknown> {
   return {
@@ -331,18 +335,6 @@ function formatDraftSummaryMessage(
   }
 
   return lines.join('\n');
-}
-
-function isSubmissionProcessQuestion(text: string): boolean {
-  const lower = text.trim().toLowerCase();
-  if (!lower) return false;
-  return (
-    /(?:how|where|when|which|can|should|do|need|want).*(?:submit|submission|upload|send|post|publish|private|public|pin|confirm|form|screen|page|website|app)/.test(
-      lower
-    ) ||
-    /(?:web|separate|another|other|different).*(?:form|screen|page|site|app|submit)/.test(lower) ||
-    /^(?:private|public|make private|make public|publish|pin|confirm)(?:[?!.])?$/.test(lower)
-  );
 }
 
 function parsePinTextCommand(
@@ -862,23 +854,13 @@ export class MobileChatService {
     // -------------------------------------------------------------------------
     // 7. Follow-up Answers on Active Observation & Conversational Geoscience Q&A
     // -------------------------------------------------------------------------
-    if (text && isSubmissionProcessQuestion(text)) {
+    const workflowReply = classifyWorkflowIntent(text, Boolean(request.pending_passport_id));
+    if (workflowReply) {
       return {
-        reply:
-          `Everything for Earth Talk happens right here in this chat — there is no other form, page, or screen to fill.\n\n` +
-          `1. Attach a clear specimen or outcrop photo here (plus optional short clips, extra angles, or document files).\n` +
-          `2. I analyse it and show the GeoAI summary here.\n` +
-          `3. Share a GPS pin or Rwanda place here.\n` +
-          `4. Choose privacy right here: Keep Private, District Only, Approximate (~2 km), or Pin Exact.\n` +
-          `5. Confirm with the button under my summary in this chat. I save the Passport and publish only what you approve.\n\n` +
-          (request.pending_passport_id
-            ? `You have a draft ${request.pending_passport_id} waiting here — tap one of the visibility buttons under my summary to confirm now.`
-            : `Send the photo first, and I will show those visibility buttons right here.`),
+        reply: workflowReply.reply,
         type: 'text',
         pending_passport_id: request.pending_passport_id ?? null,
-        suggested_actions: request.pending_passport_id
-          ? ['🔒 Keep Private', '📍 Pin Approximate (~2 km)', 'HELP']
-          : ['Attach site photo', 'HELP', 'SITES'],
+        suggested_actions: workflowReply.suggested_actions,
       };
     }
 
@@ -897,6 +879,10 @@ export class MobileChatService {
         };
       }
 
+      const isCasualGreeting =
+        /^(?:hello|hi|hey|yo|muraho|habari|amakuru|good\s+(?:morning|afternoon|evening)|greetings)[!.?\s]*$/i.test(
+          text
+        );
       const obsContext = await this.loadObservationContext(
         request.pending_passport_id,
         viewer,
@@ -908,6 +894,34 @@ export class MobileChatService {
         mimeType: doc.mime_type,
         data: doc.content_base64,
       }));
+
+      const localReply =
+        documentInputs && documentInputs.length > 0
+          ? null
+          : buildLocalGeoscienceReply(text, Boolean(request.pending_passport_id));
+      if (localReply) {
+        let appendedNote = false;
+        if (!isCasualGreeting && request.pending_passport_id && obsContext) {
+          const updatedObs = await photoSubmissionService.appendObservationFieldNote(
+            request.pending_passport_id,
+            text,
+            viewer,
+            request.contributor_token,
+            clientIp
+          );
+          appendedNote = Boolean(updatedObs);
+        }
+        return {
+          reply:
+            appendedNote && obsContext
+              ? `📝 Recorded on ${obsContext.passportId}\n\n${localReply.reply}`
+              : localReply.reply,
+          type: 'text',
+          pending_passport_id: request.pending_passport_id ?? null,
+          suggested_actions: localReply.suggested_actions,
+        };
+      }
+
       const aiAnswer = await geminiService.answerGeoscienceQuestion(
         text,
         obsContext,
@@ -915,10 +929,6 @@ export class MobileChatService {
         documentInputs
       );
       const isWarning = aiAnswer.startsWith('⚠️ Unsupported');
-      const isCasualGreeting =
-        /^(?:hello|hi|hey|yo|muraho|habari|amakuru|good\s+(?:morning|afternoon|evening)|greetings)[!.?\s]*$/i.test(
-          text
-        );
 
       let appendedNote = false;
       if (!isWarning && !isCasualGreeting && request.pending_passport_id && obsContext) {

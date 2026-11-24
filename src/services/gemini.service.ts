@@ -6,6 +6,7 @@ import {
 } from '../ai/domain-scope.js';
 import { logger } from '../utils/logger.js';
 import { aiTextFallbackService } from './ai-text-fallback.service.js';
+import { findOfflineGeoscienceAnswer } from './offline-geoscience-answer.service.js';
 import { GEOLOGICAL_SYSTEM_INSTRUCTION, buildGeologicalUserPrompt } from '../ai/geological.prompt.js';
 import { geologicalResponseSchema, validateGeologicalResponse } from '../ai/geological.schema.js';
 import { GeologicalAnalysisError, type GeoscienceAnalysisResult } from '../ai/geological.types.js';
@@ -580,6 +581,9 @@ export class GeminiService {
       }
       return textFallbackAnswer;
     }
+
+    const fieldGuideAnswer = findOfflineGeoscienceAnswer(cleanQuestion);
+    if (fieldGuideAnswer) return fieldGuideAnswer;
 
     logger.warn('Gemini Q&A generation exhausted fallback chain; returning cautious fallback response', {
       error: lastQaErr instanceof Error ? lastQaErr.message : String(lastQaErr),
