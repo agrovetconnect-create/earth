@@ -4,6 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/client",
   "rewrites": [
+    { "source": "/api/public/observations.geojson", "destination": "/api/public-observations-geojson" },
     { "source": "/terms", "destination": "/index.html" },
     { "source": "/terms/:path*", "destination": "/index.html" },
     { "source": "/privacy", "destination": "/index.html" },
